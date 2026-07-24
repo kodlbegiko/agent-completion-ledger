@@ -48,8 +48,8 @@ jobs:
           if-no-files-found: error
 
 # Security notes:
-# - This uses pull_request and read-only contents permission.
-# - It does not use pull_request_target, secrets, or command assertions.
+# - This uses the ordinary pull-request trigger with read-only contents permission.
+# - It avoids privileged target context, secrets, and command assertions.
 # - File, hash, JSON, and Git evidence can still be evaluated.
 # - A blocking command assertion becomes UNVERIFIABLE, never SUPPORTED.
 # - The runner is disposable, but static-only mode is not a complete parser or
