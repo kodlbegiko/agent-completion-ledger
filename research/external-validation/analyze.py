@@ -141,18 +141,20 @@ def summarize(rows: list[dict[str, str]]) -> dict[str, Any]:
         and not threshold_results["falseAcceptanceReductionAtLeast25Percent"]
     )
 
+    synthetic = any(item["participant_id"].startswith("SYNTH-") for item in rows)
+    real_participant_count = len(
+        {
+            item["participant_id"]
+            for item in rows
+            if not item["participant_id"].startswith("SYNTH-")
+        }
+    )
+    computed_threshold_result = primary_effect and not offset_by_cost
+
     return {
         "schemaVersion": "1",
-        "status": "SYNTHETIC_DRY_RUN"
-        if any(item["participant_id"].startswith("SYNTH-") for item in rows)
-        else "EXTERNAL_DATA_ANALYSIS",
-        "realParticipantCount": len(
-            {
-                item["participant_id"]
-                for item in rows
-                if not item["participant_id"].startswith("SYNTH-")
-            }
-        ),
+        "status": "SYNTHETIC_DRY_RUN" if synthetic else "EXTERNAL_DATA_ANALYSIS",
+        "realParticipantCount": real_participant_count,
         "conditions": condition_metrics,
         "effects": {
             "falseAcceptanceRelativeReduction": false_acceptance_reduction,
@@ -161,9 +163,13 @@ def summarize(rows: list[dict[str, str]]) -> dict[str, Any]:
             "medianReviewTimeRelativeChange": review_time_change,
         },
         "thresholds": threshold_results,
-        "preregisteredH1MaterialThresholdMet": primary_effect and not offset_by_cost,
+        "preregisteredH1MaterialThresholdMet": None if synthetic else computed_threshold_result,
+        "syntheticThresholdExercise": computed_threshold_result if synthetic else None,
         "interpretationWarning": (
-            "Synthetic rows validate analysis plumbing only and are not human evidence."
+            "Synthetic rows validate analysis plumbing only. Their metrics and threshold "
+            "exercise are not human evidence and cannot support H1, adoption, or impact."
+            if synthetic
+            else "External data still require protocol, exclusion, and provenance review."
         ),
     }
 
