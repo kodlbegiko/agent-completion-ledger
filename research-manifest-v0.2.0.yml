@@ -76,14 +76,37 @@ external_validation:
     - .github/ISSUE_TEMPLATE/reproduction-report.yml
     - .github/ISSUE_TEMPLATE/reproduction-failure.yml
 validation:
-  local_tests_passed_before_cross_platform_fix: 175
-  local_branch_coverage_percent_before_cross_platform_fix: 94.35
-  required_ci_platforms:
+  tests_passed: 177
+  coverage:
+    line_percent: 95.39
+    branch_percent: 90.81
+    branch_aware_combined_percent: 94.37
+    lines_covered: 910
+    lines_valid: 954
+    branches_covered: 247
+    branches_valid: 272
+  ci_run: https://github.com/kodlbegiko/agent-completion-ledger/actions/runs/30106141811
+  ci_head: 9df6a3e857c313580644d7c5b11501db9e39e6c3
+  ci_conclusion: success
+  platforms:
     - ubuntu-python-3.11
     - ubuntu-python-3.12
     - ubuntu-python-3.13
     - windows-python-3.12
     - macos-python-3.12
+  checks:
+    - ruff
+    - ruff-format
+    - mypy-strict
+    - pytest-branch-coverage
+    - build
+    - wheel-smoke
+    - deterministic-fixture
+    - composite-action
+    - full-reproduction
+    - generalization
+    - dogfood-shipcheck
+    - dogfood-csv-snapshot
 known_limitations:
   - completion evidence does not establish product value or semantic correctness
   - command assertions are not sandboxed
