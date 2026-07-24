@@ -1,0 +1,91 @@
+{
+  "ci": {
+    "conclusion": "success",
+    "coverage": {
+      "branchPercent": 90.60402684563758,
+      "branches": 298,
+      "combinedPercent": 94.05286343612335,
+      "coveredBranches": 270,
+      "coveredLines": 1011,
+      "statementPercent": 95.0187969924812,
+      "statements": 1064
+    },
+    "event": "push",
+    "headSha": "ce8ffb7597209428d050880907f5ccccaefc95f0",
+    "jobs": [
+      {
+        "conclusion": "success",
+        "name": "lint"
+      },
+      {
+        "conclusion": "success",
+        "name": "dogfood-shipcheck"
+      },
+      {
+        "conclusion": "success",
+        "name": "dogfood-csv-snapshot"
+      },
+      {
+        "conclusion": "success",
+        "name": "security-and-interoperability"
+      },
+      {
+        "conclusion": "success",
+        "name": "reproduce"
+      },
+      {
+        "conclusion": "success",
+        "name": "quality (ubuntu-latest, 3.11)"
+      },
+      {
+        "conclusion": "success",
+        "name": "quality (ubuntu-latest, 3.12)"
+      },
+      {
+        "conclusion": "success",
+        "name": "quality (macos-latest, 3.12)"
+      },
+      {
+        "conclusion": "success",
+        "name": "quality (ubuntu-latest, 3.13)"
+      },
+      {
+        "conclusion": "success",
+        "name": "quality (windows-latest, 3.12)"
+      },
+      {
+        "conclusion": "success",
+        "name": "action-integration"
+      }
+    ],
+    "runId": 30117477876,
+    "tests": {
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "tests": 189
+    },
+    "url": "https://github.com/kodlbegiko/agent-completion-ledger/actions/runs/30117477876"
+  },
+  "externalValidation": {
+    "nonAuthorIntegrationCount": 0,
+    "realParticipantCount": 0,
+    "status": "EXTERNAL VALIDATION PENDING"
+  },
+  "package": {
+    "githubReleaseAssets": "generated source archives only",
+    "pypiPublished": false
+  },
+  "release": {
+    "isDraft": false,
+    "isPrerelease": false,
+    "name": "v0.3.0 \u2014 Trusted Acceptance Evidence",
+    "publishedAt": "2026-07-24T18:37:03Z",
+    "tagName": "v0.3.0",
+    "targetCommitish": "main",
+    "url": "https://github.com/kodlbegiko/agent-completion-ledger/releases/tag/v0.3.0"
+  },
+  "resolvedTagCommit": "ce8ffb7597209428d050880907f5ccccaefc95f0",
+  "schemaVersion": "1",
+  "targetCommit": "ce8ffb7597209428d050880907f5ccccaefc95f0"
+}
