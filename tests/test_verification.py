@@ -46,18 +46,14 @@ def test_failed_task(tmp_path: Path) -> None:
 
 
 def test_unverifiable_task_without_evidence(tmp_path: Path) -> None:
-    contract = _contract(
-        {"id": "unknown", "claim": {"status": "completed"}, "evidence": []}
-    )
+    contract = _contract({"id": "unknown", "claim": {"status": "completed"}, "evidence": []})
     report = verify_contract(contract, tmp_path)  # type: ignore[arg-type]
     assert report.tasks[0].ledger_status is EvidenceState.UNVERIFIABLE
     assert report_exit_code(report) == 2
 
 
 def test_no_claim_task(tmp_path: Path) -> None:
-    contract = _contract(
-        {"id": "none", "claim": {"status": "none"}, "evidence": []}
-    )
+    contract = _contract({"id": "none", "claim": {"status": "none"}, "evidence": []})
     report = verify_contract(contract, tmp_path)  # type: ignore[arg-type]
     assert report.tasks[0].ledger_status is EvidenceState.NO_CLAIM
     assert report_exit_code(report) == 0
@@ -110,9 +106,7 @@ def test_unknown_task_rejected(tmp_path: Path) -> None:
 
 
 def test_reports_are_deterministic(tmp_path: Path) -> None:
-    contract = _contract(
-        {"id": "none", "claim": {"status": "none"}, "evidence": []}
-    )
+    contract = _contract({"id": "none", "claim": {"status": "none"}, "evidence": []})
     report = verify_contract(contract, tmp_path)  # type: ignore[arg-type]
     assert render_terminal(report) == render_terminal(report)
     assert "NO_CLAIM" in render_markdown(report)
@@ -159,9 +153,7 @@ def test_markdown_escapes_pipe(tmp_path: Path) -> None:
             {
                 "id": "pipe",
                 "claim": {"status": "completed"},
-                "evidence": [
-                    {"id": "text", "type": "file-exists", "path": "a|b"}
-                ],
+                "evidence": [{"id": "text", "type": "file-exists", "path": "a|b"}],
             }
         ],
     }

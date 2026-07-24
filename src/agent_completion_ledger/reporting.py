@@ -40,8 +40,7 @@ def render_terminal(report: VerificationReport) -> str:
         lines.append("")
     counts = report.counts
     lines.append(
-        "Summary: "
-        + ", ".join(f"{state}={count}" for state, count in sorted(counts.items()))
+        "Summary: " + ", ".join(f"{state}={count}" for state, count in sorted(counts.items()))
     )
     return "\n".join(lines).rstrip() + "\n"
 

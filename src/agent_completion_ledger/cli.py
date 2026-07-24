@@ -51,14 +51,10 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     verify = subparsers.add_parser("verify", help="Execute evidence assertions")
-    verify.add_argument(
-        "--contract", type=Path, default=Path("completion-ledger.yml")
-    )
+    verify.add_argument("--contract", type=Path, default=Path("completion-ledger.yml"))
     verify.add_argument("--repo-root", type=Path, default=Path("."))
     verify.add_argument("--task")
-    verify.add_argument(
-        "--format", choices=("terminal", "json", "markdown"), default="terminal"
-    )
+    verify.add_argument("--format", choices=("terminal", "json", "markdown"), default="terminal")
     verify.add_argument("--output", type=Path)
     verify.add_argument("--include-timing", action="store_true")
 
@@ -66,20 +62,14 @@ def build_parser() -> argparse.ArgumentParser:
         "report", help="Render a previously generated verification JSON report"
     )
     report.add_argument("input", type=Path)
-    report.add_argument(
-        "--format", choices=("terminal", "json", "markdown"), default="terminal"
-    )
+    report.add_argument("--format", choices=("terminal", "json", "markdown"), default="terminal")
     report.add_argument("--output", type=Path)
 
     reproduce_parser = subparsers.add_parser(
         "reproduce", help="Run and hash-check the committed v0.1.0 pilot"
     )
-    reproduce_parser.add_argument(
-        "--manifest", type=Path, default=Path("research-manifest.yml")
-    )
-    reproduce_parser.add_argument(
-        "--output-dir", type=Path, default=Path("reproduced-results")
-    )
+    reproduce_parser.add_argument("--manifest", type=Path, default=Path("research-manifest.yml"))
+    reproduce_parser.add_argument("--output-dir", type=Path, default=Path("reproduced-results"))
     reproduce_parser.add_argument("--source", type=Path)
 
     generalization = subparsers.add_parser(

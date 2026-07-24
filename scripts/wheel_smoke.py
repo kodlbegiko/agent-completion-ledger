@@ -22,7 +22,11 @@ def main() -> int:
             check=True,
         )
         subprocess.run(
-            [str(python), "-c", "import agent_completion_ledger; print(agent_completion_ledger.__version__)"],
+            [
+                str(python),
+                "-c",
+                "import agent_completion_ledger; print(agent_completion_ledger.__version__)",
+            ],
             check=True,
         )
     return 0

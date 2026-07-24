@@ -1,6 +1,5 @@
 import hashlib
 import json
-import os
 import subprocess
 import sys
 from pathlib import Path
@@ -27,7 +26,9 @@ def repo(tmp_path: Path) -> Path:
     return tmp_path
 
 
-@pytest.mark.parametrize("value", ["../secret", "a/../../secret", "/etc/passwd", "C:\\secret", "C:/secret"])
+@pytest.mark.parametrize(
+    "value", ["../secret", "a/../../secret", "/etc/passwd", "C:\\secret", "C:/secret"]
+)
 def test_unsafe_paths_rejected(repo: Path, value: str) -> None:
     with pytest.raises(UnsafePathError):
         resolve_repo_path(repo, value)
@@ -57,10 +58,18 @@ def test_symlink_rejected(repo: Path) -> None:
         (AssertionSpec("a", "file-not-exists", path="README.md"), AssertionOutcome.FAIL),
         (AssertionSpec("a", "file-not-empty", path="README.md"), AssertionOutcome.PASS),
         (AssertionSpec("a", "file-not-empty", path="empty.txt"), AssertionOutcome.FAIL),
-        (AssertionSpec("a", "text-contains", path="README.md", text="marker"), AssertionOutcome.PASS),
-        (AssertionSpec("a", "text-contains", path="README.md", text="absent"), AssertionOutcome.FAIL),
         (
-            AssertionSpec("a", "json-path", path="data.json", json_path="nested.enabled", expected=True),
+            AssertionSpec("a", "text-contains", path="README.md", text="marker"),
+            AssertionOutcome.PASS,
+        ),
+        (
+            AssertionSpec("a", "text-contains", path="README.md", text="absent"),
+            AssertionOutcome.FAIL,
+        ),
+        (
+            AssertionSpec(
+                "a", "json-path", path="data.json", json_path="nested.enabled", expected=True
+            ),
             AssertionOutcome.PASS,
         ),
         (
@@ -185,7 +194,9 @@ def test_working_directory_traversal(repo: Path) -> None:
         command=(sys.executable, "--version"),
         working_directory="..",
     )
-    assert evaluate_assertion(spec, repo, (sys.executable,)).outcome is AssertionOutcome.UNVERIFIABLE
+    assert (
+        evaluate_assertion(spec, repo, (sys.executable,)).outcome is AssertionOutcome.UNVERIFIABLE
+    )
 
 
 def _git(repo: Path, *args: str) -> None:
@@ -237,9 +248,7 @@ def test_missing_path_in_direct_spec_is_unverifiable(repo: Path) -> None:
 
 
 def test_not_empty_missing_file_fails(repo: Path) -> None:
-    result = evaluate_assertion(
-        AssertionSpec("x", "file-not-empty", path="missing"), repo, ()
-    )
+    result = evaluate_assertion(AssertionSpec("x", "file-not-empty", path="missing"), repo, ())
     assert result.outcome is AssertionOutcome.FAIL
 
 
@@ -304,7 +313,9 @@ def test_working_directory_file_is_unverifiable(repo: Path) -> None:
         command=(sys.executable, "--version"),
         working_directory="README.md",
     )
-    assert evaluate_assertion(spec, repo, (sys.executable,)).outcome is AssertionOutcome.UNVERIFIABLE
+    assert (
+        evaluate_assertion(spec, repo, (sys.executable,)).outcome is AssertionOutcome.UNVERIFIABLE
+    )
 
 
 def test_unknown_assertion_is_unverifiable(repo: Path) -> None:

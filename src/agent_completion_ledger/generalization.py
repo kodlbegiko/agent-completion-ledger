@@ -79,12 +79,8 @@ class GeneralizationResult:
                 "baselineCompletionPrecision": self.baseline_precision,
                 "incompleteRate": self.incomplete_rate,
                 "excludingEmptyErrorRate": self.excluding_empty_error_rate,
-                "reclassificationsToReachAtMost20Percent": (
-                    self.reclassifications_to_20_percent
-                ),
-                "shareUnsupportedRequiringReclassification": (
-                    self.share_unsupported_reclassified
-                ),
+                "reclassificationsToReachAtMost20Percent": (self.reclassifications_to_20_percent),
+                "shareUnsupportedRequiringReclassification": (self.share_unsupported_reclassified),
             },
             "policyB": "UNTESTABLE HERE",
             "scopeNote": (
@@ -99,12 +95,7 @@ def analyze_generalization(record: MultiSweBenchRecord) -> GeneralizationResult:
     rate = unsupported / completed
     interval = wilson_interval(unsupported, completed)
     incomplete_rate = record.unstopped_instances / completed
-    h1 = (
-        completed >= 50
-        and incomplete_rate <= 0.10
-        and rate > 0.20
-        and interval.lower > 0.20
-    )
+    h1 = completed >= 50 and incomplete_rate <= 0.10 and rate > 0.20 and interval.lower > 0.20
 
     denominator_without_empty = completed - record.empty_error_patch_instances
     numerator_without_empty = unsupported - record.empty_error_patch_instances

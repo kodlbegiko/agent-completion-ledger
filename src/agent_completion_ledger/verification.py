@@ -54,9 +54,7 @@ def _task_status(task: TaskSpec, results: tuple[AssertionResult, ...]) -> Eviden
     blocking = [item for item in results if item.blocking]
     if any(item.outcome is AssertionOutcome.FAIL for item in blocking):
         return EvidenceState.FAILED
-    if not blocking or any(
-        item.outcome is AssertionOutcome.UNVERIFIABLE for item in blocking
-    ):
+    if not blocking or any(item.outcome is AssertionOutcome.UNVERIFIABLE for item in blocking):
         return EvidenceState.UNVERIFIABLE
     return EvidenceState.SUPPORTED
 

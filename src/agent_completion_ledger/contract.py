@@ -49,9 +49,7 @@ class CompletionContract:
 
 
 def _schema() -> dict[str, Any]:
-    resource = files("agent_completion_ledger").joinpath(
-        "schemas/completion-contract.schema.json"
-    )
+    resource = files("agent_completion_ledger").joinpath("schemas/completion-contract.schema.json")
     value = json.loads(resource.read_text(encoding="utf-8"))
     if not isinstance(value, dict):
         raise ContractError("packaged contract schema is not a JSON object")

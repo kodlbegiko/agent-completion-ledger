@@ -161,7 +161,14 @@ def _path_assertion(spec: AssertionSpec, root: Path) -> AssertionResult:
                     value = value[segment]
                 else:
                     raise KeyError(segment)
-        except (OSError, UnicodeDecodeError, json.JSONDecodeError, KeyError, IndexError, ValueError) as exc:
+        except (
+            OSError,
+            UnicodeDecodeError,
+            json.JSONDecodeError,
+            KeyError,
+            IndexError,
+            ValueError,
+        ) as exc:
             return _result(spec, AssertionOutcome.UNVERIFIABLE, f"cannot resolve json path: {exc}")
         passed = value == spec.expected
         return _result(

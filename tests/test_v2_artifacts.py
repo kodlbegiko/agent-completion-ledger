@@ -6,9 +6,10 @@ from agent_completion_ledger.contract import load_contract
 
 
 def test_public_contract_schema_copies_match() -> None:
-    assert Path("schemas/completion-contract.schema.json").read_bytes() == Path(
-        "src/agent_completion_ledger/schemas/completion-contract.schema.json"
-    ).read_bytes()
+    assert (
+        Path("schemas/completion-contract.schema.json").read_bytes()
+        == Path("src/agent_completion_ledger/schemas/completion-contract.schema.json").read_bytes()
+    )
 
 
 def test_composite_action_has_required_steps() -> None:
