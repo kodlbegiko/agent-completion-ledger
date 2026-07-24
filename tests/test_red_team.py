@@ -1,4 +1,3 @@
-from agent_completion_ledger.io import load_records
 from agent_completion_ledger.metrics import analyze_records
 from agent_completion_ledger.model import SourceRecord
 
