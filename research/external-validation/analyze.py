@@ -62,6 +62,94 @@ def _relative_reduction(baseline: float, treatment: float) -> float | None:
     return (baseline - treatment) / baseline
 
 
+def _metrics(items: list[dict[str, str]]) -> dict[str, float | int | None]:
+    review_times = [float(item["review_time_seconds"]) for item in items]
+    ambiguity = [float(item["ambiguity_1_to_5"]) for item in items]
+    confidence = [float(item["confidence_1_to_5"]) for item in items]
+    blocker_times = [
+        value
+        for item in items
+        if (value := _as_float(item["first_blocker_time_seconds"])) is not None
+    ]
+    false_acceptance = [_as_bool(item["false_acceptance"]) for item in items]
+    false_rejection = [_as_bool(item["false_rejection"]) for item in items]
+    return {
+        "rows": len(items),
+        "medianReviewTimeSeconds": statistics.median(review_times),
+        "meanAmbiguity": statistics.fmean(ambiguity),
+        "meanConfidence": statistics.fmean(confidence),
+        "medianFirstBlockerTimeSeconds": (
+            statistics.median(blocker_times) if blocker_times else None
+        ),
+        "falseAcceptanceRate": sum(false_acceptance) / len(false_acceptance),
+        "falseRejectionRate": sum(false_rejection) / len(false_rejection),
+    }
+
+
+def _participant_balanced_summary(
+    participant_metrics: list[dict[str, Any]],
+) -> dict[str, float | int | None]:
+    blocker_medians = [
+        float(item["medianFirstBlockerTimeSeconds"])
+        for item in participant_metrics
+        if item["medianFirstBlockerTimeSeconds"] is not None
+    ]
+    return {
+        "participants": len(participant_metrics),
+        "medianReviewTimeSeconds": statistics.median(
+            float(item["medianReviewTimeSeconds"]) for item in participant_metrics
+        ),
+        "meanAmbiguity": statistics.fmean(
+            float(item["meanAmbiguity"]) for item in participant_metrics
+        ),
+        "meanConfidence": statistics.fmean(
+            float(item["meanConfidence"]) for item in participant_metrics
+        ),
+        "medianFirstBlockerTimeSeconds": (
+            statistics.median(blocker_medians) if blocker_medians else None
+        ),
+        "falseAcceptanceRate": statistics.fmean(
+            float(item["falseAcceptanceRate"]) for item in participant_metrics
+        ),
+        "falseRejectionRate": statistics.fmean(
+            float(item["falseRejectionRate"]) for item in participant_metrics
+        ),
+    }
+
+
+def _condition_effects(
+    baseline: dict[str, float | int | None],
+    treatment: dict[str, float | int | None],
+) -> dict[str, float | None]:
+    false_acceptance_reduction = _relative_reduction(
+        float(baseline["falseAcceptanceRate"]),
+        float(treatment["falseAcceptanceRate"]),
+    )
+    ambiguity_reduction = _relative_reduction(
+        float(baseline["meanAmbiguity"]),
+        float(treatment["meanAmbiguity"]),
+    )
+    blocker_reduction = None
+    if (
+        baseline["medianFirstBlockerTimeSeconds"] is not None
+        and treatment["medianFirstBlockerTimeSeconds"] is not None
+    ):
+        blocker_reduction = _relative_reduction(
+            float(baseline["medianFirstBlockerTimeSeconds"]),
+            float(treatment["medianFirstBlockerTimeSeconds"]),
+        )
+    review_time_change = (
+        float(treatment["medianReviewTimeSeconds"])
+        - float(baseline["medianReviewTimeSeconds"])
+    ) / float(baseline["medianReviewTimeSeconds"])
+    return {
+        "falseAcceptanceRelativeReduction": false_acceptance_reduction,
+        "ambiguityRelativeReduction": ambiguity_reduction,
+        "firstBlockerTimeRelativeReduction": blocker_reduction,
+        "medianReviewTimeRelativeChange": review_time_change,
+    }
+
+
 def summarize(rows: list[dict[str, str]]) -> dict[str, Any]:
     grouped: dict[str, list[dict[str, str]]] = defaultdict(list)
     for row in rows:
@@ -72,61 +160,53 @@ def summarize(rows: list[dict[str, str]]) -> dict[str, Any]:
     if set(grouped) != {"A", "B"}:
         raise ValueError("both conditions A and B are required")
 
-    condition_metrics: dict[str, dict[str, Any]] = {}
-    for condition, items in sorted(grouped.items()):
-        review_times = [float(item["review_time_seconds"]) for item in items]
-        ambiguity = [float(item["ambiguity_1_to_5"]) for item in items]
-        confidence = [float(item["confidence_1_to_5"]) for item in items]
-        blocker_times = [
-            value
-            for item in items
-            if (value := _as_float(item["first_blocker_time_seconds"])) is not None
-        ]
-        false_acceptance = [_as_bool(item["false_acceptance"]) for item in items]
-        false_rejection = [_as_bool(item["false_rejection"]) for item in items]
-        condition_metrics[condition] = {
-            "rows": len(items),
-            "participants": len({item["participant_id"] for item in items}),
-            "medianReviewTimeSeconds": statistics.median(review_times),
-            "meanAmbiguity": statistics.fmean(ambiguity),
-            "meanConfidence": statistics.fmean(confidence),
-            "medianFirstBlockerTimeSeconds": (
-                statistics.median(blocker_times) if blocker_times else None
-            ),
-            "falseAcceptanceRate": sum(false_acceptance) / len(false_acceptance),
-            "falseRejectionRate": sum(false_rejection) / len(false_rejection),
-        }
+    pooled_conditions: dict[str, dict[str, float | int | None]] = {}
+    participant_records: list[dict[str, Any]] = []
+    participant_balanced_conditions: dict[str, dict[str, float | int | None]] = {}
 
-    baseline = condition_metrics["A"]
-    treatment = condition_metrics["B"]
-    false_acceptance_reduction = _relative_reduction(
-        baseline["falseAcceptanceRate"], treatment["falseAcceptanceRate"]
-    )
-    ambiguity_reduction = _relative_reduction(baseline["meanAmbiguity"], treatment["meanAmbiguity"])
-    blocker_reduction = None
-    if (
-        baseline["medianFirstBlockerTimeSeconds"] is not None
-        and treatment["medianFirstBlockerTimeSeconds"] is not None
-    ):
-        blocker_reduction = _relative_reduction(
-            baseline["medianFirstBlockerTimeSeconds"],
-            treatment["medianFirstBlockerTimeSeconds"],
+    for condition, items in sorted(grouped.items()):
+        pooled = _metrics(items)
+        pooled["participants"] = len({item["participant_id"] for item in items})
+        pooled_conditions[condition] = pooled
+
+        by_participant: dict[str, list[dict[str, str]]] = defaultdict(list)
+        for item in items:
+            by_participant[item["participant_id"]].append(item)
+        condition_participant_metrics: list[dict[str, Any]] = []
+        for participant_id, participant_items in sorted(by_participant.items()):
+            metrics = {
+                "participantId": participant_id,
+                "condition": condition,
+                **_metrics(participant_items),
+            }
+            participant_records.append(metrics)
+            condition_participant_metrics.append(metrics)
+        participant_balanced_conditions[condition] = _participant_balanced_summary(
+            condition_participant_metrics
         )
-    review_time_change = (
-        treatment["medianReviewTimeSeconds"] - baseline["medianReviewTimeSeconds"]
-    ) / baseline["medianReviewTimeSeconds"]
+
+    primary_effects = _condition_effects(
+        participant_balanced_conditions["A"], participant_balanced_conditions["B"]
+    )
+    pooled_effects = _condition_effects(pooled_conditions["A"], pooled_conditions["B"])
 
     threshold_results = {
         "falseAcceptanceReductionAtLeast25Percent": (
-            false_acceptance_reduction is not None and false_acceptance_reduction >= 0.25
+            primary_effects["falseAcceptanceRelativeReduction"] is not None
+            and primary_effects["falseAcceptanceRelativeReduction"] >= 0.25
         ),
         "ambiguityReductionAtLeast20Percent": (
-            ambiguity_reduction is not None and ambiguity_reduction >= 0.20
+            primary_effects["ambiguityRelativeReduction"] is not None
+            and primary_effects["ambiguityRelativeReduction"] >= 0.20
         ),
         "firstBlockerTimeReductionAtLeast20Percent": (
-            blocker_reduction is not None and blocker_reduction >= 0.20
+            primary_effects["firstBlockerTimeRelativeReduction"] is not None
+            and primary_effects["firstBlockerTimeRelativeReduction"] >= 0.20
         ),
-        "medianReviewTimeMoreThan20PercentSlower": review_time_change > 0.20,
+        "medianReviewTimeMoreThan20PercentSlower": (
+            primary_effects["medianReviewTimeRelativeChange"] is not None
+            and primary_effects["medianReviewTimeRelativeChange"] > 0.20
+        ),
     }
     primary_effect = any(
         threshold_results[key]
@@ -148,16 +228,15 @@ def summarize(rows: list[dict[str, str]]) -> dict[str, Any]:
     computed_threshold_result = primary_effect and not offset_by_cost
 
     return {
-        "schemaVersion": "1",
+        "schemaVersion": "2",
         "status": "SYNTHETIC_DRY_RUN" if synthetic else "EXTERNAL_DATA_ANALYSIS",
         "realParticipantCount": real_participant_count,
-        "conditions": condition_metrics,
-        "effects": {
-            "falseAcceptanceRelativeReduction": false_acceptance_reduction,
-            "ambiguityRelativeReduction": ambiguity_reduction,
-            "firstBlockerTimeRelativeReduction": blocker_reduction,
-            "medianReviewTimeRelativeChange": review_time_change,
-        },
+        "primaryAnalysisBasis": "participant-balanced condition summaries",
+        "participantMetrics": participant_records,
+        "participantBalancedConditions": participant_balanced_conditions,
+        "pooledConditions": pooled_conditions,
+        "primaryEffects": primary_effects,
+        "pooledSensitivityEffects": pooled_effects,
         "thresholds": threshold_results,
         "preregisteredH1MaterialThresholdMet": None if synthetic else computed_threshold_result,
         "syntheticThresholdExercise": computed_threshold_result if synthetic else None,
