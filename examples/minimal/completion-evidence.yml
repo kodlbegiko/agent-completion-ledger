@@ -10,15 +10,23 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+      - name: Read contract from reviewed base commit
+        id: contract
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p .trusted
+          git fetch --no-tags --depth=1 origin "$BASE_SHA"
+          git show "$BASE_SHA:completion-ledger.yml" > .trusted/completion-ledger.yml
+          echo "sha256=$(sha256sum .trusted/completion-ledger.yml | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Pin checked-out contract
-        id: contract
-        shell: bash
-        run: echo "sha256=$(sha256sum completion-ledger.yml | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
       - uses: kodlbegiko/agent-completion-ledger@v0.3.0
         with:
+          contract: .trusted/completion-ledger.yml
           expected-contract-sha256: ${{ steps.contract.outputs.sha256 }}
           no-exec: "true"
           output: completion-report.md
