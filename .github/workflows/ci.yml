@@ -47,26 +47,78 @@ jobs:
       - name: Wheel installation smoke test
         shell: bash
         run: python scripts/wheel_smoke.py "$(python -c 'import glob; print(glob.glob("dist/*.whl")[0])')"
-      - name: Deterministic fixture verification
+      - name: Deterministic trusted report verification
         shell: bash
         run: |
+          CONTRACT_SHA256="$(python -c 'import hashlib; print(hashlib.sha256(open("tests/fixtures/action-success.yml", "rb").read()).hexdigest())')"
           agent-completion-ledger verify \
             --contract tests/fixtures/action-success.yml \
             --repo-root tests/fixtures/repository \
+            --expected-contract-sha256 "$CONTRACT_SHA256" \
+            --no-exec \
             --format json \
             --output fixture-report-a.json
           agent-completion-ledger verify \
             --contract tests/fixtures/action-success.yml \
             --repo-root tests/fixtures/repository \
+            --expected-contract-sha256 "$CONTRACT_SHA256" \
+            --no-exec \
             --format json \
             --output fixture-report-b.json
           diff -u fixture-report-a.json fixture-report-b.json
+          agent-completion-ledger verify \
+            --contract tests/fixtures/action-success.yml \
+            --repo-root tests/fixtures/repository \
+            --expected-contract-sha256 "$CONTRACT_SHA256" \
+            --no-exec \
+            --format in-toto \
+            --output fixture-evidence.intoto.json
       - uses: actions/upload-artifact@v4
         with:
           name: quality-${{ matrix.os }}-py${{ matrix.python }}
           path: |
             coverage.xml
             fixture-report-a.json
+            fixture-evidence.intoto.json
+
+  security-and-interoperability:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e ".[dev]"
+      - name: Validate adoption contracts
+        run: |
+          agent-completion-ledger validate-contract examples/minimal/completion-ledger.yml
+          agent-completion-ledger validate-contract examples/node/completion-ledger.yml
+          agent-completion-ledger validate-contract examples/python/completion-ledger.yml
+      - name: Validate safe workflow fixtures
+        shell: bash
+        run: |
+          for workflow in docs/workflows/trusted-main-contract.yml docs/workflows/static-untrusted-pr.yml; do
+            grep -q '^on:' "$workflow"
+            grep -q 'pull_request:' "$workflow"
+            grep -q 'contents: read' "$workflow"
+            ! grep -q 'pull_request_target' "$workflow"
+            ! grep -q 'secrets\.' "$workflow"
+            grep -q 'event.pull_request.base.sha' "$workflow"
+            grep -q 'expected-contract-sha256' "$workflow"
+          done
+          grep -q 'no-exec: "true"' docs/workflows/static-untrusted-pr.yml
+      - name: Validate synthetic analysis plumbing
+        run: |
+          python research/external-validation/analyze.py \
+            research/external-validation/synthetic-dry-run.csv \
+            --output synthetic-analysis-result.json
+          python -c 'import json; d=json.load(open("synthetic-analysis-result.json")); assert d["status"] == "SYNTHETIC_DRY_RUN"; assert d["realParticipantCount"] == 0'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: security-interoperability-study-fixtures
+          path: synthetic-analysis-result.json
 
   reproduce:
     needs: lint
@@ -95,15 +147,23 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Run local composite action against deterministic fixture
+      - name: Calculate contract digest
+        id: contract
+        shell: bash
+        run: echo "sha256=$(sha256sum tests/fixtures/action-success.yml | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+      - name: Run local composite action in trusted static mode
         uses: ./
         with:
           contract: tests/fixtures/action-success.yml
           repo-root: tests/fixtures/repository
           task: fixture-success
+          expected-contract-sha256: ${{ steps.contract.outputs.sha256 }}
+          no-exec: "true"
           format: markdown
           output: completion-report.md
       - run: grep -q 'SUPPORTED' completion-report.md
+      - run: grep -q 'Trusted mode: `true`' completion-report.md
+      - run: grep -q 'Execution mode: `static-only`' completion-report.md
       - uses: actions/upload-artifact@v4
         with:
           name: action-integration-report
