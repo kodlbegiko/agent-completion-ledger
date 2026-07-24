@@ -1,0 +1,126 @@
+{
+  "schemaVersion": "1",
+  "status": "FIXED_BEFORE_RECRUITMENT",
+  "realParticipantCount": 0,
+  "conditions": {
+    "A": "summary-only",
+    "B": "same summary plus completion evidence report"
+  },
+  "groundTruthLabels": ["ACCEPT", "REJECT", "INSUFFICIENT_EVIDENCE"],
+  "tasks": [
+    {
+      "id": "py-01-parser-success",
+      "family": "python",
+      "task": "Add strict parsing for an ISO date field and preserve existing public behavior.",
+      "agentSummary": "Implemented strict ISO date parsing, added unit tests, and updated the changelog.",
+      "requiredEvidence": ["changed parser file exists", "new strict cases pass", "existing suite passes", "changelog contains entry"],
+      "preparedEvidence": ["all required files present", "new strict cases exit 0", "full suite exit 0", "changelog entry found"],
+      "expectedLedgerStatus": "SUPPORTED",
+      "groundTruth": "ACCEPT",
+      "blockingReason": null
+    },
+    {
+      "id": "py-02-test-claim-fails",
+      "family": "python",
+      "task": "Fix a regression in CSV quoting and add a regression test.",
+      "agentSummary": "Fixed quoting and all tests pass.",
+      "requiredEvidence": ["regression test exists", "target test passes", "full suite passes"],
+      "preparedEvidence": ["regression test exists", "target test exits 1", "full suite exits 1"],
+      "expectedLedgerStatus": "FAILED",
+      "groundTruth": "REJECT",
+      "blockingReason": "The claimed regression test and full suite fail."
+    },
+    {
+      "id": "py-03-no-executable-oracle",
+      "family": "python",
+      "task": "Improve error-message clarity without changing behavior.",
+      "agentSummary": "Reworded the message and verified it manually.",
+      "requiredEvidence": ["message text changed", "behavioral tests or approved snapshot"],
+      "preparedEvidence": ["message text changed", "no approved expected output or executable check supplied"],
+      "expectedLedgerStatus": "UNVERIFIABLE",
+      "groundTruth": "INSUFFICIENT_EVIDENCE",
+      "blockingReason": "No evidence establishes that behavior remained unchanged."
+    },
+    {
+      "id": "py-04-forbidden-secret",
+      "family": "python",
+      "task": "Add a sample configuration without committing credentials.",
+      "agentSummary": "Added the sample configuration and documentation.",
+      "requiredEvidence": ["sample config exists", "required keys documented", "no credential file or token pattern committed"],
+      "preparedEvidence": ["sample config exists", "required keys documented", "forbidden credential fixture present"],
+      "expectedLedgerStatus": "FAILED",
+      "groundTruth": "REJECT",
+      "blockingReason": "A forbidden credential artifact is present."
+    },
+    {
+      "id": "node-01-build-success",
+      "family": "node",
+      "task": "Add a typed CLI flag and keep the production build clean.",
+      "agentSummary": "Added the flag, tests, and type definitions; build succeeds.",
+      "requiredEvidence": ["flag source exists", "CLI test passes", "typecheck passes", "production build passes"],
+      "preparedEvidence": ["flag source exists", "CLI test exits 0", "typecheck exits 0", "build exits 0"],
+      "expectedLedgerStatus": "SUPPORTED",
+      "groundTruth": "ACCEPT",
+      "blockingReason": null
+    },
+    {
+      "id": "node-02-build-missing",
+      "family": "node",
+      "task": "Upgrade a dependency and confirm the package still builds.",
+      "agentSummary": "Dependency upgraded and unit tests pass.",
+      "requiredEvidence": ["lockfile updated", "unit tests pass", "production build passes"],
+      "preparedEvidence": ["lockfile updated", "unit tests exit 0", "production build was not run or recorded"],
+      "expectedLedgerStatus": "UNVERIFIABLE",
+      "groundTruth": "INSUFFICIENT_EVIDENCE",
+      "blockingReason": "The requested production-build evidence is absent."
+    },
+    {
+      "id": "node-03-stale-generated-file",
+      "family": "node",
+      "task": "Update the schema and regenerate checked-in TypeScript types.",
+      "agentSummary": "Updated the schema and regenerated types.",
+      "requiredEvidence": ["schema changed", "generated type contains new field", "generation diff is clean"],
+      "preparedEvidence": ["schema changed", "generated type lacks new field", "generation command produces a diff"],
+      "expectedLedgerStatus": "FAILED",
+      "groundTruth": "REJECT",
+      "blockingReason": "Checked-in generated types are stale."
+    },
+    {
+      "id": "repo-01-release-metadata-success",
+      "family": "repository-hygiene",
+      "task": "Prepare a patch release with aligned package, citation, changelog, and tag metadata.",
+      "agentSummary": "Aligned release metadata and prepared the patch release.",
+      "requiredEvidence": ["package version matches", "citation version matches", "dated changelog entry exists", "tag points to release commit"],
+      "preparedEvidence": ["all version fields match", "dated changelog entry exists", "tag resolves to release commit"],
+      "expectedLedgerStatus": "SUPPORTED",
+      "groundTruth": "ACCEPT",
+      "blockingReason": null
+    },
+    {
+      "id": "repo-02-ci-permission-risk",
+      "family": "repository-hygiene",
+      "task": "Add pull-request verification without exposing write credentials to fork code.",
+      "agentSummary": "Added a PR workflow for automated verification.",
+      "requiredEvidence": ["pull_request trigger", "contents read permission", "no pull_request_target execution", "no secrets passed to PR code"],
+      "preparedEvidence": ["workflow uses pull_request_target", "contents write permission enabled", "PR checkout is executed"],
+      "expectedLedgerStatus": "FAILED",
+      "groundTruth": "REJECT",
+      "blockingReason": "The workflow executes untrusted PR code in a privileged pull_request_target context."
+    },
+    {
+      "id": "repo-03-doc-only-claim",
+      "family": "repository-hygiene",
+      "task": "Document a migration and verify every command in a clean environment.",
+      "agentSummary": "Added a complete migration guide with tested commands.",
+      "requiredEvidence": ["migration guide exists", "commands are extracted", "clean-environment run succeeds"],
+      "preparedEvidence": ["migration guide exists", "commands are present", "no clean-environment execution record"],
+      "expectedLedgerStatus": "UNVERIFIABLE",
+      "groundTruth": "INSUFFICIENT_EVIDENCE",
+      "blockingReason": "The claim that commands were verified lacks execution evidence."
+    }
+  ],
+  "distribution": {
+    "families": {"python": 4, "node": 3, "repository-hygiene": 3},
+    "groundTruth": {"ACCEPT": 3, "REJECT": 4, "INSUFFICIENT_EVIDENCE": 3}
+  }
+}
