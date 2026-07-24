@@ -1,0 +1,31 @@
+name: Reproduction failure
+description: Report a failed reproduction with actionable diagnostics.
+title: "[Reproduction failure] "
+labels: [reproduction, bug]
+body:
+  - type: markdown
+    attributes:
+      value: Remove secrets, private paths, private repository data, and personal sensitive information before submitting logs.
+  - type: input
+    id: os
+    attributes: {label: Operating system}
+    validations: {required: true}
+  - type: input
+    id: python
+    attributes: {label: Python version}
+    validations: {required: true}
+  - type: input
+    id: install
+    attributes: {label: Installation command}
+    validations: {required: true}
+  - type: input
+    id: exit
+    attributes: {label: Exit code}
+    validations: {required: true}
+  - type: textarea
+    id: error
+    attributes: {label: Sanitized error output}
+    validations: {required: true}
+  - type: textarea
+    id: attempted
+    attributes: {label: Steps already attempted}

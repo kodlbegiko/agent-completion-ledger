@@ -1,14 +1,3 @@
-"""Evidence-gated status accounting for coding-agent benchmark submissions."""
+"""Agent Completion Ledger public package."""
 
-from .metrics import AggregateMetrics, SubmissionMetrics, analyze_records
-from .model import EvidenceState, SourceRecord
-
-__all__ = [
-    "AggregateMetrics",
-    "EvidenceState",
-    "SourceRecord",
-    "SubmissionMetrics",
-    "analyze_records",
-]
-
-__version__ = "0.1.0"
+__version__ = "0.2.0"

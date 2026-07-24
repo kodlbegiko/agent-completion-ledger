@@ -12,3 +12,7 @@ dist/
 .venv/
 data/raw-upstream/
 results/reproduced/
+reproduced-results/
+completion-report.md
+fixture-report-*.json
+dogfood/

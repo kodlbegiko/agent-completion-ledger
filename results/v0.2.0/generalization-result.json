@@ -1,0 +1,32 @@
+{
+  "metrics": {
+    "baselineCompletionPrecision": 0.07331378299120235,
+    "excludingEmptyErrorRate": 0.9015748031496063,
+    "incompleteRate": 0.0,
+    "reclassificationsToReachAtMost20Percent": 248,
+    "shareUnsupportedRequiringReclassification": 0.7848101265822784,
+    "unsupportedRate": 0.9266862170087976,
+    "wilson95": {
+      "lower": 0.8940149831068024,
+      "upper": 0.9498510676725215
+    }
+  },
+  "policyB": "UNTESTABLE HERE",
+  "record": {
+    "completed_instances": 341,
+    "empty_error_patch_instances": 87,
+    "resolved_instances": 25,
+    "source_blob_sha": "30c6d4f4242b1ce87a000edeec5a29a622678861",
+    "source_commit": "6a7d5566f62fa76f4192302cf763051b98e4facc",
+    "source_path": "evaluation/go/verified/20250329_MagentLess_Claude-3.7-Sonnet/results/results.json",
+    "source_repository": "https://github.com/multi-swe-bench/experiments",
+    "submitted_instances": 341,
+    "total_instances": 428,
+    "unresolved_instances": 316,
+    "unstopped_instances": 0
+  },
+  "schemaVersion": "1",
+  "scopeNote": "Executable benchmark evidence, not user satisfaction or semantic correctness",
+  "study": "multi-swe-bench-go-magentless-confirmatory",
+  "verdict": "SUPPORTED"
+}

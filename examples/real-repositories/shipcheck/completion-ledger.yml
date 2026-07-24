@@ -1,0 +1,48 @@
+schemaVersion: "1"
+policy:
+  allowedExecutables: [npm, node]
+tasks:
+  - id: shipcheck-success
+    description: Verify Shipcheck's documented lint, test, and build evidence.
+    claim:
+      status: completed
+      agent: dogfood-adapter
+    evidence:
+      - id: package-manifest
+        type: file-exists
+        path: package.json
+      - id: package-version
+        type: json-path
+        path: package.json
+        jsonPath: version
+        expected: "0.1.0"
+      - id: required-files
+        type: required-files
+        paths: [README.md, CHANGELOG.md, LICENSE, package.json]
+      - id: lint
+        type: command
+        command: [npm, run, lint]
+        timeoutSeconds: 180
+      - id: tests
+        type: test-command
+        command: [npm, test]
+        timeoutSeconds: 600
+      - id: build
+        type: build-command
+        command: [npm, run, build]
+        timeoutSeconds: 180
+  - id: shipcheck-failure
+    description: A controlled failure without changing Shipcheck product behavior.
+    claim:
+      status: completed
+      agent: dogfood-adapter
+    evidence:
+      - id: deliberately-missing-file
+        type: file-exists
+        path: __agent_completion_ledger_expected_missing__
+  - id: shipcheck-unverifiable
+    description: A controlled unverifiable claim with no blocking evidence.
+    claim:
+      status: completed
+      agent: dogfood-adapter
+    evidence: []

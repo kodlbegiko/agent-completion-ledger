@@ -1,0 +1,42 @@
+name: Agent Completion Ledger
+description: Verify a repository's completion evidence contract without a shell-based contract runner.
+inputs:
+  contract:
+    description: Path to the completion evidence contract.
+    required: false
+    default: completion-ledger.yml
+  repo-root:
+    description: Repository root containing evidence paths.
+    required: false
+    default: .
+  task:
+    description: Optional single task id to verify.
+    required: false
+    default: ""
+  format:
+    description: terminal, json, or markdown.
+    required: false
+    default: markdown
+  output:
+    description: Optional report output path.
+    required: false
+    default: completion-report.md
+runs:
+  using: composite
+  steps:
+    - name: Install Agent Completion Ledger
+      shell: bash
+      run: python -m pip install "${GITHUB_ACTION_PATH}"
+    - name: Verify completion evidence
+      shell: bash
+      env:
+        ACL_CONTRACT: ${{ inputs.contract }}
+        ACL_REPO_ROOT: ${{ inputs.repo-root }}
+        ACL_TASK: ${{ inputs.task }}
+        ACL_FORMAT: ${{ inputs.format }}
+        ACL_OUTPUT: ${{ inputs.output }}
+      run: |
+        args=(verify --contract "$ACL_CONTRACT" --repo-root "$ACL_REPO_ROOT" --format "$ACL_FORMAT")
+        if [[ -n "$ACL_TASK" ]]; then args+=(--task "$ACL_TASK"); fi
+        if [[ -n "$ACL_OUTPUT" ]]; then args+=(--output "$ACL_OUTPUT"); fi
+        agent-completion-ledger "${args[@]}"

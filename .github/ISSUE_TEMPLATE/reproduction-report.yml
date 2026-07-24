@@ -1,0 +1,46 @@
+name: Successful reproduction report
+description: Report an independent reproduction without sharing secrets or private repository content.
+title: "[Reproduction] "
+labels: [reproduction]
+body:
+  - type: markdown
+    attributes:
+      value: Do not include API keys, secrets, private repository content, or personal sensitive data.
+  - type: input
+    id: os
+    attributes: {label: Operating system}
+    validations: {required: true}
+  - type: input
+    id: python
+    attributes: {label: Python version}
+    validations: {required: true}
+  - type: dropdown
+    id: install
+    attributes:
+      label: Installation method
+      options: [Git checkout, Wheel, Other]
+    validations: {required: true}
+  - type: input
+    id: duration
+    attributes: {label: Execution time}
+  - type: dropdown
+    id: hashes
+    attributes:
+      label: Did output hashes match?
+      options: [Yes, No, Not checked]
+    validations: {required: true}
+  - type: dropdown
+    id: assistance
+    attributes:
+      label: Was author assistance required?
+      options: [No, Yes]
+    validations: {required: true}
+  - type: textarea
+    id: obstacles
+    attributes: {label: Obstacles or notes}
+  - type: dropdown
+    id: public
+    attributes:
+      label: May this result be cited publicly?
+      options: [Yes, No]
+    validations: {required: true}

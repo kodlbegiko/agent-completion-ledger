@@ -15,27 +15,159 @@ jobs:
       - uses: astral-sh/ruff-action@v3
         with:
           args: format --check .
+
   quality:
     needs: lint
-    runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        python-version: ["3.11", "3.13"]
+        include:
+          - os: ubuntu-latest
+            python: "3.11"
+          - os: ubuntu-latest
+            python: "3.12"
+          - os: ubuntu-latest
+            python: "3.13"
+          - os: windows-latest
+            python: "3.12"
+          - os: macos-latest
+            python: "3.12"
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: ${{ matrix.python }}
           cache: pip
       - run: python -m pip install --upgrade pip
       - run: python -m pip install -e ".[dev]"
       - run: mypy src
-      - run: pytest --cov --cov-report=term-missing --cov-report=xml
+      - run: pytest --cov=agent_completion_ledger --cov-branch --cov-report=term-missing --cov-report=xml
       - run: python -m build
-      - run: PYTHONHASHSEED=0 agent-completion-ledger benchmark --output-dir /tmp/repro-a
-      - run: PYTHONHASHSEED=321 agent-completion-ledger benchmark --output-dir /tmp/repro-b
-      - run: diff -u /tmp/repro-a/output-hashes.json /tmp/repro-b/output-hashes.json
+      - name: Wheel installation smoke test
+        shell: bash
+        run: python scripts/wheel_smoke.py "$(python -c 'import glob; print(glob.glob("dist/*.whl")[0])')"
+      - name: Deterministic fixture verification
+        shell: bash
+        run: |
+          agent-completion-ledger verify \
+            --contract tests/fixtures/action-success.yml \
+            --repo-root tests/fixtures/repository \
+            --format json \
+            --output fixture-report-a.json
+          agent-completion-ledger verify \
+            --contract tests/fixtures/action-success.yml \
+            --repo-root tests/fixtures/repository \
+            --format json \
+            --output fixture-report-b.json
+          diff -u fixture-report-a.json fixture-report-b.json
       - uses: actions/upload-artifact@v4
         with:
-          name: research-results-py${{ matrix.python-version }}
-          path: /tmp/repro-a/
+          name: quality-${{ matrix.os }}-py${{ matrix.python }}
+          path: |
+            coverage.xml
+            fixture-report-a.json
+
+  reproduce:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e ".[dev]"
+      - run: agent-completion-ledger reproduce --output-dir reproduced-results
+      - run: agent-completion-ledger generalization
+      - uses: actions/upload-artifact@v4
+        with:
+          name: reproduction-and-generalization
+          path: |
+            reproduced-results/
+            results/v0.2.0/generalization-result.json
+
+  action-integration:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run local composite action against deterministic fixture
+        uses: ./
+        with:
+          contract: tests/fixtures/action-success.yml
+          repo-root: tests/fixtures/repository
+          task: fixture-success
+          format: markdown
+          output: completion-report.md
+      - run: grep -q 'SUPPORTED' completion-report.md
+      - uses: actions/upload-artifact@v4
+        with:
+          name: action-integration-report
+          path: completion-report.md
+
+  dogfood-shipcheck:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: ledger
+      - uses: actions/checkout@v4
+        with:
+          repository: kodlbegiko/shipcheck
+          path: project
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: project/package-lock.json
+      - run: python -m pip install ./ledger
+      - run: npm ci
+        working-directory: project
+      - run: npm install --global typescript@5.8.3
+      - name: Execute all controlled dogfood states
+        run: >-
+          python ledger/scripts/dogfood.py
+          --name kodlbegiko/shipcheck
+          --repo-root project
+          --contract ledger/examples/real-repositories/shipcheck/completion-ledger.yml
+          --output dogfood/shipcheck.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dogfood-shipcheck
+          path: dogfood/shipcheck.json
+
+  dogfood-csv-snapshot:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: ledger
+      - uses: actions/checkout@v4
+        with:
+          repository: kodlbegiko/CSV-Snapshot
+          path: project
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install ./ledger
+      - run: python -m pip install -e "./project[dev]"
+      - name: Execute all controlled dogfood states
+        run: >-
+          python ledger/scripts/dogfood.py
+          --name kodlbegiko/CSV-Snapshot
+          --repo-root project
+          --contract ledger/examples/real-repositories/csv-snapshot/completion-ledger.yml
+          --output dogfood/csv-snapshot.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dogfood-csv-snapshot
+          path: dogfood/csv-snapshot.json

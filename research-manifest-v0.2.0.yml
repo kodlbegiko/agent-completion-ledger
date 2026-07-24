@@ -1,0 +1,71 @@
+schema_version: "0.2.0"
+product:
+  contract_schema: schemas/completion-contract.schema.json
+  contract_schema_sha256: 7bbf637ed365eea9e25e51de2d85fd02381297b7ed92ead41a99a8805b697825
+  default_contract: completion-ledger.yml
+  default_contract_sha256: 19a1a84b76b911d2a9bbec52f9c2676690a2b62e3d10be042414f610d53af907
+  ledger_states: [SUPPORTED, FAILED, UNVERIFIABLE, NO_CLAIM]
+  command_shell: false
+  security_boundary: trusted contract on a non-sandboxed local runner
+reproduction:
+  command: agent-completion-ledger reproduce
+  exit_codes:
+    0: hashes match
+    1: completed with output mismatch
+    2: environment or input error
+  v0_1_manifest: research-manifest.yml
+generalization_study:
+  protocol: docs/v0.2.0-generalization-preregistered.md
+  question: >-
+    In a different benchmark family and agent implementation, does a generated-output
+    completion baseline retain a material oracle-unsupported rate, and can the same
+    four-state ledger represent the source?
+  source_repository: https://github.com/multi-swe-bench/experiments
+  source_commit: 6a7d5566f62fa76f4192302cf763051b98e4facc
+  source_path: evaluation/go/verified/20250329_MagentLess_Claude-3.7-Sonnet/results/results.json
+  source_blob_sha1: 30c6d4f4242b1ce87a000edeec5a29a622678861
+  derived_record: data/generalization/multi-swe-bench-go-magentless-summary.json
+  derived_record_sha256: cedd744520f82d0f3121ee43fafa60f3c7bd1e78d52a0d2b46aae8b1a78e2446
+  result: results/v0.2.0/generalization-result.json
+  result_sha256: 726f610738fa1fd6bf9c18f364d21f065edbaf1eae85b08335915a037033ad0a
+  thresholds:
+    minimum_completed_claims: 50
+    maximum_incomplete_rate: 0.10
+    minimum_unsupported_rate: 0.20
+    wilson_95_lower_bound_above: 0.20
+  result_summary:
+    completed: 341
+    resolved: 25
+    unresolved: 316
+    unsupported_rate: 0.9266862170087976
+    wilson_95: [0.8940149831068024, 0.9498510676725215]
+    verdict: SUPPORTED
+dogfood:
+  repositories:
+    - kodlbegiko/shipcheck
+    - kodlbegiko/CSV-Snapshot
+  adapters: examples/real-repositories
+  execution: GitHub Actions on clean public checkouts
+  external_enablement: false
+external_validation:
+  status: EXTERNAL VALIDATION PENDING
+  instructions: docs/THIRD-PARTY-REPRODUCTION.md
+  issue_forms:
+    - .github/ISSUE_TEMPLATE/reproduction-report.yml
+    - .github/ISSUE_TEMPLATE/reproduction-failure.yml
+validation:
+  local_tests_passed: 175
+  local_branch_coverage_percent: 94.35
+  required_ci_platforms:
+    - ubuntu-python-3.11
+    - ubuntu-python-3.12
+    - ubuntu-python-3.13
+    - windows-python-3.12
+    - macos-python-3.12
+known_limitations:
+  - completion evidence does not establish product value or semantic correctness
+  - command assertions are not sandboxed
+  - second research source is one purposive Multi-SWE-bench Go submission
+  - no independent third-party reproduction has yet been observed
+  - adoption willingness and reviewer-time savings remain unknown
+  - natural-language agent self-report remains untestable in the selected datasets

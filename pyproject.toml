@@ -4,13 +4,16 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agent-completion-ledger"
-version = "0.1.0"
-description = "A reproducible benchmark and evidence-gated status ledger for coding-agent completion claims."
+version = "0.2.0"
+description = "Deterministic completion evidence contracts and reproducible coding-agent reporting research."
 readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "MIT"}
 authors = [{name = "Frontier Public-Interest Research Mission"}]
-dependencies = []
+dependencies = [
+  "jsonschema==4.26.0",
+  "PyYAML==6.0.3",
+]
 classifiers = [
   "Programming Language :: Python :: 3",
   "License :: OSI Approved :: MIT License",
@@ -30,6 +33,9 @@ agent-completion-ledger = "agent_completion_ledger.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+agent_completion_ledger = ["schemas/*.json"]
 
 [tool.pytest.ini_options]
 addopts = "-ra --strict-markers"

@@ -1,0 +1,13 @@
+{
+  "source_repository": "https://github.com/multi-swe-bench/experiments",
+  "source_commit": "6a7d5566f62fa76f4192302cf763051b98e4facc",
+  "source_path": "evaluation/go/verified/20250329_MagentLess_Claude-3.7-Sonnet/results/results.json",
+  "source_blob_sha": "30c6d4f4242b1ce87a000edeec5a29a622678861",
+  "total_instances": 428,
+  "submitted_instances": 341,
+  "completed_instances": 341,
+  "resolved_instances": 25,
+  "unresolved_instances": 316,
+  "empty_error_patch_instances": 87,
+  "unstopped_instances": 0
+}

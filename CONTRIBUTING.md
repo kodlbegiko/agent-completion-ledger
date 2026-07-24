@@ -1,3 +1,18 @@
 # Contributing
 
-Open an issue before expanding the benchmark sample or changing operational definitions. New adapters must preserve the four evidence states and add fixtures for every supported source format. Run the full quality gate shown in README. Do not submit private trajectories, credentials, personal data, or unlicensed bulk source files.
+Open an issue before changing evidence-state semantics, adding a source to a confirmatory study, or expanding the command security model.
+
+New assertions must include schema updates, deterministic reports, path/security analysis, pass/fail/unverifiable tests, and cross-platform considerations. New adapters must pin an immutable source and reject inconsistent count identities rather than silently repairing them.
+
+Run:
+
+```bash
+python -m pip install -e ".[dev]"
+ruff check .
+ruff format --check .
+mypy src
+pytest --cov=agent_completion_ledger --cov-branch
+python -m build
+```
+
+Do not submit private trajectories, credentials, personal data, hidden chain-of-thought, unlicensed bulk datasets, virtual environments, or generated dependency directories.

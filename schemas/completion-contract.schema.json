@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kodlbegiko/agent-completion-ledger/schemas/completion-contract.schema.json",
+  "title": "Agent Completion Evidence Contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "tasks"],
+  "properties": {
+    "schemaVersion": {"const": "1"},
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "allowedExecutables": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true,
+          "default": []
+        }
+      }
+    },
+    "tasks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/task"}
+    }
+  },
+  "$defs": {
+    "task": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "claim", "evidence"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"},
+        "description": {"type": "string"},
+        "claim": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status"],
+          "properties": {
+            "status": {"enum": ["completed", "none"]},
+            "agent": {"type": "string", "minLength": 1},
+            "recordedAt": {"type": "string", "format": "date-time"}
+          }
+        },
+        "evidence": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/assertion"}
+        }
+      }
+    },
+    "assertion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"},
+        "type": {
+          "enum": [
+            "file-exists",
+            "file-not-exists",
+            "file-not-empty",
+            "file-sha256",
+            "text-contains",
+            "json-path",
+            "command",
+            "test-command",
+            "build-command",
+            "exit-code",
+            "git-diff-contains",
+            "git-working-tree-clean",
+            "required-files",
+            "forbidden-files"
+          ]
+        },
+        "blocking": {"type": "boolean", "default": true},
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "text": {"type": "string"},
+        "jsonPath": {"type": "string", "minLength": 1},
+        "expected": {},
+        "command": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string"}
+        },
+        "expectedExitCode": {"type": "integer", "default": 0},
+        "timeoutSeconds": {"type": "number", "exclusiveMinimum": 0, "maximum": 3600},
+        "workingDirectory": {"type": "string", "minLength": 1, "default": "."},
+        "paths": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        }
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"type": {"enum": ["file-exists", "file-not-exists", "file-not-empty"]}}},
+          "then": {"required": ["path"]}
+        },
+        {
+          "if": {"properties": {"type": {"const": "file-sha256"}}},
+          "then": {"required": ["path", "sha256"]}
+        },
+        {
+          "if": {"properties": {"type": {"const": "text-contains"}}},
+          "then": {"required": ["path", "text"]}
+        },
+        {
+          "if": {"properties": {"type": {"const": "json-path"}}},
+          "then": {"required": ["path", "jsonPath", "expected"]}
+        },
+        {
+          "if": {"properties": {"type": {"enum": ["command", "test-command", "build-command", "exit-code"]}}},
+          "then": {"required": ["command"]}
+        },
+        {
+          "if": {"properties": {"type": {"const": "git-diff-contains"}}},
+          "then": {"required": ["text"]}
+        },
+        {
+          "if": {"properties": {"type": {"enum": ["required-files", "forbidden-files"]}}},
+          "then": {"required": ["paths"]}
+        }
+      ]
+    }
+  }
+}
