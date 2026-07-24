@@ -14,6 +14,8 @@ reproduction:
     1: completed with output mismatch
     2: environment or input error
   v0_1_manifest: research-manifest.yml
+  cross_platform_text_hashing: canonical LF for tracked text inputs
+  generated_output_newline: LF
 generalization_study:
   protocol: docs/v0.2.0-generalization-preregistered.md
   question: >-
@@ -41,12 +43,32 @@ generalization_study:
     wilson_95: [0.8940149831068024, 0.9498510676725215]
     verdict: SUPPORTED
 dogfood:
-  repositories:
-    - kodlbegiko/shipcheck
-    - kodlbegiko/CSV-Snapshot
   adapters: examples/real-repositories
   execution: GitHub Actions on clean public checkouts
   external_enablement: false
+  results:
+    shipcheck:
+      repository: kodlbegiko/shipcheck
+      commit: a14330cb101645f60f3aa10ca0df4a1a60bc0dac
+      result: results/v0.2.0/dogfood-shipcheck.json
+      result_sha256: e739071f19cbda1b880d20f8e64ae962c9422e1913b2870a676c7b370097e908
+      contract_lines: 48
+      assertions: 7
+      execution_milliseconds: 3782
+      expected_states_matched: true
+      controlled_false_positives: 0
+      controlled_false_negatives: 0
+    csv_snapshot:
+      repository: kodlbegiko/CSV-Snapshot
+      commit: 9fc37d2c223554b818b1099794c239ad0c50f667
+      result: results/v0.2.0/dogfood-csv-snapshot.json
+      result_sha256: e548948770b5742233ac3e82ddbc437874b66efc63e6682be04604b75f7f4c1e
+      contract_lines: 43
+      assertions: 6
+      execution_milliseconds: 6403
+      expected_states_matched: true
+      controlled_false_positives: 0
+      controlled_false_negatives: 0
 external_validation:
   status: EXTERNAL VALIDATION PENDING
   instructions: docs/THIRD-PARTY-REPRODUCTION.md
@@ -54,8 +76,8 @@ external_validation:
     - .github/ISSUE_TEMPLATE/reproduction-report.yml
     - .github/ISSUE_TEMPLATE/reproduction-failure.yml
 validation:
-  local_tests_passed: 175
-  local_branch_coverage_percent: 94.35
+  local_tests_passed_before_cross_platform_fix: 175
+  local_branch_coverage_percent_before_cross_platform_fix: 94.35
   required_ci_platforms:
     - ubuntu-python-3.11
     - ubuntu-python-3.12
