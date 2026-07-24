@@ -45,19 +45,13 @@ def main() -> int:
 
     output = {
         "schema_version": "0.1.0",
-        "macro_submission_rate_mean": mean(
-            item.false_completion_rate for item in items
-        ),
-        "macro_submission_rate_median": median(
-            item.false_completion_rate for item in items
-        ),
+        "macro_submission_rate_mean": mean(item.false_completion_rate for item in items),
+        "macro_submission_rate_median": median(item.false_completion_rate for item in items),
         "threshold_sweep": threshold_sweep,
         "leave_one_submission_out": leave_one_out,
         "oracle_false_negative_break_even": {
             "unsupported_claims": unsupported,
-            "reclassifications_needed_to_reach_at_most_20_percent": (
-                reclassifications_needed
-            ),
+            "reclassifications_needed_to_reach_at_most_20_percent": (reclassifications_needed),
             "share_of_unsupported_requiring_reclassification": (
                 reclassifications_needed / unsupported
             ),

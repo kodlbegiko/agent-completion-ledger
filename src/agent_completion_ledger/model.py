@@ -64,9 +64,7 @@ class SourceRecord:
 
     def validate(self) -> None:
         if not self.submission or not self.source_path or not self.source_blob_sha:
-            raise ValueError(
-                "submission, source_path, and source_blob_sha must be non-empty"
-            )
+            raise ValueError("submission, source_path, and source_blob_sha must be non-empty")
         numeric = (
             self.benchmark_size,
             self.generated,
@@ -93,9 +91,7 @@ class SourceRecord:
             char in "0123456789abcdef" for char in self.source_blob_sha
         )
         if not valid_sha:
-            raise ValueError(
-                "source_blob_sha must be a lowercase 40-character Git blob SHA-1"
-            )
+            raise ValueError("source_blob_sha must be a lowercase 40-character Git blob SHA-1")
 
     @property
     def failed(self) -> int:

@@ -75,9 +75,7 @@ def wilson_interval(
     proportion = successes / trials
     denominator = 1 + z * z / trials
     center = (proportion + z * z / (2 * trials)) / denominator
-    margin = z * sqrt(
-        proportion * (1 - proportion) / trials + z * z / (4 * trials * trials)
-    )
+    margin = z * sqrt(proportion * (1 - proportion) / trials + z * z / (4 * trials * trials))
     margin /= denominator
     return Interval(max(0.0, center - margin), min(1.0, center + margin))
 

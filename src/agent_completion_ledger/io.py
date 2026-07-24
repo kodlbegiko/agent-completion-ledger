@@ -63,8 +63,7 @@ def ledger_rows(records: Iterable[SourceRecord]) -> list[dict[str, object]]:
                         "source_blob_sha": record.source_blob_sha,
                     },
                     "scope_note": (
-                        "SWE-bench executable-oracle support; "
-                        "not user-satisfaction ground truth"
+                        "SWE-bench executable-oracle support; not user-satisfaction ground truth"
                     ),
                 }
             )
@@ -131,9 +130,7 @@ def write_outputs(
             "wilson_95": asdict(aggregate.strict_false_completion_interval),
             "treatment_of_no_logs": "excluded",
         },
-        "difference": (
-            aggregate.false_completion_rate - aggregate.strict_false_completion_rate
-        ),
+        "difference": (aggregate.false_completion_rate - aggregate.strict_false_completion_rate),
     }
     sensitivity_path = output_dir / "sensitivity.json"
     sensitivity_path.write_text(

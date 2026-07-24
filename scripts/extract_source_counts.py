@@ -23,9 +23,7 @@ def main() -> int:
             errors.append(f"missing raw source: {source}")
             continue
         payload: dict[str, Any] = json.loads(source.read_text(encoding="utf-8"))
-        actual = asdict(
-            extract_counts(payload, benchmark_size=int(expected["benchmark_size"]))
-        )
+        actual = asdict(extract_counts(payload, benchmark_size=int(expected["benchmark_size"])))
         for key in (
             "benchmark_size",
             "generated",

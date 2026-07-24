@@ -69,9 +69,7 @@ def _analyze(
     print(
         json.dumps(
             {
-                "verdict": (
-                    "SUPPORTED" if aggregate.h1_supported else "NOT SUPPORTED"
-                ),
+                "verdict": ("SUPPORTED" if aggregate.h1_supported else "NOT SUPPORTED"),
                 "generated": aggregate.generated,
                 "false_completion_rate": aggregate.false_completion_rate,
                 "hashes": hashes,
