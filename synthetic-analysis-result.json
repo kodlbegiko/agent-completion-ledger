@@ -1,0 +1,41 @@
+{
+  "conditions": {
+    "A": {
+      "falseAcceptanceRate": 0.3,
+      "falseRejectionRate": 0.0,
+      "meanAmbiguity": 4.1,
+      "meanConfidence": 2.8,
+      "medianFirstBlockerTimeSeconds": 65.0,
+      "medianReviewTimeSeconds": 112.5,
+      "participants": 2,
+      "rows": 10
+    },
+    "B": {
+      "falseAcceptanceRate": 0.0,
+      "falseRejectionRate": 0.0,
+      "meanAmbiguity": 2.2,
+      "meanConfidence": 4.7,
+      "medianFirstBlockerTimeSeconds": 35.0,
+      "medianReviewTimeSeconds": 80.0,
+      "participants": 2,
+      "rows": 10
+    }
+  },
+  "effects": {
+    "ambiguityRelativeReduction": 0.4634146341463414,
+    "falseAcceptanceRelativeReduction": 1.0,
+    "firstBlockerTimeRelativeReduction": 0.46153846153846156,
+    "medianReviewTimeRelativeChange": -0.28888888888888886
+  },
+  "interpretationWarning": "Synthetic rows validate analysis plumbing only and are not human evidence.",
+  "preregisteredH1MaterialThresholdMet": true,
+  "realParticipantCount": 0,
+  "schemaVersion": "1",
+  "status": "SYNTHETIC_DRY_RUN",
+  "thresholds": {
+    "ambiguityReductionAtLeast20Percent": true,
+    "falseAcceptanceReductionAtLeast25Percent": true,
+    "firstBlockerTimeReductionAtLeast20Percent": true,
+    "medianReviewTimeMoreThan20PercentSlower": false
+  }
+}
