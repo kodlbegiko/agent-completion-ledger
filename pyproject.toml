@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agent-completion-ledger"
-version = "0.2.0"
-description = "Deterministic completion evidence contracts and reproducible coding-agent reporting research."
+version = "0.3.0"
+description = "Repository-level acceptance evidence contracts for coding-agent tasks."
 readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "MIT"}
