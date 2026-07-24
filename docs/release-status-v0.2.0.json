@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "1",
+  "targetCommit": "cc47d9ee309f801135825a5ed1a4417110542690",
+  "resolvedTagCommit": "cc47d9ee309f801135825a5ed1a4417110542690",
+  "release": {
+    "isDraft": false,
+    "isPrerelease": false,
+    "publishedAt": "2026-07-24T16:38:56Z",
+    "tagName": "v0.2.0",
+    "targetCommitish": "main",
+    "url": "https://github.com/kodlbegiko/agent-completion-ledger/releases/tag/v0.2.0"
+  }
+}
