@@ -1,0 +1,6 @@
+src/agent_completion_ledger/cli.py:1:1: I001 [*] Import block is un-sorted or un-formatted
+Found 1 error.
+[*] 1 fixable with the `--fix` option.
+Would reformat: src/agent_completion_ledger/reporting.py
+Would reformat: src/agent_completion_ledger/verification.py
+2 files would be reformatted, 33 files already formatted
