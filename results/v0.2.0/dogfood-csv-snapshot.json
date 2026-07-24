@@ -1,0 +1,97 @@
+{
+  "assertionCount": 6,
+  "completedClaimsCorrected": 2,
+  "contractLines": 43,
+  "contractPath": "ledger/examples/real-repositories/csv-snapshot/completion-ledger.yml",
+  "controlledFalseNegatives": 0,
+  "controlledFalsePositives": 0,
+  "executionMilliseconds": 6403,
+  "expectedControlledStatesMatched": true,
+  "humanAdjudicationItems": [
+    "Whether passing repository tests fully represents product-value completion"
+  ],
+  "limitations": [
+    "Controlled failure and unverifiable cases test reporting semantics, not naturally occurring defects",
+    "Elapsed time includes repository-native tests and varies by runner"
+  ],
+  "manualSteps": [
+    "Check out the public repository",
+    "Install its documented development dependencies",
+    "Run the evidence contract"
+  ],
+  "repository": "kodlbegiko/CSV-Snapshot",
+  "repositoryCommit": "9fc37d2c223554b818b1099794c239ad0c50f667",
+  "schemaVersion": "1",
+  "tasks": [
+    {
+      "assertions": [
+        {
+          "blocking": true,
+          "id": "package-manifest",
+          "message": "pyproject.toml exists",
+          "outcome": "PASS",
+          "type": "file-exists"
+        },
+        {
+          "blocking": true,
+          "id": "required-files",
+          "message": "all path requirements satisfied",
+          "outcome": "PASS",
+          "type": "required-files"
+        },
+        {
+          "actualExitCode": 0,
+          "blocking": true,
+          "durationMs": 2117,
+          "id": "tests",
+          "message": "command exited with expected code 0",
+          "outcome": "PASS",
+          "type": "test-command"
+        },
+        {
+          "actualExitCode": 0,
+          "blocking": true,
+          "durationMs": 4284,
+          "id": "build",
+          "message": "command exited with expected code 0",
+          "outcome": "PASS",
+          "type": "build-command"
+        }
+      ],
+      "claimedStatus": "completed",
+      "description": "Verify CSV Snapshot's documented quality and build evidence.",
+      "ledgerStatus": "SUPPORTED",
+      "taskId": "csv-snapshot-success"
+    },
+    {
+      "assertions": [
+        {
+          "blocking": true,
+          "id": "deliberately-forbidden-present-file",
+          "message": "present: README.md",
+          "outcome": "FAIL",
+          "type": "forbidden-files"
+        }
+      ],
+      "claimedStatus": "completed",
+      "description": "A controlled failure without changing CSV Snapshot product behavior.",
+      "ledgerStatus": "FAILED",
+      "taskId": "csv-snapshot-failure"
+    },
+    {
+      "assertions": [
+        {
+          "blocking": true,
+          "id": "disallowed-command",
+          "message": "executable is not allow-listed: curl",
+          "outcome": "UNVERIFIABLE",
+          "type": "command"
+        }
+      ],
+      "claimedStatus": "completed",
+      "description": "A controlled unverifiable command because curl is not allow-listed.",
+      "ledgerStatus": "UNVERIFIABLE",
+      "taskId": "csv-snapshot-unverifiable"
+    }
+  ]
+}
