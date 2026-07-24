@@ -109,16 +109,20 @@ jobs:
       - name: Validate safe workflow fixtures
         shell: bash
         run: |
-          for workflow in docs/workflows/trusted-main-contract.yml docs/workflows/static-untrusted-pr.yml; do
-            grep -q '^on:' "$workflow"
-            grep -q 'pull_request:' "$workflow"
-            grep -q 'contents: read' "$workflow"
-            ! grep -q 'pull_request_target' "$workflow"
-            ! grep -q 'secrets\.' "$workflow"
-            grep -q 'event.pull_request.base.sha' "$workflow"
-            grep -q 'expected-contract-sha256' "$workflow"
-          done
-          grep -q 'no-exec: "true"' docs/workflows/static-untrusted-pr.yml
+          python - <<'PY'
+          from pathlib import Path
+
+          for name in ("trusted-main-contract.yml", "static-untrusted-pr.yml"):
+              text = Path("docs/workflows", name).read_text(encoding="utf-8")
+              assert "pull_request:" in text
+              assert "contents: read" in text
+              assert "pull_request_target" not in text
+              assert "secrets." not in text
+              assert "event.pull_request.base.sha" in text
+              assert "expected-contract-sha256" in text
+          static = Path("docs/workflows/static-untrusted-pr.yml").read_text(encoding="utf-8")
+          assert 'no-exec: "true"' in static
+          PY
       - name: Validate synthetic analysis plumbing
         run: |
           python research/external-validation/analyze.py \
@@ -171,11 +175,17 @@ jobs:
           no-exec: "true"
           format: markdown
           output: completion-report.md
-      - run: grep -q 'SUPPORTED' completion-report.md
-      - run: >-
-          grep -q 'Trusted mode: `true`' completion-report.md
-      - run: >-
-          grep -q 'Execution mode: `static-only`' completion-report.md
+      - name: Validate action report
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          report = Path("completion-report.md").read_text(encoding="utf-8")
+          assert "SUPPORTED" in report
+          assert "Trusted mode: `true`" in report
+          assert "Execution mode: `static-only`" in report
+          PY
       - uses: actions/upload-artifact@v4
         with:
           name: action-integration-report
