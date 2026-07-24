@@ -42,9 +42,7 @@ def main() -> int:
         "unverifiable": EvidenceState.UNVERIFIABLE,
     }
     observed = {item.task_id.rsplit("-", 1)[-1]: item.ledger_status for item in report.tasks}
-    expected_matched = all(
-        observed.get(key) is value for key, value in expected_suffixes.items()
-    )
+    expected_matched = all(observed.get(key) is value for key, value in expected_suffixes.items())
     assertion_count = sum(len(task.evidence) for task in contract.tasks)
     output = {
         "schemaVersion": "1",
