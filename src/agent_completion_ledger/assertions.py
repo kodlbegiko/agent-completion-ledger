@@ -315,6 +315,7 @@ def evaluate_assertion(
     allowed_executables: tuple[str, ...],
     *,
     include_timing: bool = False,
+    no_exec: bool = False,
 ) -> AssertionResult:
     path_types = {
         "file-exists",
@@ -328,6 +329,12 @@ def evaluate_assertion(
     if spec.type in path_types:
         return _path_assertion(spec, root)
     if spec.type in command_types:
+        if no_exec:
+            return _result(
+                spec,
+                AssertionOutcome.UNVERIFIABLE,
+                "command evidence disabled by static-only mode",
+            )
         return _command_assertion(spec, root, allowed_executables, include_timing)
     if spec.type in {"git-diff-contains", "git-working-tree-clean"}:
         return _git_assertion(spec, root)
