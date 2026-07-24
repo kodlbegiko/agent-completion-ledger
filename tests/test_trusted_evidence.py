@@ -57,7 +57,7 @@ def test_contract_sha256_hashes_exact_bytes(tmp_path: Path) -> None:
 
 
 def test_expected_sha256_validation() -> None:
-    assert normalize_expected_sha256(" A" * 0 + "A" * 64 + "\n") == "a" * 64
+    assert normalize_expected_sha256("A" * 64 + "\n") == "a" * 64
     with pytest.raises(ContractError, match="64 hexadecimal"):
         normalize_expected_sha256("not-a-digest")
 
