@@ -26,7 +26,6 @@ from .verification import (
     verify_contract,
 )
 
-
 _REPORT_FORMATS = ("terminal", "json", "markdown", "in-toto")
 
 

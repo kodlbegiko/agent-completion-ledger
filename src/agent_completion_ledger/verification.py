@@ -56,9 +56,7 @@ class VerificationReport:
 
     @property
     def assertion_ids(self) -> tuple[str, ...]:
-        return tuple(
-            assertion.id for task in self.tasks for assertion in task.assertions
-        )
+        return tuple(assertion.id for task in self.tasks for assertion in task.assertions)
 
     @property
     def overall_status(self) -> EvidenceState:

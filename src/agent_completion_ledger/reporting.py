@@ -9,8 +9,7 @@ from .verification import VerificationReport
 
 ReportFormat = Literal["terminal", "json", "markdown", "in-toto"]
 PREDICATE_TYPE = (
-    "https://github.com/kodlbegiko/agent-completion-ledger/"
-    "predicate/completion-evidence/v1"
+    "https://github.com/kodlbegiko/agent-completion-ledger/predicate/completion-evidence/v1"
 )
 
 
@@ -181,7 +180,9 @@ def in_toto_statement(report: VerificationReport) -> dict[str, object]:
 
 
 def render_in_toto(report: VerificationReport) -> str:
-    return json.dumps(in_toto_statement(report), ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+    return (
+        json.dumps(in_toto_statement(report), ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+    )
 
 
 def render_report(report: VerificationReport, format_name: ReportFormat) -> str:
