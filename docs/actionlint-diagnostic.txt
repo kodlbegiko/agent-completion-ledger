@@ -1,0 +1,6 @@
+.github/workflows/ci.yml:175:0: could not parse as YAML: yaml: line 175: mapping values are not allowed in this context [syntax-check]
+    |
+175 |       - run: grep -q 'Trusted mode: `true`' completion-report.md
+    | 
+
+EXIT_CODE=1
