@@ -2,7 +2,15 @@
 
 Status: **PREREGISTERED DESIGN — RECRUITMENT NOT STARTED**
 
-Real participant count at registration: **0**
+Protocol version: **1.1**
+
+Real participant count at registration and amendment: **0**
+
+## Pre-recruitment amendment log
+
+### v1.1 — 2026-07-24 UTC
+
+Before recruitment and before inspecting any human outcome data, the primary estimand was clarified as **participant-balanced condition summaries**. Each eligible participant contributes one condition-level false-acceptance rate, false-rejection rate, mean ambiguity, mean confidence, median review time, and median first-blocker time; H1 thresholds are evaluated from those participant-balanced summaries. Pooled row-level metrics remain mandatory sensitivity outputs. This prevents participants with more retained rows or a different post-exclusion task mix from receiving greater weight. The synthetic dry run is non-human plumbing and did not support this amendment or any hypothesis.
 
 ## Research question
 
@@ -85,11 +93,13 @@ For contract preparation collect:
 
 ## Primary analysis
 
-1. Calculate participant-level and pooled false acceptance, false rejection, ambiguity, confidence, review time, and first-blocker time by condition.
-2. Report absolute and relative condition differences with bootstrap 95% confidence intervals where sample size permits.
-3. Evaluate the three H1 material thresholds exactly as written above.
-4. Report all thresholds, including unfavorable outcomes; do not select only the best metric.
-5. Keep acceptable, failed, and insufficient-evidence ground-truth classes visible in stratified results.
+1. For each participant and condition, calculate false acceptance, false rejection, mean ambiguity, mean confidence, median review time, and median first-blocker time.
+2. Produce participant-balanced condition summaries by giving each eligible participant equal weight. These summaries are the primary basis for H1 thresholds.
+3. Also report pooled row-level metrics and effects as a required sensitivity analysis; pooled values cannot replace the participant-balanced primary result.
+4. Report absolute and relative condition differences with bootstrap 95% confidence intervals where sample size permits.
+5. Evaluate the three H1 material thresholds exactly as written above.
+6. Report all thresholds, including unfavorable outcomes; do not select only the best metric.
+7. Keep acceptable, failed, and insufficient-evidence ground-truth classes visible in stratified results.
 
 ## Secondary analysis
 
@@ -103,7 +113,7 @@ Secondary analysis is exploratory and cannot replace a failed primary threshold.
 
 ## Stopping rule
 
-The first analysis occurs after at least five eligible external participants complete all assigned tasks. Recruitment may continue to 12 participants for precision, but the hypotheses, metrics, exclusions, and thresholds cannot change after any outcome data are inspected.
+The first analysis occurs after at least five eligible external participants complete all assigned tasks. Recruitment may continue to 12 participants for precision, but the hypotheses, metrics, exclusions, and thresholds cannot change after any human outcome data are inspected.
 
 ## Integrity and privacy
 
