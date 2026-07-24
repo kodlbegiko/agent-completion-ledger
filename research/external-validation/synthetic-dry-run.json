@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "1",
+  "status": "SYNTHETIC_DRY_RUN_ONLY",
+  "realParticipantCount": 0,
+  "humanEvidence": false,
+  "purpose": "Validate CSV parsing, aggregation, and preregistered threshold code. Do not interpret as evidence for any research hypothesis.",
+  "input": "synthetic-dry-run.csv",
+  "rows": 20,
+  "syntheticReviewerIds": ["SYNTH-001", "SYNTH-002"],
+  "analysisPlumbing": {
+    "bothConditionsPresent": true,
+    "allTenTasksPresent": true,
+    "threeTaskFamiliesPresent": true,
+    "groundTruthClassesPresent": ["ACCEPT", "REJECT", "INSUFFICIENT_EVIDENCE"],
+    "metricsComputed": [
+      "review time",
+      "false acceptance",
+      "false rejection",
+      "confidence",
+      "ambiguity",
+      "first blocking issue time"
+    ]
+  },
+  "warning": "These values were constructed for software testing and must never be counted as participants, adoption, reproduction, or impact."
+}
