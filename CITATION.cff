@@ -1,16 +1,18 @@
 cff-version: 1.2.0
-message: "If you use this software, cite the version used and state the executable-evidence scope."
-title: "Agent Completion Ledger: deterministic completion evidence contracts and reporting studies"
+message: "If you use this software, cite the version used and state the repository-acceptance evidence scope."
+title: "Agent Completion Ledger: repository-level acceptance evidence contracts for coding-agent tasks"
 type: software
-version: 0.2.0
+version: 0.3.0
+date-released: 2026-07-24
 authors:
   - name: "Frontier Public-Interest Research Mission contributors"
 repository-code: "https://github.com/kodlbegiko/agent-completion-ledger"
 license: MIT
-abstract: "Deterministic repository completion-evidence contracts, a reproducible SWE-bench pilot, and a preregistered Multi-SWE-bench replication."
+abstract: "Repository-level coding-agent acceptance contracts with trusted contract pinning, deterministic provenance reports, static-only verification, and an experimental in-toto evidence statement. External adoption and real-world impact remain unvalidated."
 keywords:
   - coding agents
-  - completion evidence
+  - acceptance evidence
   - software verification
   - reproducibility
-  - benchmark reporting
+  - in-toto
+  - continuous integration
