@@ -21,12 +21,12 @@ def main() -> int:
             [str(python), "-m", "pip", "install", "--no-deps", str(args.wheel)],
             check=True,
         )
+        smoke_code = (
+            "import agent_completion_ledger; "
+            "print(agent_completion_ledger.__version__)"
+        )
         subprocess.run(
-            [
-                str(python),
-                "-c",
-                "import agent_completion_ledger; print(agent_completion_ledger.__version__)",
-            ],
+            [str(python), "-c", smoke_code],
             check=True,
         )
     return 0
