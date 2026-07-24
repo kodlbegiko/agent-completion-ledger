@@ -64,10 +64,16 @@ def test_external_analysis_script_runs_and_reports_zero_real_participants(
         timeout=30,
     )
     payload = json.loads(output.read_text(encoding="utf-8"))
+    assert payload["schemaVersion"] == "2"
     assert payload["status"] == "SYNTHETIC_DRY_RUN"
     assert payload["realParticipantCount"] == 0
-    assert payload["conditions"]["A"]["rows"] == 10
-    assert payload["conditions"]["B"]["rows"] == 10
+    assert payload["preregisteredH1MaterialThresholdMet"] is None
+    assert payload["primaryAnalysisBasis"] == "participant-balanced condition summaries"
+    assert payload["pooledConditions"]["A"]["rows"] == 10
+    assert payload["pooledConditions"]["B"]["rows"] == 10
+    assert payload["participantBalancedConditions"]["A"]["participants"] == 2
+    assert payload["participantBalancedConditions"]["B"]["participants"] == 2
+    assert len(payload["participantMetrics"]) == 4
 
 
 def test_safe_workflows_use_base_contract_and_least_privilege() -> None:
@@ -83,3 +89,10 @@ def test_safe_workflows_use_base_contract_and_least_privilege() -> None:
 
     static_text = (workflow_root / "static-untrusted-pr.yml").read_text(encoding="utf-8")
     assert 'no-exec: "true"' in static_text
+
+    minimal = (REPOSITORY_ROOT / "examples/minimal/completion-evidence.yml").read_text(
+        encoding="utf-8"
+    )
+    assert "github.event.pull_request.base.sha" in minimal
+    assert "git show" in minimal
+    assert "contract: .trusted/completion-ledger.yml" in minimal
