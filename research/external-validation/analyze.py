@@ -139,8 +139,7 @@ def _condition_effects(
             float(treatment["medianFirstBlockerTimeSeconds"]),
         )
     review_time_change = (
-        float(treatment["medianReviewTimeSeconds"])
-        - float(baseline["medianReviewTimeSeconds"])
+        float(treatment["medianReviewTimeSeconds"]) - float(baseline["medianReviewTimeSeconds"])
     ) / float(baseline["medianReviewTimeSeconds"])
     return {
         "falseAcceptanceRelativeReduction": false_acceptance_reduction,
