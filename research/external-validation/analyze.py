@@ -8,7 +8,6 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
-
 REQUIRED_FIELDS = {
     "participant_id",
     "task_id",
@@ -103,9 +102,7 @@ def summarize(rows: list[dict[str, str]]) -> dict[str, Any]:
     false_acceptance_reduction = _relative_reduction(
         baseline["falseAcceptanceRate"], treatment["falseAcceptanceRate"]
     )
-    ambiguity_reduction = _relative_reduction(
-        baseline["meanAmbiguity"], treatment["meanAmbiguity"]
-    )
+    ambiguity_reduction = _relative_reduction(baseline["meanAmbiguity"], treatment["meanAmbiguity"])
     blocker_reduction = None
     if (
         baseline["medianFirstBlockerTimeSeconds"] is not None
@@ -146,9 +143,9 @@ def summarize(rows: list[dict[str, str]]) -> dict[str, Any]:
 
     return {
         "schemaVersion": "1",
-        "status": "SYNTHETIC_DRY_RUN" if any(
-            item["participant_id"].startswith("SYNTH-") for item in rows
-        ) else "EXTERNAL_DATA_ANALYSIS",
+        "status": "SYNTHETIC_DRY_RUN"
+        if any(item["participant_id"].startswith("SYNTH-") for item in rows)
+        else "EXTERNAL_DATA_ANALYSIS",
         "realParticipantCount": len(
             {
                 item["participant_id"]
