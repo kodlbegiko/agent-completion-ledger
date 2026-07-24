@@ -31,3 +31,4 @@ jobs:
           git add docs/actionlint-diagnostic.txt
           git commit -m "ci: record temporary actionlint diagnostics"
           git push origin HEAD:feat/trusted-evidence-and-validation
+# diagnostic revision 2
