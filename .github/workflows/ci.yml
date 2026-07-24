@@ -42,7 +42,14 @@ jobs:
       - run: python -m pip install --upgrade pip
       - run: python -m pip install -e ".[dev]"
       - run: mypy src
-      - run: pytest --cov=agent_completion_ledger --cov-branch --cov-report=term-missing --cov-report=xml
+      - run: >-
+          pytest
+          --cov=agent_completion_ledger
+          --cov-branch
+          --cov-report=term-missing
+          --cov-report=xml
+          --cov-report=json:coverage.json
+          --junitxml=junit.xml
       - run: python -m build
       - name: Wheel installation smoke test
         shell: bash
@@ -78,6 +85,8 @@ jobs:
           name: quality-${{ matrix.os }}-py${{ matrix.python }}
           path: |
             coverage.xml
+            coverage.json
+            junit.xml
             fixture-report-a.json
             fixture-evidence.intoto.json
 
@@ -114,7 +123,7 @@ jobs:
           python research/external-validation/analyze.py \
             research/external-validation/synthetic-dry-run.csv \
             --output synthetic-analysis-result.json
-          python -c 'import json; d=json.load(open("synthetic-analysis-result.json")); assert d["status"] == "SYNTHETIC_DRY_RUN"; assert d["realParticipantCount"] == 0'
+          python -c 'import json; d=json.load(open("synthetic-analysis-result.json")); assert d["status"] == "SYNTHETIC_DRY_RUN"; assert d["realParticipantCount"] == 0; assert d["preregisteredH1MaterialThresholdMet"] is None'
       - uses: actions/upload-artifact@v4
         with:
           name: security-interoperability-study-fixtures
