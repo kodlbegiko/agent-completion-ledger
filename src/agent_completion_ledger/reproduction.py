@@ -97,10 +97,7 @@ def reproduce(
     expected_source_hash = manifest.get("dataset_sources", {}).get("records_sha256")
     if not source.is_file():
         errors.append(f"required source file is missing: {source}")
-    elif (
-        expected_source_hash
-        and sha256_normalized_text_file(source) != expected_source_hash
-    ):
+    elif expected_source_hash and sha256_normalized_text_file(source) != expected_source_hash:
         errors.append(f"source hash mismatch: {source}")
     if errors:
         return ReproductionResult("ERROR", 2, str(output_dir), (), (), tuple(errors))
