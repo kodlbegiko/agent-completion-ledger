@@ -16,13 +16,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Publish v0.2.0 tag and release
+      - name: Publish and verify v0.2.0
         env:
           GH_TOKEN: ${{ github.token }}
           TARGET_SHA: cc47d9ee309f801135825a5ed1a4417110542690
         shell: bash
         run: |
           set -euo pipefail
+          git fetch --force --tags origin
           git cat-file -e "${TARGET_SHA}^{commit}"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -47,6 +48,19 @@ jobs:
               --notes-file docs/release-notes-v0.2.0.md
           fi
 
-          gh release view v0.2.0 \
+          RELEASE_JSON="$(gh release view v0.2.0 \
             --repo "${GITHUB_REPOSITORY}" \
-            --json url,tagName,targetCommitish,isDraft,isPrerelease
+            --json url,tagName,targetCommitish,isDraft,isPrerelease,publishedAt)"
+
+          jq -n \
+            --arg targetCommit "${TARGET_SHA}" \
+            --arg resolvedTagCommit "${TAG_SHA}" \
+            --argjson release "${RELEASE_JSON}" \
+            '{schemaVersion:"1", targetCommit:$targetCommit, resolvedTagCommit:$resolvedTagCommit, release:$release}' \
+            > docs/release-status-v0.2.0.json
+
+          git add docs/release-status-v0.2.0.json
+          if ! git diff --cached --quiet; then
+            git commit -m "docs: record verified v0.2.0 release"
+            git push origin HEAD:main
+          fi
