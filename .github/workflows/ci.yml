@@ -172,8 +172,10 @@ jobs:
           format: markdown
           output: completion-report.md
       - run: grep -q 'SUPPORTED' completion-report.md
-      - run: grep -q 'Trusted mode: `true`' completion-report.md
-      - run: grep -q 'Execution mode: `static-only`' completion-report.md
+      - run: >-
+          grep -q 'Trusted mode: `true`' completion-report.md
+      - run: >-
+          grep -q 'Execution mode: `static-only`' completion-report.md
       - uses: actions/upload-artifact@v4
         with:
           name: action-integration-report
