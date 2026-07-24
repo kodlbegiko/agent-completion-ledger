@@ -114,3 +114,4 @@ jobs:
           PY
           gh pr comment 3 --repo "$GITHUB_REPOSITORY" --body-file /tmp/ci-comment.md
           test "$WATCH_EXIT" -eq 0
+# final validation revision 2
