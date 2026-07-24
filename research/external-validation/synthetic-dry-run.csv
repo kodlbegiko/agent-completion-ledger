@@ -1,0 +1,21 @@
+protocol_version,participant_id,session_id,task_id,task_family,condition,order_index,ground_truth,decision,review_time_seconds,false_acceptance,false_rejection,confidence_1_to_5,ambiguity_1_to_5,first_blocker_time_seconds,blocking_issue,report_changed_initial_decision,maintenance_willingness_1_to_5,contract_authoring_seconds,contract_noncomment_lines,ci_overhead_seconds,interrupted,exclusion_reason,notes
+v1,SYNTH-001,SYNTH-S1,py-01-parser-success,python,A,1,ACCEPT,ACCEPT,100,false,false,3,4,,,false,3,480,24,4,false,,SYNTHETIC_NOT_HUMAN
+v1,SYNTH-001,SYNTH-S1,py-02-test-claim-fails,python,B,2,REJECT,REJECT,75,false,false,5,2,30,test failure,false,4,520,28,5,false,,SYNTHETIC_NOT_HUMAN
+v1,SYNTH-001,SYNTH-S1,py-03-no-executable-oracle,python,A,3,INSUFFICIENT_EVIDENCE,ACCEPT,120,true,false,2,5,,,false,2,410,20,3,false,,SYNTHETIC_NOT_HUMAN
+v1,SYNTH-001,SYNTH-S1,py-04-forbidden-secret,python,B,4,REJECT,REJECT,80,false,false,5,2,35,forbidden file,true,4,450,22,4,false,,SYNTHETIC_NOT_HUMAN
+v1,SYNTH-001,SYNTH-S1,node-01-build-success,node,A,5,ACCEPT,ACCEPT,95,false,false,3,3,,,false,3,600,31,7,false,,SYNTHETIC_NOT_HUMAN
+v1,SYNTH-001,SYNTH-S1,node-02-build-missing,node,B,6,INSUFFICIENT_EVIDENCE,INSUFFICIENT_EVIDENCE,90,false,false,4,2,40,build missing,true,4,500,26,5,false,,SYNTHETIC_NOT_HUMAN
+v1,SYNTH-001,SYNTH-S1,node-03-stale-generated-file,node,A,7,REJECT,REJECT,115,false,false,4,4,65,generated file stale,false,3,550,30,6,false,,SYNTHETIC_NOT_HUMAN
+v1,SYNTH-001,SYNTH-S1,repo-01-release-metadata-success,repository-hygiene,B,8,ACCEPT,ACCEPT,85,false,false,5,2,,,true,4,360,18,2,false,,SYNTHETIC_NOT_HUMAN
+v1,SYNTH-001,SYNTH-S1,repo-02-ci-permission-risk,repository-hygiene,A,9,REJECT,ACCEPT,130,true,false,2,5,80,workflow privilege,false,2,420,21,3,false,,SYNTHETIC_NOT_HUMAN
+v1,SYNTH-001,SYNTH-S1,repo-03-doc-only-claim,repository-hygiene,B,10,INSUFFICIENT_EVIDENCE,INSUFFICIENT_EVIDENCE,70,false,false,4,3,30,execution evidence missing,true,4,330,17,2,false,,SYNTHETIC_NOT_HUMAN
+v1,SYNTH-002,SYNTH-S2,py-01-parser-success,python,B,1,ACCEPT,ACCEPT,80,false,false,5,2,,,false,4,480,24,4,false,,SYNTHETIC_NOT_HUMAN
+v1,SYNTH-002,SYNTH-S2,py-02-test-claim-fails,python,A,2,REJECT,REJECT,105,false,false,3,4,55,test failure,false,3,520,28,5,false,,SYNTHETIC_NOT_HUMAN
+v1,SYNTH-002,SYNTH-S2,py-03-no-executable-oracle,python,B,3,INSUFFICIENT_EVIDENCE,INSUFFICIENT_EVIDENCE,78,false,false,4,3,38,behavior evidence missing,true,4,410,20,3,false,,SYNTHETIC_NOT_HUMAN
+v1,SYNTH-002,SYNTH-S2,py-04-forbidden-secret,python,A,4,REJECT,REJECT,110,false,false,3,4,60,forbidden file,false,3,450,22,4,false,,SYNTHETIC_NOT_HUMAN
+v1,SYNTH-002,SYNTH-S2,node-01-build-success,node,B,5,ACCEPT,ACCEPT,88,false,false,5,2,,,false,4,600,31,7,false,,SYNTHETIC_NOT_HUMAN
+v1,SYNTH-002,SYNTH-S2,node-02-build-missing,node,A,6,INSUFFICIENT_EVIDENCE,ACCEPT,125,true,false,2,5,,,false,2,500,26,5,false,,SYNTHETIC_NOT_HUMAN
+v1,SYNTH-002,SYNTH-S2,node-03-stale-generated-file,node,B,7,REJECT,REJECT,82,false,false,5,2,42,generated file stale,true,4,550,30,6,false,,SYNTHETIC_NOT_HUMAN
+v1,SYNTH-002,SYNTH-S2,repo-01-release-metadata-success,repository-hygiene,A,8,ACCEPT,ACCEPT,90,false,false,3,3,,,false,3,360,18,2,false,,SYNTHETIC_NOT_HUMAN
+v1,SYNTH-002,SYNTH-S2,repo-02-ci-permission-risk,repository-hygiene,B,9,REJECT,REJECT,76,false,false,5,2,32,workflow privilege,true,4,420,21,3,false,,SYNTHETIC_NOT_HUMAN
+v1,SYNTH-002,SYNTH-S2,repo-03-doc-only-claim,repository-hygiene,A,10,INSUFFICIENT_EVIDENCE,INSUFFICIENT_EVIDENCE,118,false,false,3,4,70,execution evidence missing,false,3,330,17,2,false,,SYNTHETIC_NOT_HUMAN
