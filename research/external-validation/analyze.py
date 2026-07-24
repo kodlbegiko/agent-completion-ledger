@@ -143,11 +143,7 @@ def summarize(rows: list[dict[str, str]]) -> dict[str, Any]:
 
     synthetic = any(item["participant_id"].startswith("SYNTH-") for item in rows)
     real_participant_count = len(
-        {
-            item["participant_id"]
-            for item in rows
-            if not item["participant_id"].startswith("SYNTH-")
-        }
+        {item["participant_id"] for item in rows if not item["participant_id"].startswith("SYNTH-")}
     )
     computed_threshold_result = primary_effect and not offset_by_cost
 
