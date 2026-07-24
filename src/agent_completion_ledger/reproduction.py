@@ -9,7 +9,13 @@ from typing import Any
 
 import yaml
 
-from .io import load_records, sha256_file, validate_ledger, write_outputs
+from .io import (
+    load_records,
+    sha256_file,
+    sha256_normalized_text_file,
+    validate_ledger,
+    write_outputs,
+)
 from .metrics import analyze_records
 
 
@@ -91,7 +97,10 @@ def reproduce(
     expected_source_hash = manifest.get("dataset_sources", {}).get("records_sha256")
     if not source.is_file():
         errors.append(f"required source file is missing: {source}")
-    elif expected_source_hash and sha256_file(source) != expected_source_hash:
+    elif (
+        expected_source_hash
+        and sha256_normalized_text_file(source) != expected_source_hash
+    ):
         errors.append(f"source hash mismatch: {source}")
     if errors:
         return ReproductionResult("ERROR", 2, str(output_dir), (), (), tuple(errors))
@@ -141,9 +150,11 @@ def reproduce(
     (output_dir / "reproduction-report.json").write_text(
         json.dumps(result.to_dict(), indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
+        newline="\n",
     )
     (output_dir / "reproduction-summary.md").write_text(
         _markdown(result),
         encoding="utf-8",
+        newline="\n",
     )
     return result
