@@ -1,0 +1,43 @@
+schemaVersion: "1"
+policy:
+  allowedExecutables: [python]
+tasks:
+  - id: csv-snapshot-success
+    description: Verify CSV Snapshot's documented quality and build evidence.
+    claim:
+      status: completed
+      agent: dogfood-adapter
+    evidence:
+      - id: package-manifest
+        type: file-exists
+        path: pyproject.toml
+      - id: required-files
+        type: required-files
+        paths: [README.md, CHANGELOG.md, LICENSE, pyproject.toml]
+      - id: tests
+        type: test-command
+        command: [python, -m, pytest, -q]
+        timeoutSeconds: 600
+      - id: build
+        type: build-command
+        command: [python, -m, build]
+        timeoutSeconds: 180
+  - id: csv-snapshot-failure
+    description: A controlled failure without changing CSV Snapshot product behavior.
+    claim:
+      status: completed
+      agent: dogfood-adapter
+    evidence:
+      - id: deliberately-forbidden-present-file
+        type: forbidden-files
+        paths: [README.md]
+  - id: csv-snapshot-unverifiable
+    description: A controlled unverifiable command because curl is not allow-listed.
+    claim:
+      status: completed
+      agent: dogfood-adapter
+    evidence:
+      - id: disallowed-command
+        type: command
+        command: [curl, --version]
+        timeoutSeconds: 5

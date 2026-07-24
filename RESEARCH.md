@@ -96,3 +96,23 @@ Only public aggregate benchmark records are analyzed. No personal data, secrets,
 ## Future work
 
 Replicate across other agent frameworks; pair natural-language self-reports with verifier outcomes; reassess supported cases using strengthened tests; and run a preregistered reviewer study measuring time-to-verification, correction rate, and adoption friction.
+
+---
+
+# v0.2.0 extension: generic contracts and second-source replication
+
+## Engineering question
+
+Can the v0.1.0 separation between generated output and executable support be expressed as a deterministic repository contract that is usable outside a benchmark adapter?
+
+v0.2.0 implements a JSON-Schema-defined contract, 14 assertion types, repository-root path confinement, symlink rejection, argv-only commands, explicit executable allowlists, timeouts, terminal/JSON/Markdown reports, a composite GitHub Action, and a one-command reproduction workflow. It does not provide process isolation or prove semantic correctness.
+
+## Second research question
+
+In a different agent implementation and benchmark family, does the generated-output baseline still yield a materially high oracle-unsupported completion-label rate, and can the same four states represent the source without changing semantics?
+
+The source and thresholds were preregistered before reading the fixed Go result file. Multi-SWE-bench Go/MagentLess reported 341 completed patches, 25 resolved, 316 unresolved, 87 empty/error patches, and zero unstopped instances. The unsupported rate was 92.67% (95% Wilson 89.40%–94.99%). Removing empty/error patches from numerator and denominator yielded 90.16%. The confirmatory verdict is `SUPPORTED` within the executable-oracle scope.
+
+## What this adds—and does not add
+
+The result adds one cross-benchmark schema replication and real-repository feasibility testing. It does not establish population prevalence, independent adoption, reviewer-time savings, natural-language self-report accuracy, or patch-quality improvement. Details are in `docs/v0.2.0-generalization-report.md`, `docs/v0.2.0-dogfooding.md`, and `docs/v0.2.0-red-team.md`.

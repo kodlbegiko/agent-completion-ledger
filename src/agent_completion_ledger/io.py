@@ -29,6 +29,18 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def sha256_normalized_text_file(path: Path) -> str:
+    """Hash UTF-8 text after universal-newline normalization.
+
+    Git may materialize tracked text with CRLF on Windows. Research inputs are
+    content-equivalent across checkouts, so their manifest hash uses canonical LF.
+    Generated research outputs are written with explicit LF and use byte hashes.
+    """
+
+    text = path.read_text(encoding="utf-8")
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
 def load_records(path: Path) -> list[SourceRecord]:
     value = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(value, list):
@@ -70,6 +82,10 @@ def ledger_rows(records: Iterable[SourceRecord]) -> list[dict[str, object]]:
     return rows
 
 
+def _write_lf(path: Path, content: str) -> None:
+    path.write_text(content, encoding="utf-8", newline="\n")
+
+
 def write_outputs(
     output_dir: Path,
     records: list[SourceRecord],
@@ -84,9 +100,9 @@ def write_outputs(
         "submissions": [item.to_dict() for item in per_submission],
     }
     summary_path = output_dir / "summary.json"
-    summary_path.write_text(
+    _write_lf(
+        summary_path,
         json.dumps(summary, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
     )
 
     csv_path = output_dir / "submission-metrics.csv"
@@ -110,9 +126,9 @@ def write_outputs(
             writer.writerow({key: row[key] for key in fieldnames})
 
     ledger_path = output_dir / "ledger.jsonl"
-    ledger_path.write_text(
+    _write_lf(
+        ledger_path,
         "".join(canonical_json(row) + "\n" for row in ledger_rows(records)),
-        encoding="utf-8",
     )
 
     sensitivity = {
@@ -133,18 +149,15 @@ def write_outputs(
         "difference": (aggregate.false_completion_rate - aggregate.strict_false_completion_rate),
     }
     sensitivity_path = output_dir / "sensitivity.json"
-    sensitivity_path.write_text(
+    _write_lf(
+        sensitivity_path,
         json.dumps(sensitivity, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
     )
 
     output_paths = (summary_path, csv_path, ledger_path, sensitivity_path)
     hashes = {path.name: sha256_file(path) for path in output_paths}
     hash_path = output_dir / "output-hashes.json"
-    hash_path.write_text(
-        json.dumps(hashes, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
+    _write_lf(hash_path, json.dumps(hashes, indent=2, sort_keys=True) + "\n")
     return hashes
 
 

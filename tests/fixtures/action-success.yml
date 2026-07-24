@@ -1,0 +1,17 @@
+schemaVersion: "1"
+policy:
+  allowedExecutables: [python]
+tasks:
+  - id: fixture-success
+    claim:
+      status: completed
+      agent: integration-test
+    evidence:
+      - id: readme
+        type: file-exists
+        path: README.md
+      - id: package-version
+        type: json-path
+        path: package.json
+        jsonPath: version
+        expected: "1.0.0"

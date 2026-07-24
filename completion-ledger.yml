@@ -1,0 +1,26 @@
+schemaVersion: "1"
+policy:
+  allowedExecutables: [python]
+tasks:
+  - id: self-validation
+    description: Validate the package's core files and focused test suite.
+    claim:
+      status: completed
+      agent: frontier-public-interest-research-mission
+    evidence:
+      - id: package-file
+        type: file-exists
+        path: src/agent_completion_ledger/cli.py
+      - id: package-version
+        type: json-path
+        path: tests/fixtures/repository/package.json
+        jsonPath: version
+        expected: "1.0.0"
+        blocking: false
+      - id: required-project-files
+        type: required-files
+        paths: [README.md, RESEARCH.md, pyproject.toml, LICENSE]
+      - id: focused-tests
+        type: test-command
+        command: [python, -m, pytest, tests/test_model.py, -q]
+        timeoutSeconds: 120
