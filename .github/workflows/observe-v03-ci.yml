@@ -1,0 +1,117 @@
+name: observe-v03-ci
+on:
+  push:
+    paths:
+      - .github/workflows/observe-v03-ci.yml
+permissions:
+  actions: read
+  contents: read
+  pull-requests: write
+jobs:
+  observe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Wait for matching full CI run
+        id: ci
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TARGET_SHA: ${{ github.sha }}
+          TARGET_BRANCH: ${{ github.ref_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          run_id=""
+          for attempt in $(seq 1 90); do
+            run_id="$(gh run list \
+              --repo "$GITHUB_REPOSITORY" \
+              --workflow ci.yml \
+              --branch "$TARGET_BRANCH" \
+              --event push \
+              --limit 30 \
+              --json databaseId,headSha \
+              --jq ".[] | select(.headSha == \"$TARGET_SHA\") | .databaseId" \
+              | head -n 1)"
+            if [[ -n "$run_id" ]]; then
+              break
+            fi
+            sleep 10
+          done
+          if [[ -z "$run_id" ]]; then
+            echo "No matching CI run found for $TARGET_SHA" >&2
+            exit 2
+          fi
+          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+          set +e
+          gh run watch "$run_id" --repo "$GITHUB_REPOSITORY" --exit-status
+          watch_exit=$?
+          set -e
+          echo "watch_exit=$watch_exit" >> "$GITHUB_OUTPUT"
+          gh run view "$run_id" \
+            --repo "$GITHUB_REPOSITORY" \
+            --json databaseId,url,headSha,event,status,conclusion,workflowName,jobs \
+            > /tmp/ci-run.json
+      - name: Download Ubuntu 3.12 validation artifact
+        if: always() && steps.ci.outputs.run_id != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ steps.ci.outputs.run_id }}
+        shell: bash
+        run: |
+          mkdir -p /tmp/quality
+          gh run download "$RUN_ID" \
+            --repo "$GITHUB_REPOSITORY" \
+            --name quality-ubuntu-latest-py3.12 \
+            --dir /tmp/quality || true
+      - name: Post auditable PR validation summary
+        if: always() && steps.ci.outputs.run_id != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WATCH_EXIT: ${{ steps.ci.outputs.watch_exit }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import xml.etree.ElementTree as ET
+          from pathlib import Path
+
+          run = json.loads(Path('/tmp/ci-run.json').read_text(encoding='utf-8'))
+          coverage_path = Path('/tmp/quality/coverage.json')
+          junit_path = Path('/tmp/quality/junit.xml')
+          coverage = json.loads(coverage_path.read_text(encoding='utf-8')) if coverage_path.exists() else {}
+          totals = coverage.get('totals', {})
+          tests = failures = errors = skipped = None
+          if junit_path.exists():
+              root = ET.parse(junit_path).getroot()
+              tests = int(root.attrib.get('tests', 0))
+              failures = int(root.attrib.get('failures', 0))
+              errors = int(root.attrib.get('errors', 0))
+              skipped = int(root.attrib.get('skipped', 0))
+          jobs = run.get('jobs', [])
+          job_lines = '\n'.join(
+              f"- `{job.get('name')}`: **{job.get('conclusion') or job.get('status')}**"
+              for job in jobs
+          )
+          body = f"""<!-- ACL_V03_FINAL_CI -->
+          ## v0.3.0 full CI evidence
+
+          - Head SHA: `{run.get('headSha')}`
+          - Run: {run.get('url')}
+          - Event: `{run.get('event')}`
+          - Status: **{run.get('conclusion') or run.get('status')}**
+          - Tests (Ubuntu 3.12 artifact): **{tests}**; failures `{failures}`, errors `{errors}`, skipped `{skipped}`
+          - Combined branch-aware coverage: **{totals.get('percent_covered')}%**
+          - Covered lines/statements: `{totals.get('covered_lines')}/{totals.get('num_statements')}`
+          - Covered branches: `{totals.get('covered_branches')}/{totals.get('num_branches')}`
+
+          ### Jobs
+
+          {job_lines}
+
+          External validation remains pending: real participant count `0`, non-author integration count `0`.
+          """
+          Path('/tmp/ci-comment.md').write_text(body, encoding='utf-8')
+          PY
+          gh pr comment 3 --repo "$GITHUB_REPOSITORY" --body-file /tmp/ci-comment.md
+          test "$WATCH_EXIT" -eq 0
+# final validation revision 2

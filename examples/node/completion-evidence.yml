@@ -1,0 +1,29 @@
+name: node-completion-evidence
+on:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: npm ci
+      - name: Calculate contract digest
+        id: contract
+        shell: bash
+        run: echo "sha256=$(sha256sum completion-ledger.yml | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+      - uses: kodlbegiko/agent-completion-ledger@v0.3.0
+        with:
+          expected-contract-sha256: ${{ steps.contract.outputs.sha256 }}
+          format: markdown
+          output: completion-report.md

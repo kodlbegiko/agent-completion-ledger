@@ -1,0 +1,17 @@
+schemaVersion: "1"
+policy:
+  allowedExecutables: []
+tasks:
+  - id: minimal-documentation-task
+    description: Verify a documentation completion claim with static repository evidence.
+    claim:
+      status: completed
+      agent: example
+    evidence:
+      - id: readme-exists
+        type: file-exists
+        path: README.md
+      - id: installation-heading
+        type: text-contains
+        path: README.md
+        text: "## Installation"

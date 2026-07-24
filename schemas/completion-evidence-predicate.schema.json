@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kodlbegiko/agent-completion-ledger/schemas/completion-evidence-predicate.schema.json",
+  "title": "Agent Completion Ledger completion evidence predicate",
+  "description": "Experimental in-toto predicate describing repository-level coding-agent acceptance evidence results.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "taskClaims",
+    "ledgerStatus",
+    "contractDigest",
+    "repository",
+    "assertionSummary",
+    "evidenceReportDigest",
+    "tool",
+    "scope"
+  ],
+  "properties": {
+    "schemaVersion": {"const": "1"},
+    "taskClaims": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["taskId", "claimedStatus", "ledgerStatus"],
+        "properties": {
+          "taskId": {"type": "string", "minLength": 1},
+          "claimedStatus": {"enum": ["completed", "none"]},
+          "ledgerStatus": {"enum": ["SUPPORTED", "FAILED", "UNVERIFIABLE", "NO_CLAIM"]}
+        }
+      }
+    },
+    "ledgerStatus": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["overall", "counts"],
+      "properties": {
+        "overall": {"enum": ["SUPPORTED", "FAILED", "UNVERIFIABLE", "NO_CLAIM"]},
+        "counts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["SUPPORTED", "FAILED", "UNVERIFIABLE", "NO_CLAIM"],
+          "properties": {
+            "SUPPORTED": {"type": "integer", "minimum": 0},
+            "FAILED": {"type": "integer", "minimum": 0},
+            "UNVERIFIABLE": {"type": "integer", "minimum": 0},
+            "NO_CLAIM": {"type": "integer", "minimum": 0}
+          }
+        }
+      }
+    },
+    "contractDigest": {"$ref": "#/$defs/sha256Digest"},
+    "expectedContractDigest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sha256", "matched"],
+      "properties": {
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "matched": {"type": "boolean"}
+      }
+    },
+    "repository": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identity", "commit"],
+      "properties": {
+        "identity": {"type": "string", "minLength": 1},
+        "commit": {"type": "string", "minLength": 1}
+      }
+    },
+    "assertionSummary": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "type", "outcome", "blocking"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "type": {"type": "string", "minLength": 1},
+          "outcome": {"enum": ["PASS", "FAIL", "UNVERIFIABLE"]},
+          "blocking": {"type": "boolean"}
+        }
+      }
+    },
+    "evidenceReportDigest": {"$ref": "#/$defs/sha256Digest"},
+    "tool": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version"],
+      "properties": {
+        "name": {"const": "agent-completion-ledger"},
+        "version": {"type": "string", "minLength": 1}
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "trustedMode", "executionMode", "limitations"],
+      "properties": {
+        "kind": {"const": "repository-level coding-agent acceptance evidence"},
+        "trustedMode": {"type": "boolean"},
+        "executionMode": {"enum": ["full", "static-only", "integrity-only"]},
+        "limitations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        }
+      }
+    }
+  },
+  "$defs": {
+    "sha256Digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sha256"],
+      "properties": {
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    }
+  }
+}

@@ -1,0 +1,29 @@
+schemaVersion: "1"
+policy:
+  allowedExecutables:
+    - python
+tasks:
+  - id: python-feature
+    description: Verify a Python feature with source, tests, typing, and wheel build evidence.
+    claim:
+      status: completed
+      agent: example
+    evidence:
+      - id: package-metadata
+        type: file-exists
+        path: pyproject.toml
+      - id: source-package
+        type: file-exists
+        path: src/example/__init__.py
+      - id: tests
+        type: test-command
+        command: ["python", "-m", "pytest"]
+        timeoutSeconds: 300
+      - id: typecheck
+        type: command
+        command: ["python", "-m", "mypy", "src"]
+        timeoutSeconds: 300
+      - id: wheel-build
+        type: build-command
+        command: ["python", "-m", "build"]
+        timeoutSeconds: 300

@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import hashlib
 import json
+import re
 from dataclasses import dataclass
 from importlib.resources import files
 from pathlib import Path
@@ -12,6 +14,9 @@ from jsonschema import Draft202012Validator
 
 class ContractError(ValueError):
     """Raised when a completion evidence contract is invalid."""
+
+
+_SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}$")
 
 
 @dataclass(frozen=True, slots=True)
@@ -54,6 +59,24 @@ def _schema() -> dict[str, Any]:
     if not isinstance(value, dict):
         raise ContractError("packaged contract schema is not a JSON object")
     return value
+
+
+def contract_sha256(path: Path) -> str:
+    """Return the SHA-256 of the exact contract bytes used for verification."""
+
+    try:
+        return hashlib.sha256(path.read_bytes()).hexdigest()
+    except OSError as exc:
+        raise ContractError(f"cannot read contract: {exc}") from exc
+
+
+def normalize_expected_sha256(value: str) -> str:
+    """Validate and normalize a user-supplied SHA-256 pin."""
+
+    normalized = value.strip().lower()
+    if not _SHA256_PATTERN.fullmatch(normalized):
+        raise ContractError("expected contract SHA-256 must be exactly 64 hexadecimal characters")
+    return normalized
 
 
 def load_contract(path: Path) -> CompletionContract:

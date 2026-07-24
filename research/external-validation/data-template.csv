@@ -1,0 +1,2 @@
+protocol_version,participant_id,session_id,task_id,task_family,condition,order_index,ground_truth,decision,review_time_seconds,false_acceptance,false_rejection,confidence_1_to_5,ambiguity_1_to_5,first_blocker_time_seconds,blocking_issue,report_changed_initial_decision,maintenance_willingness_1_to_5,contract_authoring_seconds,contract_noncomment_lines,ci_overhead_seconds,interrupted,exclusion_reason,notes
+v1,P000,S000,py-01-parser-success,python,A,1,ACCEPT,ACCEPT,0,false,false,3,3,,,false,3,0,0,0,false,,TEMPLATE_ROW_DO_NOT_ANALYZE

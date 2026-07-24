@@ -4,11 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agent-completion-ledger"
-version = "0.2.0"
-description = "Deterministic completion evidence contracts and reproducible coding-agent reporting research."
+version = "0.3.0"
+description = "Repository-level acceptance evidence contracts for coding-agent tasks."
 readme = "README.md"
 requires-python = ">=3.11"
-license = {text = "MIT"}
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [{name = "Frontier Public-Interest Research Mission"}]
 dependencies = [
   "jsonschema==4.26.0",
@@ -16,7 +17,6 @@ dependencies = [
 ]
 classifiers = [
   "Programming Language :: Python :: 3",
-  "License :: OSI Approved :: MIT License",
 ]
 
 [project.optional-dependencies]

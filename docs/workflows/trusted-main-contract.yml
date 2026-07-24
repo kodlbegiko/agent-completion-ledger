@@ -1,0 +1,56 @@
+name: trusted-main-contract
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-with-trusted-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout pull request code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Read contract from trusted base commit
+        id: contract
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p .trusted
+          git fetch --no-tags --depth=1 origin "$BASE_SHA"
+          git show "$BASE_SHA:completion-ledger.yml" > .trusted/completion-ledger.yml
+          echo "sha256=$(sha256sum .trusted/completion-ledger.yml | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify PR code against trusted base contract
+        uses: kodlbegiko/agent-completion-ledger@v0.3.0
+        with:
+          contract: .trusted/completion-ledger.yml
+          repo-root: .
+          expected-contract-sha256: ${{ steps.contract.outputs.sha256 }}
+          format: markdown
+          output: completion-report.md
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: trusted-completion-report
+          path: completion-report.md
+          if-no-files-found: error
+
+# Security notes:
+# - This uses the ordinary pull-request trigger, not a privileged target context.
+# - No repository secrets are exposed and GITHUB_TOKEN is read-only.
+# - The contract comes from the reviewed base commit, not the PR branch.
+# - Command assertions still execute untrusted PR code. Use a disposable
+#   GitHub-hosted runner and choose static-untrusted-pr.yml when execution is
+#   unnecessary or too risky. Trusted Contract Mode is not a sandbox.
+# - For higher assurance, replace version tags with reviewed full action SHAs.
