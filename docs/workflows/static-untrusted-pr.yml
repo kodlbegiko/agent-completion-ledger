@@ -1,0 +1,56 @@
+name: static-untrusted-pr
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  static-evidence-only:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout pull request code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Read contract from trusted base commit
+        id: contract
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p .trusted
+          git fetch --no-tags --depth=1 origin "$BASE_SHA"
+          git show "$BASE_SHA:completion-ledger.yml" > .trusted/completion-ledger.yml
+          echo "sha256=$(sha256sum .trusted/completion-ledger.yml | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify static evidence without executing PR commands
+        uses: kodlbegiko/agent-completion-ledger@v0.3.0
+        with:
+          contract: .trusted/completion-ledger.yml
+          repo-root: .
+          expected-contract-sha256: ${{ steps.contract.outputs.sha256 }}
+          no-exec: "true"
+          format: markdown
+          output: completion-report.md
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: static-completion-report
+          path: completion-report.md
+          if-no-files-found: error
+
+# Security notes:
+# - This uses pull_request and read-only contents permission.
+# - It does not use pull_request_target, secrets, or command assertions.
+# - File, hash, JSON, and Git evidence can still be evaluated.
+# - A blocking command assertion becomes UNVERIFIABLE, never SUPPORTED.
+# - The runner is disposable, but static-only mode is not a complete parser or
+#   filesystem sandbox. For higher assurance, pin actions to full commit SHAs.
