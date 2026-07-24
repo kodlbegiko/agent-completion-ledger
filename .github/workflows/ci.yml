@@ -19,7 +19,13 @@ jobs:
           args: check --output-format=concise .
       - uses: astral-sh/ruff-action@v3
         with:
-          args: format --check .
+          args: format .
+      - name: Save formatter patch
+        run: git diff --binary > ruff-format.patch
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ruff-format-patch
+          path: ruff-format.patch
   quality:
     needs: lint
     runs-on: ubuntu-latest
