@@ -1,0 +1,29 @@
+schemaVersion: "1"
+policy:
+  allowedExecutables:
+    - npm
+tasks:
+  - id: node-feature
+    description: Verify that a Node.js feature has source, tests, typecheck, and production build evidence.
+    claim:
+      status: completed
+      agent: example
+    evidence:
+      - id: package-manifest
+        type: file-exists
+        path: package.json
+      - id: source-file
+        type: file-exists
+        path: src/index.ts
+      - id: unit-tests
+        type: test-command
+        command: ["npm", "test", "--", "--runInBand"]
+        timeoutSeconds: 300
+      - id: typecheck
+        type: command
+        command: ["npm", "run", "typecheck"]
+        timeoutSeconds: 300
+      - id: production-build
+        type: build-command
+        command: ["npm", "run", "build"]
+        timeoutSeconds: 300
