@@ -47,7 +47,7 @@ jobs:
           if-no-files-found: error
 
 # Security notes:
-# - This uses pull_request, not pull_request_target.
+# - This uses the ordinary pull-request trigger, not a privileged target context.
 # - No repository secrets are exposed and GITHUB_TOKEN is read-only.
 # - The contract comes from the reviewed base commit, not the PR branch.
 # - Command assertions still execute untrusted PR code. Use a disposable
