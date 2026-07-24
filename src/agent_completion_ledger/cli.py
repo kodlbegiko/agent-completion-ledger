@@ -7,13 +7,27 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import cast
 
-from .contract import ContractError, default_contract, load_contract
+from .contract import (
+    ContractError,
+    contract_sha256,
+    default_contract,
+    load_contract,
+    normalize_expected_sha256,
+)
 from .generalization import write_generalization_result
 from .io import load_records, validate_ledger, write_outputs
 from .metrics import analyze_records
 from .reporting import ReportFormat, render_report, write_or_print
 from .reproduction import reproduce
-from .verification import VerificationReport, report_exit_code, verify_contract
+from .verification import (
+    VerificationReport,
+    contract_hash_mismatch_report,
+    report_exit_code,
+    verify_contract,
+)
+
+
+_REPORT_FORMATS = ("terminal", "json", "markdown", "in-toto")
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -54,15 +68,24 @@ def build_parser() -> argparse.ArgumentParser:
     verify.add_argument("--contract", type=Path, default=Path("completion-ledger.yml"))
     verify.add_argument("--repo-root", type=Path, default=Path("."))
     verify.add_argument("--task")
-    verify.add_argument("--format", choices=("terminal", "json", "markdown"), default="terminal")
+    verify.add_argument("--format", choices=_REPORT_FORMATS, default="terminal")
     verify.add_argument("--output", type=Path)
     verify.add_argument("--include-timing", action="store_true")
+    verify.add_argument(
+        "--expected-contract-sha256",
+        help="Pin the exact trusted contract bytes. A mismatch is UNVERIFIABLE.",
+    )
+    verify.add_argument(
+        "--no-exec",
+        action="store_true",
+        help="Evaluate static file, JSON, hash, and Git evidence without command assertions.",
+    )
 
     report = subparsers.add_parser(
         "report", help="Render a previously generated verification JSON report"
     )
     report.add_argument("input", type=Path)
-    report.add_argument("--format", choices=("terminal", "json", "markdown"), default="terminal")
+    report.add_argument("--format", choices=_REPORT_FORMATS, default="terminal")
     report.add_argument("--output", type=Path)
 
     reproduce_parser = subparsers.add_parser(
@@ -132,6 +155,7 @@ def _init_contract(output: Path, force: bool) -> int:
         output.write_text(
             yaml.safe_dump(default_contract(), sort_keys=False, allow_unicode=True),
             encoding="utf-8",
+            newline="\n",
         )
     except OSError as exc:
         print(f"cannot write contract: {exc}", file=sys.stderr)
@@ -142,13 +166,33 @@ def _init_contract(output: Path, force: bool) -> int:
 
 def _verify(args: argparse.Namespace) -> int:
     try:
-        contract = load_contract(args.contract)
-        report = verify_contract(
-            contract,
-            args.repo_root,
-            task_id=args.task,
-            include_timing=args.include_timing,
+        actual_digest = contract_sha256(args.contract)
+        expected_digest = (
+            normalize_expected_sha256(args.expected_contract_sha256)
+            if args.expected_contract_sha256 is not None
+            else None
         )
+        if expected_digest is not None and actual_digest != expected_digest:
+            report = contract_hash_mismatch_report(
+                args.repo_root,
+                args.contract,
+                actual_sha256=actual_digest,
+                expected_sha256=expected_digest,
+            )
+        else:
+            contract = load_contract(args.contract)
+            report = verify_contract(
+                contract,
+                args.repo_root,
+                task_id=args.task,
+                include_timing=args.include_timing,
+                contract_path=args.contract,
+                contract_sha256=actual_digest,
+                expected_contract_sha256=expected_digest,
+                trusted_mode=expected_digest is not None,
+                contract_digest_matched=True if expected_digest is not None else None,
+                no_exec=args.no_exec,
+            )
         content = render_report(report, cast(ReportFormat, args.format))
         write_or_print(content, args.output)
     except (ContractError, OSError, ValueError) as exc:
@@ -186,10 +230,25 @@ def _load_report(path: Path) -> VerificationReport:
                 assertions=assertions,
             )
         )
+    provenance = raw.get("provenance", {})
+    expected_value = provenance.get("expectedContractSha256")
+    digest_match_value = provenance.get("contractDigestMatched")
     return VerificationReport(
         schema_version=raw["schemaVersion"],
         contract_schema_version=raw["contractSchemaVersion"],
         tasks=tuple(tasks),
+        tool_version=str(provenance.get("toolVersion", "UNKNOWN")),
+        repository_commit_sha=str(provenance.get("repositoryCommitSha", "UNKNOWN")),
+        contract_path=str(provenance.get("contractPath", "UNKNOWN")),
+        contract_sha256=str(provenance.get("contractSha256", "")),
+        expected_contract_sha256=(str(expected_value) if expected_value is not None else None),
+        repository_root_identity=str(provenance.get("repositoryRootIdentity", "UNKNOWN")),
+        trusted_mode=bool(provenance.get("trustedMode", False)),
+        contract_digest_matched=(
+            bool(digest_match_value) if digest_match_value is not None else None
+        ),
+        execution_mode=str(provenance.get("executionMode", "unknown")),
+        result_digest=str(raw.get("resultDigest", "")),
     )
 
 
