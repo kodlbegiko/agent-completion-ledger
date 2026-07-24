@@ -231,15 +231,19 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 2
         return 0
     if args.command == "reproduce":
-        result = reproduce(args.manifest, args.output_dir, source_override=args.source)
-        print(json.dumps(result.to_dict(), sort_keys=True))
-        return result.exit_code
+        reproduction_result = reproduce(
+            args.manifest,
+            args.output_dir,
+            source_override=args.source,
+        )
+        print(json.dumps(reproduction_result.to_dict(), sort_keys=True))
+        return reproduction_result.exit_code
     if args.command == "generalization":
         try:
-            result = write_generalization_result(args.source, args.output)
+            generalization_result = write_generalization_result(args.source, args.output)
         except (OSError, ValueError, TypeError, json.JSONDecodeError) as exc:
             print(f"generalization analysis failed: {exc}", file=sys.stderr)
             return 2
-        print(json.dumps(result.to_dict(), sort_keys=True))
-        return 0 if result.verdict == "SUPPORTED" else 1
+        print(json.dumps(generalization_result.to_dict(), sort_keys=True))
+        return 0 if generalization_result.verdict == "SUPPORTED" else 1
     raise AssertionError("unreachable")
