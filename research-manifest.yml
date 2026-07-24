@@ -1,0 +1,92 @@
+schema_version: "0.1.0"
+research_question: >-
+  Across seven fixed public SWE-agent submissions to SWE-bench Verified, how often
+  is a patch-exists completion label unsupported by the executable oracle, and can
+  evidence-gated status reporting eliminate unsupported COMPLETED labels relative
+  to that oracle?
+status: SUPPORTED
+study_type: exploratory benchmark
+frozen_date: "2026-07-24"
+timezone: Asia/Taipei
+random_seed: 0
+sample_rule: >-
+  Seven named historical SWE-agent Verified folders in the preregistered protocol;
+  no post-result sample changes.
+dataset_sources:
+  repository: https://github.com/SWE-bench/experiments
+  records_file: data/frozen/submission-summaries.json
+  records_sha256: 38882ed9496dbe4de3837b9d98f099098cb231858f5116d4e55918d0627499d0
+  candidate_index_sha256: 6e76287d34db521cd3cc5b67f84e32e7d6799e0fe29c2b5778860aec86915265
+  candidate_shard_sha256:
+    candidates-01-07.json: d4124ef1414ca98a340c49230d26448e3640d8a01ab6ea758a529d6ff0d307e7
+    candidates-08-14.json: fecd93be3e8f5414dbe67c466d5a234d81cdeab45caa1d268ca7bacc2b3b46b9
+    candidates-15-21.json: 332f52df11b0d090485b96a99be28824a13c3e8dc0f90179e03310f71e5abb40
+  source_blob_sha1:
+    - 2e76b7330b09b1ff0574d2bc324bb678b79c7056
+    - eb4fca14e56194937c64b1117129a407a0a10241
+    - c6317e942210be3936fa57db7b4d15de8fbdf438
+    - 4f76fa60571f92930c3d8cf452137ab85b5d36b3
+    - f5a507a4dc254a29f642276a06d94f7d3fdb4c95
+    - 2ca4f9a8d3c7a6f9ec52e23ade846db9e1ca3abe
+    - be9eeca19bd7b07d4c3a58b719f1f6fc8954b391
+  upstream_license_observation: >-
+    No root LICENSE file found at inspection; full raw files are not redistributed.
+commands:
+  install: 'python -m pip install -e ".[dev]"'
+  lint: 'ruff check .'
+  format: 'ruff format --check .'
+  typecheck: 'mypy src'
+  test: 'pytest --cov'
+  build: 'python -m build'
+  reproduce: >-
+    PYTHONHASHSEED=0 agent-completion-ledger benchmark
+    --output-dir reproduced-results
+  red_team: 'PYTHONPATH=src python scripts/red_team.py'
+  fetch_sources: 'python scripts/fetch_public_results.py'
+  extract_sources: 'PYTHONPATH=src python scripts/extract_source_counts.py'
+expected_outputs:
+  summary.json: 7ee038eeff5eb11d1572e503c855b1627aa1bb026491b9f040120b04fd025a2d
+  submission-metrics.csv: 270cc9710dabae05dcbecaf537760634ed45b49d7b0679ffed4435b591961edd
+  ledger.jsonl: 4fed93e6fe417f6ef680b40ea85f120c897742ebd1ad2816641eb075c7ef1515
+  sensitivity.json: 0008af6a2ef7d3545ea45caf95c19ff9ec0af464b308a0df39e751509562968b
+  red-team-sensitivity.json: 6483a31b422e10ca54a498fde7110e1ff1f46ae4b43172d786c7f12565110891
+metrics:
+  primary: inclusive_oracle_unsupported_completion_label_rate
+  secondary:
+    - strict_false_completion_rate
+    - baseline_completion_precision
+    - ledger_completion_precision_relative_to_oracle
+    - wilson_95_interval
+    - submissions_above_threshold
+    - leave_one_submission_out_rate
+    - oracle_reclassification_break_even
+stopping_rule:
+  minimum_generated_claims: 3000
+  support_conditions:
+    - aggregate_wilson_lower_bound_gt_0.20
+    - at_least_5_of_7_submissions_gt_0.20
+    - minimum_claims_met
+environment:
+  local_python: "3.13.5"
+  node: "22.16.0"
+  cpu: "5 vCPU AMD EPYC"
+  memory: "5.9 GiB, no swap"
+  disk_free: "39 GiB"
+  direct_container_network: unavailable
+  public_web_tools: available
+  github_connector: available
+  local_benchmark_wall_seconds: 0.52
+  local_benchmark_max_rss_kib: 110784
+validation:
+  tests_passed: 79
+  branch_aware_coverage_percent: 95.35
+  local_wheel_sha256: 82346aa14890ead7e29528e5a1a4bcc340363e20deb8187d3a72d835f3239c37
+  deterministic_hash_seeds: [0, 321]
+known_limitations:
+  - generated patch is a behavioral proxy, not a natural-language completion statement
+  - the primary rate is the complement of oracle support among generated attempts
+  - SWE-bench oracle can be weak, incomplete, or vulnerable
+  - purposive sample from one agent lineage and benchmark family
+  - repeated tasks across submissions are not independent population draws
+  - compact records do not identify exact failed instances without a task universe
+  - generic evidence-ledger concepts already exist

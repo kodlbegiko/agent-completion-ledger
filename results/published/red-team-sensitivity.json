@@ -1,0 +1,90 @@
+{
+  "accepted_novelty_criticism": "The primary rate is the arithmetic complement of benchmark resolution among generated patches; the reusable contribution is the evidence-state adapter, frozen extraction record, and reporting protocol, not a new agent-capability metric.",
+  "leave_one_submission_out": [
+    {
+      "false_completion_rate": 0.5717728055077452,
+      "generated": 2905,
+      "omitted": "20240402_sweagent_claude3opus",
+      "wilson_lower": 0.5536958153007457,
+      "wilson_upper": 0.5896602272692265
+    },
+    {
+      "false_completion_rate": 0.5812586445366529,
+      "generated": 2892,
+      "omitted": "20240402_sweagent_gpt4",
+      "wilson_lower": 0.5631817585214534,
+      "wilson_upper": 0.5991199443457345
+    },
+    {
+      "false_completion_rate": 0.5982608695652174,
+      "generated": 2875,
+      "omitted": "20240620_sweagent_claude3.5sonnet",
+      "wilson_lower": 0.5802208809360948,
+      "wilson_upper": 0.6160386241744958
+    },
+    {
+      "false_completion_rate": 0.5857927247769389,
+      "generated": 2914,
+      "omitted": "20240728_sweagent_gpt4o",
+      "wilson_lower": 0.5678063919434333,
+      "wilson_upper": 0.6035531582776692
+    },
+    {
+      "false_completion_rate": 0.6475924633635729,
+      "generated": 2866,
+      "omitted": "20250225_sweagent_claude-3-7-sonnet",
+      "wilson_lower": 0.6299157494502468,
+      "wilson_upper": 0.6648740541466556
+    },
+    {
+      "false_completion_rate": 0.608786610878661,
+      "generated": 2868,
+      "omitted": "20250511_sweagent_lm_32b",
+      "wilson_lower": 0.5907917739620515,
+      "wilson_upper": 0.6264904155137706
+    },
+    {
+      "false_completion_rate": 0.6546787709497207,
+      "generated": 2864,
+      "omitted": "20250522_sweagent_claude-4-sonnet-20250514",
+      "wilson_lower": 0.6370684613211389,
+      "wilson_upper": 0.6718746977488673
+    }
+  ],
+  "macro_submission_rate_mean": 0.6125009318501848,
+  "macro_submission_rate_median": 0.656441717791411,
+  "oracle_false_negative_break_even": {
+    "interpretation": "At least this many currently unsupported claims would need to be acceptable despite the oracle to reduce the observed rate to 20%.",
+    "reclassifications_needed_to_reach_at_most_20_percent": 1369,
+    "share_of_unsupported_requiring_reclassification": 0.6707496325330721,
+    "unsupported_claims": 2041
+  },
+  "schema_version": "0.1.0",
+  "threshold_sweep": [
+    {
+      "h1_rule_supported": true,
+      "submissions_above": 7,
+      "threshold": 0.2
+    },
+    {
+      "h1_rule_supported": true,
+      "submissions_above": 6,
+      "threshold": 0.3333333333333333
+    },
+    {
+      "h1_rule_supported": true,
+      "submissions_above": 5,
+      "threshold": 0.4
+    },
+    {
+      "h1_rule_supported": true,
+      "submissions_above": 5,
+      "threshold": 0.5
+    },
+    {
+      "h1_rule_supported": false,
+      "submissions_above": 4,
+      "threshold": 0.6
+    }
+  ]
+}

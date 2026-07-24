@@ -1,0 +1,41 @@
+name: ci
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/ruff-action@v3
+        with:
+          args: check --output-format=concise .
+      - uses: astral-sh/ruff-action@v3
+        with:
+          args: format --check .
+  quality:
+    needs: lint
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - run: python -m pip install --upgrade pip
+      - run: python -m pip install -e ".[dev]"
+      - run: mypy src
+      - run: pytest --cov --cov-report=term-missing --cov-report=xml
+      - run: python -m build
+      - run: PYTHONHASHSEED=0 agent-completion-ledger benchmark --output-dir /tmp/repro-a
+      - run: PYTHONHASHSEED=321 agent-completion-ledger benchmark --output-dir /tmp/repro-b
+      - run: diff -u /tmp/repro-a/output-hashes.json /tmp/repro-b/output-hashes.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: research-results-py${{ matrix.python-version }}
+          path: /tmp/repro-a/
