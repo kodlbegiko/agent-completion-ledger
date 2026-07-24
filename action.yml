@@ -1,5 +1,5 @@
 name: Agent Completion Ledger
-description: Verify a repository's completion evidence contract without a shell-based contract runner.
+description: Verify repository-level acceptance evidence contracts for coding-agent tasks.
 inputs:
   contract:
     description: Path to the completion evidence contract.
@@ -14,13 +14,21 @@ inputs:
     required: false
     default: ""
   format:
-    description: terminal, json, or markdown.
+    description: terminal, json, markdown, or in-toto.
     required: false
     default: markdown
   output:
     description: Optional report output path.
     required: false
     default: completion-report.md
+  expected-contract-sha256:
+    description: Optional SHA-256 pin for trusted contract mode.
+    required: false
+    default: ""
+  no-exec:
+    description: Disable command assertions and evaluate static evidence only.
+    required: false
+    default: "false"
 runs:
   using: composite
   steps:
@@ -35,8 +43,14 @@ runs:
         ACL_TASK: ${{ inputs.task }}
         ACL_FORMAT: ${{ inputs.format }}
         ACL_OUTPUT: ${{ inputs.output }}
+        ACL_EXPECTED_CONTRACT_SHA256: ${{ inputs.expected-contract-sha256 }}
+        ACL_NO_EXEC: ${{ inputs.no-exec }}
       run: |
         args=(verify --contract "$ACL_CONTRACT" --repo-root "$ACL_REPO_ROOT" --format "$ACL_FORMAT")
         if [[ -n "$ACL_TASK" ]]; then args+=(--task "$ACL_TASK"); fi
         if [[ -n "$ACL_OUTPUT" ]]; then args+=(--output "$ACL_OUTPUT"); fi
+        if [[ -n "$ACL_EXPECTED_CONTRACT_SHA256" ]]; then
+          args+=(--expected-contract-sha256 "$ACL_EXPECTED_CONTRACT_SHA256")
+        fi
+        if [[ "$ACL_NO_EXEC" == "true" ]]; then args+=(--no-exec); fi
         agent-completion-ledger "${args[@]}"
