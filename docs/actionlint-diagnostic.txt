@@ -1,6 +1,18 @@
-.github/workflows/ci.yml:175:0: could not parse as YAML: yaml: line 175: mapping values are not allowed in this context [syntax-check]
+.github/workflows/ci.yml:111:9: shellcheck reported issue in this script: SC2251:info:5:3: This ! is not on a condition and skips errexit. Use `&& exit 1` instead, or make sure $? is checked [shellcheck]
     |
-175 |       - run: grep -q 'Trusted mode: `true`' completion-report.md
-    | 
+111 |         run: |
+    |         ^~~~
+.github/workflows/ci.yml:111:9: shellcheck reported issue in this script: SC2251:info:6:3: This ! is not on a condition and skips errexit. Use `&& exit 1` instead, or make sure $? is checked [shellcheck]
+    |
+111 |         run: |
+    |         ^~~~
+.github/workflows/ci.yml:175:9: shellcheck reported issue in this script: SC2016:info:1:9: Expressions don't expand in single quotes, use double quotes for that [shellcheck]
+    |
+175 |       - run: >-
+    |         ^~~~
+.github/workflows/ci.yml:177:9: shellcheck reported issue in this script: SC2016:info:1:9: Expressions don't expand in single quotes, use double quotes for that [shellcheck]
+    |
+177 |       - run: >-
+    |         ^~~~
 
 EXIT_CODE=1
