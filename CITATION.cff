@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use this pilot, cite the software and state the benchmark scope."
+title: "Agent Completion Ledger: a SWE-bench evidence-gated reporting pilot"
+type: software
+version: 0.1.0
+date-released: 2026-07-24
+authors:
+  - name: "Frontier Public-Interest Research Mission contributors"
+repository-code: "https://github.com/kodlbegiko/agent-completion-ledger"
+license: MIT
+abstract: "A reproducible exploratory benchmark measuring unsupported completion labels under a patch-exists baseline across seven public SWE-agent submissions."
+keywords:
+  - coding agents
+  - software engineering benchmark
+  - evidence ledger
+  - reproducibility

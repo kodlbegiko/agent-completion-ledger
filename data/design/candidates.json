@@ -1,0 +1,26 @@
+{
+  "schema": "candidate-record-v1",
+  "count": 21,
+  "required_fields": [
+    "research_question",
+    "public_interest",
+    "affected",
+    "existing_solutions",
+    "concrete_gap",
+    "available_data",
+    "experiment",
+    "metrics",
+    "estimated_time",
+    "technical_difficulty",
+    "ethics_safety",
+    "largest_failure_mode",
+    "reusable_if_success",
+    "knowledge_if_failure",
+    "environment_feasibility"
+  ],
+  "files": [
+    "candidates-01-07.json",
+    "candidates-08-14.json",
+    "candidates-15-21.json"
+  ]
+}

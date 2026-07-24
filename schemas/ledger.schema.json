@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/agent-completion-ledger/ledger.schema.json",
+  "title": "Aggregate coding-agent completion evidence record",
+  "type": "object",
+  "required": ["schema_version", "submission", "evidence_state", "count", "evidence", "scope_note"],
+  "properties": {
+    "schema_version": {"const": "0.1.0"},
+    "submission": {"type": "string", "minLength": 1},
+    "evidence_state": {"enum": ["SUPPORTED", "FAILED", "UNVERIFIABLE", "NO_CLAIM"]},
+    "count": {"type": "integer", "minimum": 0},
+    "evidence": {
+      "type": "object",
+      "required": ["kind", "source_path", "source_blob_sha"],
+      "properties": {
+        "kind": {"const": "swe-bench-results-json"},
+        "source_path": {"type": "string"},
+        "source_blob_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      },
+      "additionalProperties": false
+    },
+    "scope_note": {"type": "string"}
+  },
+  "additionalProperties": false
+}

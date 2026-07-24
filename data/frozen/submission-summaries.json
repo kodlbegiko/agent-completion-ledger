@@ -1,0 +1,93 @@
+[
+  {
+    "submission": "20240402_sweagent_claude3opus",
+    "source_path": "evaluation/verified/20240402_sweagent_claude3opus/results/results.json",
+    "source_blob_sha": "2e76b7330b09b1ff0574d2bc324bb678b79c7056",
+    "benchmark_size": 500,
+    "generated": 459,
+    "resolved": 79,
+    "no_logs": 0,
+    "no_generation_raw": 41,
+    "inferred_no_claim": 41,
+    "source_format": "legacy-expanded",
+    "example_failed_instance": "astropy__astropy-12907"
+  },
+  {
+    "submission": "20240402_sweagent_gpt4",
+    "source_path": "evaluation/verified/20240402_sweagent_gpt4/results/results.json",
+    "source_blob_sha": "eb4fca14e56194937c64b1117129a407a0a10241",
+    "benchmark_size": 500,
+    "generated": 472,
+    "resolved": 112,
+    "no_logs": 0,
+    "no_generation_raw": 30,
+    "inferred_no_claim": 28,
+    "source_format": "legacy-expanded-with-duplicate-no-generation-entries",
+    "example_failed_instance": "django__django-16454"
+  },
+  {
+    "submission": "20240620_sweagent_claude3.5sonnet",
+    "source_path": "evaluation/verified/20240620_sweagent_claude3.5sonnet/results/results.json",
+    "source_blob_sha": "c6317e942210be3936fa57db7b4d15de8fbdf438",
+    "benchmark_size": 500,
+    "generated": 489,
+    "resolved": 168,
+    "no_logs": 3,
+    "no_generation_raw": 11,
+    "inferred_no_claim": 11,
+    "source_format": "compact",
+    "example_failed_instance": null
+  },
+  {
+    "submission": "20240728_sweagent_gpt4o",
+    "source_path": "evaluation/verified/20240728_sweagent_gpt4o/results/results.json",
+    "source_blob_sha": "4f76fa60571f92930c3d8cf452137ab85b5d36b3",
+    "benchmark_size": 500,
+    "generated": 450,
+    "resolved": 116,
+    "no_logs": 3,
+    "no_generation_raw": 50,
+    "inferred_no_claim": 50,
+    "source_format": "compact",
+    "example_failed_instance": null
+  },
+  {
+    "submission": "20250225_sweagent_claude-3-7-sonnet",
+    "source_path": "evaluation/verified/20250225_sweagent_claude-3-7-sonnet/results/results.json",
+    "source_blob_sha": "f5a507a4dc254a29f642276a06d94f7d3fdb4c95",
+    "benchmark_size": 500,
+    "generated": 498,
+    "resolved": 313,
+    "no_logs": 0,
+    "no_generation_raw": 2,
+    "inferred_no_claim": 2,
+    "source_format": "compact",
+    "example_failed_instance": null
+  },
+  {
+    "submission": "20250511_sweagent_lm_32b",
+    "source_path": "evaluation/verified/20250511_sweagent_lm_32b/results/results.json",
+    "source_blob_sha": "2ca4f9a8d3c7a6f9ec52e23ade846db9e1ca3abe",
+    "benchmark_size": 500,
+    "generated": 496,
+    "resolved": 201,
+    "no_logs": 0,
+    "no_generation_raw": 4,
+    "inferred_no_claim": 4,
+    "source_format": "compact",
+    "example_failed_instance": null
+  },
+  {
+    "submission": "20250522_sweagent_claude-4-sonnet-20250514",
+    "source_path": "evaluation/verified/20250522_sweagent_claude-4-sonnet-20250514/results/results.json",
+    "source_blob_sha": "be9eeca19bd7b07d4c3a58b719f1f6fc8954b391",
+    "benchmark_size": 500,
+    "generated": 500,
+    "resolved": 334,
+    "no_logs": 0,
+    "no_generation_raw": 0,
+    "inferred_no_claim": 0,
+    "source_format": "compact",
+    "example_failed_instance": null
+  }
+]

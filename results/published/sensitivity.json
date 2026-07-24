@@ -1,0 +1,23 @@
+{
+  "difference": 0.0007027072198431128,
+  "inclusive": {
+    "denominator": 3364,
+    "numerator": 2041,
+    "rate": 0.606718192627824,
+    "treatment_of_no_logs": "counted as not supported",
+    "wilson_95": {
+      "lower": 0.590098533920081,
+      "upper": 0.6230943995297671
+    }
+  },
+  "strict": {
+    "denominator": 3358,
+    "numerator": 2035,
+    "rate": 0.6060154854079809,
+    "treatment_of_no_logs": "excluded",
+    "wilson_95": {
+      "lower": 0.5893765303710006,
+      "upper": 0.6224121600599168
+    }
+  }
+}

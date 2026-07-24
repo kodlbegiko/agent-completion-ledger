@@ -1,0 +1,151 @@
+{
+  "aggregate": {
+    "baseline_completion_precision": 0.393281807372176,
+    "benchmark_slots": 3500,
+    "failed": 2035,
+    "false_completion_interval": {
+      "lower": 0.590098533920081,
+      "upper": 0.6230943995297671
+    },
+    "false_completion_rate": 0.606718192627824,
+    "generated": 3364,
+    "h1_supported": true,
+    "ledger_completion_precision": 1.0,
+    "no_claim": 136,
+    "resolved": 1323,
+    "stopping_minimum_claims": 3000,
+    "stopping_rule_met": true,
+    "strict_false_completion_interval": {
+      "lower": 0.5893765303710006,
+      "upper": 0.6224121600599168
+    },
+    "strict_false_completion_rate": 0.6060154854079809,
+    "submissions": 7,
+    "submissions_above_threshold": 7,
+    "threshold": 0.2,
+    "unverifiable": 6
+  },
+  "schema_version": "0.1.0",
+  "submissions": [
+    {
+      "baseline_completion_precision": 0.1721132897603486,
+      "failed": 380,
+      "false_completion_interval": {
+        "lower": 0.7906684289705248,
+        "upper": 0.8596622496314716
+      },
+      "false_completion_rate": 0.8278867102396514,
+      "generated": 459,
+      "ledger_completion_precision": 1.0,
+      "no_claim": 41,
+      "no_generation_discrepancy": 0,
+      "resolved": 79,
+      "strict_false_completion_rate": 0.8278867102396514,
+      "submission": "20240402_sweagent_claude3opus",
+      "unverifiable": 0
+    },
+    {
+      "baseline_completion_precision": 0.23728813559322035,
+      "failed": 360,
+      "false_completion_interval": {
+        "lower": 0.7223082840597154,
+        "upper": 0.7988737092340866
+      },
+      "false_completion_rate": 0.7627118644067796,
+      "generated": 472,
+      "ledger_completion_precision": 1.0,
+      "no_claim": 28,
+      "no_generation_discrepancy": 2,
+      "resolved": 112,
+      "strict_false_completion_rate": 0.7627118644067796,
+      "submission": "20240402_sweagent_gpt4",
+      "unverifiable": 0
+    },
+    {
+      "baseline_completion_precision": 0.34355828220858897,
+      "failed": 318,
+      "false_completion_interval": {
+        "lower": 0.6132777006935073,
+        "upper": 0.6971669610971407
+      },
+      "false_completion_rate": 0.656441717791411,
+      "generated": 489,
+      "ledger_completion_precision": 1.0,
+      "no_claim": 11,
+      "no_generation_discrepancy": 0,
+      "resolved": 168,
+      "strict_false_completion_rate": 0.654320987654321,
+      "submission": "20240620_sweagent_claude3.5sonnet",
+      "unverifiable": 3
+    },
+    {
+      "baseline_completion_precision": 0.2577777777777778,
+      "failed": 331,
+      "false_completion_interval": {
+        "lower": 0.6998772115181738,
+        "upper": 0.7804667406770981
+      },
+      "false_completion_rate": 0.7422222222222222,
+      "generated": 450,
+      "ledger_completion_precision": 1.0,
+      "no_claim": 50,
+      "no_generation_discrepancy": 0,
+      "resolved": 116,
+      "strict_false_completion_rate": 0.7404921700223713,
+      "submission": "20240728_sweagent_gpt4o",
+      "unverifiable": 3
+    },
+    {
+      "baseline_completion_precision": 0.6285140562248996,
+      "failed": 185,
+      "false_completion_interval": {
+        "lower": 0.3301822762901645,
+        "upper": 0.41475709101361613
+      },
+      "false_completion_rate": 0.3714859437751004,
+      "generated": 498,
+      "ledger_completion_precision": 1.0,
+      "no_claim": 2,
+      "no_generation_discrepancy": 0,
+      "resolved": 313,
+      "strict_false_completion_rate": 0.3714859437751004,
+      "submission": "20250225_sweagent_claude-3-7-sonnet",
+      "unverifiable": 0
+    },
+    {
+      "baseline_completion_precision": 0.40524193548387094,
+      "failed": 295,
+      "false_completion_interval": {
+        "lower": 0.5509849376384888,
+        "upper": 0.6370746927526751
+      },
+      "false_completion_rate": 0.594758064516129,
+      "generated": 496,
+      "ledger_completion_precision": 1.0,
+      "no_claim": 4,
+      "no_generation_discrepancy": 0,
+      "resolved": 201,
+      "strict_false_completion_rate": 0.594758064516129,
+      "submission": "20250511_sweagent_lm_32b",
+      "unverifiable": 0
+    },
+    {
+      "baseline_completion_precision": 0.668,
+      "failed": 166,
+      "false_completion_interval": {
+        "lower": 0.2921404418575132,
+        "upper": 0.3744213365375685
+      },
+      "false_completion_rate": 0.332,
+      "generated": 500,
+      "ledger_completion_precision": 1.0,
+      "no_claim": 0,
+      "no_generation_discrepancy": 0,
+      "resolved": 334,
+      "strict_false_completion_rate": 0.332,
+      "submission": "20250522_sweagent_claude-4-sonnet-20250514",
+      "unverifiable": 0
+    }
+  ],
+  "verdict": "SUPPORTED"
+}
