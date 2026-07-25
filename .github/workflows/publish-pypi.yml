@@ -47,9 +47,10 @@ jobs:
           python -m twine check dist/*
           python scripts/wheel_smoke.py "$(python -c 'import glob; print(glob.glob("dist/*.whl")[0])')"
 
-      - name: Generate SHA-256 checksums
+      - name: Generate SHA-256 checksums outside the publication directory
         shell: bash
         run: |
+          mkdir -p checksums
           python - <<'PY'
           import hashlib
           from pathlib import Path
@@ -59,13 +60,23 @@ jobs:
               if path.is_file():
                   digest = hashlib.sha256(path.read_bytes()).hexdigest()
                   lines.append(f"{digest}  {path.name}")
-          Path('dist/SHA256SUMS').write_text('\n'.join(lines) + '\n', encoding='utf-8', newline='\n')
+          Path('checksums/SHA256SUMS').write_text(
+              '\n'.join(lines) + '\n',
+              encoding='utf-8',
+              newline='\n',
+          )
           PY
 
       - uses: actions/upload-artifact@v4
         with:
           name: python-package-distributions
           path: dist/
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: python-package-checksums
+          path: checksums/SHA256SUMS
           if-no-files-found: error
 
   publish-testpypi:
