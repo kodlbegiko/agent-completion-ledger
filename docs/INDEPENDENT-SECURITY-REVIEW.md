@@ -2,172 +2,133 @@
 
 Status: **READY FOR INDEPENDENT REVIEW — REVIEWER COUNT 0**
 
-Target release: `v0.3.0`
+Target release: **v0.3.1**
 
-Recommended review time for an initial pass: **30–60 minutes**
+Recommended initial review time: **30–60 minutes**
 
 Benign reproduction cases: `security/reproduction-cases/`
 
-## Review objective
+## Objective
 
-Assess whether Agent Completion Ledger accurately enforces its documented trust boundary when verifying coding-agent completion evidence. The review is not a request to certify the software, approve its product value, or treat it as a sandbox.
+Assess whether Agent Completion Ledger accurately enforces its documented trust boundary while verifying coding-agent completion evidence. This is not a certification request, product-value review, or request to treat ACL as a sandbox.
 
-ACL is **not a sandbox**. It performs local filesystem/Git checks and, outside `--no-exec`, may run explicitly allow-listed executables with the verifier process's permissions.
+ACL is **not a sandbox**. Outside `--no-exec`, explicitly allow-listed executables may run with the verifier process's permissions.
 
-## Security properties claimed
+## Claimed security properties
 
-1. An expected contract SHA-256 is checked before parsing the contract.
-2. Digest mismatch yields integrity-only `UNVERIFIABLE` and no execution of mismatched policy.
-3. `--no-exec` disables command/test/build/exit-code assertions.
-4. Blocking command evidence disabled by `--no-exec` cannot become `SUPPORTED`.
+1. `--expected-contract-sha256` is checked before contract parsing.
+2. A digest mismatch yields integrity-only `UNVERIFIABLE`, exit code 2, and no mismatched-policy execution.
+3. `--no-exec` disables command, test-command, build-command, and exit-code assertions.
+4. Disabled blocking command evidence cannot become `SUPPORTED`.
 5. Evidence paths and working directories remain under the selected repository root.
 6. Absolute, Windows-drive, traversal, and symlink evidence paths are rejected.
-7. Executed commands use argument arrays with `shell=False`.
+7. Commands use argument arrays with `shell=False`.
 8. Executables require an explicit contract allowlist.
-9. Remote URL command arguments are rejected case-insensitively.
+9. HTTP/HTTPS command arguments are rejected case-insensitively before execution.
 10. Command execution has a bounded timeout.
-11. Command stdout/stderr is not copied into generated reports.
-12. Safe untrusted-PR examples use read-only permissions, no secrets, a base-commit contract, and static-only verification.
-13. The deterministic result digest detects report-content changes when compared with a retained trusted digest; it is not a signature.
-14. The in-toto output is an experimental unsigned statement unless an external attestation system signs an artifact/predicate.
+11. Command stdout/stderr is not copied into reports.
+12. Safe untrusted-PR examples use read-only permissions, no secrets, a protected/base contract, and static-only verification.
+13. `resultDigest` detects report-content changes when compared with a retained trusted digest; it is not a signature.
+14. ACL's in-toto output is unsigned structured evidence unless an external attestation system signs the intended artifact.
+
+v0.3.0 remains immutable and affected by the documented mixed-case URL-scheme defect. Review executable-mode URL rejection against v0.3.1.
 
 ## Trust boundaries
 
 ### Reviewed or protected inputs
 
-- the ACL release/action commit;
-- the expected contract digest source;
-- the contract bytes selected by that digest;
-- the CI workflow and runner image;
+- ACL release or pinned action commit;
+- expected contract digest source;
+- contract bytes selected by that digest;
+- workflow and runner image;
 - dependency resolution and installed packages;
-- any external signing/attestation service.
+- any external signing or attestation service.
 
 ### Potentially untrusted inputs
 
 - pull-request repository contents;
-- paths and values referenced by the contract;
-- test/build configuration and plugins;
-- local interpreters and package-manager lifecycle hooks;
+- contract-referenced paths and values;
+- tests, build configuration, plugins, imports, and lifecycle hooks;
+- local interpreters and package managers;
 - Git metadata and filenames;
-- task IDs, assertion IDs, descriptions, and messages;
-- report consumers that may overinterpret a status or attestation.
+- task/assertion IDs, descriptions, and messages;
+- report consumers that may overinterpret a status or signature.
 
 ### Outputs
 
 - terminal, JSON, Markdown, and in-toto reports;
-- exit code;
+- process exit code;
 - optional externally signed artifact attestation.
 
-A `SUPPORTED` output means the configured blocking evidence passed. It does not prove semantic correctness, safety, complete requirements, author identity, legal compliance, or user value.
+`SUPPORTED` means only that configured blocking evidence passed. It does not prove semantic correctness, safe code, complete requirements, author identity, legal compliance, or user value.
 
 ## Attack surface
 
-- YAML and JSON parsing;
+- YAML/JSON parsing and schema validation;
 - contract digest calculation and comparison;
-- filesystem resolution and file reads;
-- symlink and platform-path handling;
-- Git command invocation and repository metadata;
-- command allowlist validation;
-- subprocess creation, environment inheritance, working directory, timeout, and termination;
+- filesystem resolution, file reads, symlink and platform-path behavior;
+- Git invocation and metadata;
+- command allowlist checks and URL-argument validation;
+- subprocess creation, environment inheritance, PATH resolution, timeout, and termination;
 - report construction and serialization;
 - composite GitHub Action inputs;
-- fork-PR workflow permissions;
-- in-toto predicate semantics;
-- release/package dependency and action supply chain.
+- fork-PR permissions and secrets;
+- in-toto/attestation semantics;
+- package, release, dependency, and action supply chain.
 
 ## Priority review scenarios
 
-### 1. Contract replacement
+### 1. Contract replacement and digest source
 
-An attacker modifies both code and `completion-ledger.yml` in a pull request. A vulnerable workflow hashes the PR-controlled contract and calls the result “trusted.”
+Test whether an untrusted PR can replace both code and contract while the workflow hashes the PR-controlled contract and calls it trusted. Expected mitigation: contract bytes and expected digest originate from a reviewed base commit or another protected channel.
 
-Expected mitigation: the workflow fetches the contract from the reviewed base commit or another protected source, then pins those exact bytes.
+### 2. Digest pinning bypass and TOCTOU
 
-Review question: can any documented example still self-pin an untrusted contract while claiming Trusted Contract Mode?
-
-### 2. Digest pinning bypass attempts
-
-Try:
-
-- uppercase/lowercase digest forms;
-- malformed length or non-hex input;
-- file replacement between hash and parse;
-- alternate path spellings;
-- newline changes;
-- symlink replacement;
-- parsing errors in a mismatched contract.
-
-Expected result: invalid or mismatched integrity state must not execute contract commands. Report the precise time-of-check/time-of-use behavior observed.
+Review malformed/non-hex digests, upper/lowercase forms, length errors, newline changes, alternate paths, symlink replacement, parsing errors in mismatched policy, and replacement between digest check and parse. Mismatched policy must not execute.
 
 ### 3. Allow-listed interpreter risk
 
-Allow-listing `python`, `node`, `bash`, package managers, test runners, or build tools can execute arbitrary repository code through imports, scripts, plugins, configuration, or lifecycle hooks.
+Python, Node, shells, package managers, tests, and build tools can execute arbitrary repository code through imports, scripts, plugins, or lifecycle hooks. Confirm documentation and workflows do not imply that allowlisting creates a capability boundary.
 
-Expected documentation property: ACL does not claim that an allowlist makes code safe. Review whether the Action/examples create a misleading default or expose secrets/network access.
+### 4. Path, platform, and symlink escapes
 
-### 4. Path and symlink escapes
+Test traversal, POSIX absolute paths, Windows drive/UNC paths, separator variants, nested/broken symlinks, and symlinked working directories. Evidence access must remain under the selected repository root.
 
-Test relative traversal, POSIX absolute paths, Windows drive/UNC forms, separator variants, nested symlinks, broken symlinks, symlinked working directories, and platform-specific normalization.
+### 5. Remote URL argument rejection
 
-Expected result: evidence access stays under the selected repository root and does not follow symlink evidence paths.
+Confirm lower-, upper-, and mixed-case `http://` and `https://` arguments become `UNVERIFIABLE` before an allow-listed interpreter receives them. Use only the included `.invalid` benign fixture.
 
-### 5. Timeout and subprocess behavior
+### 6. Timeout and subprocess behavior
 
-Review:
+Review child/grandchild termination, signals, PATH manipulation, inherited environment/file descriptors, resource exhaustion, and Windows/macOS/Linux behavior. ACL's timeout is not resource isolation.
 
-- timeout precision;
-- child/grandchild process termination;
-- signal handling;
-- resource exhaustion;
-- inherited environment and file descriptors;
-- executable resolution/PATH manipulation;
-- behavior on Windows, macOS, and Linux.
+### 7. Report information leakage
 
-ACL's timeout is not a resource sandbox. A subprocess may affect the runner before termination.
+Confirm stdout/stderr omission while testing whether filenames, YAML/JSON values, exceptions, Git metadata, paths, task IDs, assertion IDs, or messages can reveal excessive information. Never use real secrets.
 
-### 6. Report information leakage
+### 8. Fork pull-request permissions
 
-Command stdout/stderr should be omitted. However, report fields deliberately include repository identity, commit, contract path/digest, task/assertion IDs, assertion types, status, and messages.
+Review examples for `pull_request_target`, write permissions, `id-token: write`, secrets, credential persistence, untrusted workflow changes, and whether the base contract is acquired before PR code evaluation.
 
-Review whether malformed filenames, YAML values, exception text, JSON values, or Git metadata can place secrets or excessive internal detail in a report. Never test with real secrets.
+### 9. in-toto and signed-artifact interpretation
 
-### 7. Fork pull-request secret exposure
-
-Review every PR example for:
-
-- `pull_request_target` misuse;
-- write permissions;
-- `id-token: write` or attestation permissions;
-- secrets/environment credentials;
-- credential persistence in checkout;
-- untrusted action/workflow modification;
-- base-contract acquisition before PR code evaluation.
-
-Expected boundary: untrusted preview workflows are read-only and static-only, with no secrets.
-
-### 8. in-toto misinterpretation
-
-An unsigned ACL Statement uses the in-toto Statement envelope but is not itself a signed attestation. A valid signature or GitHub Artifact Attestation proves an issuer/artifact binding under that system; it does not establish software correctness, safe execution, complete contract requirements, or regulatory approval.
-
-Review whether schema, names, documentation, or UI examples could cause a consumer to infer more.
-
-### 9. Signed artifact does not equal software correctness
-
-Confirm the attestation example signs the intended report bytes and uses the expected predicate type. Then test the documentation boundary: a correctly signed `FAILED`, `UNVERIFIABLE`, incomplete, or maliciously authored contract report can still be authentic.
+An unsigned Statement is not an attestation. A valid signature or GitHub Artifact Attestation establishes an issuer/artifact relationship under that system; it does not establish correctness, safe execution, complete requirements, or regulatory approval. A correctly signed `FAILED`, `UNVERIFIABLE`, incomplete, or maliciously authored report can still be authentic.
 
 ### 10. Package and Action supply chain
 
-Review tag mutability, third-party action references, dependency pins, build isolation, provenance, release assets, Trusted Publishing, and the risk of installing from a movable tag rather than a full commit SHA.
+Review tag mutability, release/tag binding, third-party action references, dependency pins, build isolation, release assets/checksums, OIDC Trusted Publishing preparation, and the risk of using movable tags instead of reviewed full commit SHAs.
 
-## Reproduction commands
+## Reproduction setup
 
-Install the tagged release in a disposable environment:
+Use the immutable v0.3.1 tag in a disposable environment:
 
 ```bash
+git clone --branch v0.3.1 --depth 1 \
+  https://github.com/kodlbegiko/agent-completion-ledger.git
+cd agent-completion-ledger
 python -m venv .venv
 . .venv/bin/activate
-python -m pip install \
-  "agent-completion-ledger @ git+https://github.com/kodlbegiko/agent-completion-ledger.git@v0.3.0"
+python -m pip install -e ".[dev]"
 agent-completion-ledger --help
 ```
 
@@ -177,24 +138,22 @@ Run the fixed package reproduction:
 agent-completion-ledger reproduce --output-dir reproduced-results
 ```
 
-Run the benign security cases from a source checkout:
+Read and execute only the benign local security cases:
 
 ```bash
-git clone https://github.com/kodlbegiko/agent-completion-ledger.git
-cd agent-completion-ledger
-python -m pip install -e ".[dev]"
 cat security/reproduction-cases/README.md
 ```
 
-The full step-by-step commands and expected results are in `security/reproduction-cases/README.md`.
+The cases use repository fixtures, a short local sleep, and a reserved `.invalid` URL string. They must not be redirected to third-party systems or run with secrets.
 
-## Finding report format
+## Finding format
 
-For a public low-risk finding or documentation defect:
+For a public low-risk finding or documentation concern:
 
 ```markdown
 Reviewer pseudonymous ID:
 ACL version/tag and commit:
+Reviewed scenario/case ID:
 Affected file/line:
 Expected security property:
 Observed result:
@@ -202,33 +161,34 @@ Minimal benign reproduction:
 Impact and preconditions:
 Severity rationale:
 Suggested mitigation:
-Environment:
+Operating system and Python version:
+Public evidence link:
 ```
 
-Do not publish proof-of-concept secrets, private repository content, weaponized payloads, or instructions that directly harm third parties.
+Do not publish credentials, private source, employer-confidential data, weaponized payloads, or instructions that directly harm third parties.
 
 ## High-risk handling
 
 For a suspected high-risk vulnerability:
 
-1. stop public reproduction at the minimum evidence necessary;
+1. stop public reproduction at the minimum benign evidence;
 2. use GitHub private security reporting for `kodlbegiko/agent-completion-ledger`;
-3. include affected versions and a benign reproduction when possible;
-4. do not open a public issue with exploit details;
-5. pause high-assurance claims and external recruitment for the affected surface;
-6. remediate under the feature-freeze security exception;
-7. add regression tests and disclose only after an appropriate fix/review decision.
+3. include affected versions and a benign reproduction where possible;
+4. do not open a public issue containing exploit details;
+5. pause outreach for the affected execution surface;
+6. remediate only under the feature-freeze security exception after validation;
+7. add a regression test and disclose only after an appropriate fix/review decision.
 
-## Review completion criteria
+## What counts as an independent review
 
-An independent security review counts only when a non-author supplies at least:
+A review counts only when a `NON-AUTHOR HUMAN` supplies:
 
-- reviewer pseudonymous ID;
-- version/commit;
-- reviewed scenarios;
-- commands or inspection method;
-- findings or explicit no-finding result;
+- pseudonymous reviewer ID;
+- reviewed ACL tag/commit;
+- scenarios or inspection method;
+- commands or reproducible evidence;
+- findings or an explicit no-finding result;
 - limitations and environment;
-- public evidence link or private-report reference.
+- a public evidence link or private-report reference.
 
-Model-only comments, author review, CI success, and this prepared package do not count. Current independent reviewer count remains **0**.
+Author review, model comments, CI, release verification, and prepared materials do not count. Current independent reviewer count remains **0**.
