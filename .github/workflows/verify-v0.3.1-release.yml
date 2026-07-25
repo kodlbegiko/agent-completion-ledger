@@ -1,0 +1,113 @@
+name: verify-v0.3.1-release
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify release tag and metadata
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_RELEASE_COMMIT: 703d63d6fb9a4329327634d5ae6e21030e13075e
+        run: |
+          set -euo pipefail
+          mkdir -p validation release-assets
+          git fetch --force --tags origin
+          git show-ref --verify --quiet refs/tags/v0.3.1
+          test "$(git rev-list -n 1 v0.3.1)" = "$EXPECTED_RELEASE_COMMIT"
+          gh release view v0.3.1 \
+            --repo "$GITHUB_REPOSITORY" \
+            --json tagName,name,isDraft,isPrerelease,publishedAt,url,assets \
+            > validation/release.json
+          jq -e '.tagName == "v0.3.1"' validation/release.json
+          jq -e '.name == "v0.3.1 — Security and Packaging Patch"' validation/release.json
+          jq -e '.isDraft == false and .isPrerelease == false' validation/release.json
+          jq -e '[.assets[].name] | index("agent_completion_ledger-0.3.1-py3-none-any.whl") != null' validation/release.json
+          jq -e '[.assets[].name] | index("agent_completion_ledger-0.3.1.tar.gz") != null' validation/release.json
+          jq -e '[.assets[].name] | index("SHA256SUMS") != null' validation/release.json
+
+      - name: Download and verify exact checksum entries
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release download v0.3.1 \
+            --repo "$GITHUB_REPOSITORY" \
+            --dir release-assets \
+            --pattern 'agent_completion_ledger-0.3.1-py3-none-any.whl' \
+            --pattern 'agent_completion_ledger-0.3.1.tar.gz' \
+            --pattern 'SHA256SUMS'
+          cd release-assets
+          test "$(awk '$2 == "agent_completion_ledger-0.3.1-py3-none-any.whl" {count++} END {print count+0}' SHA256SUMS)" -eq 1
+          test "$(awk '$2 == "agent_completion_ledger-0.3.1.tar.gz" {count++} END {print count+0}' SHA256SUMS)" -eq 1
+          test "$(awk 'NF {count++} END {print count+0}' SHA256SUMS)" -eq 2
+          sha256sum --check SHA256SUMS
+
+      - name: Smoke-test released wheel
+        run: >-
+          python scripts/wheel_smoke.py
+          release-assets/agent_completion_ledger-0.3.1-py3-none-any.whl
+
+      - name: Record verification result
+        shell: bash
+        env:
+          EXPECTED_RELEASE_COMMIT: 703d63d6fb9a4329327634d5ae6e21030e13075e
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          release = json.loads(Path('validation/release.json').read_text(encoding='utf-8'))
+          assets = {}
+          for path in sorted(Path('release-assets').iterdir()):
+              assets[path.name] = {
+                  'bytes': path.stat().st_size,
+                  'sha256': hashlib.sha256(path.read_bytes()).hexdigest(),
+              }
+          result = {
+              'status': 'VERIFIED',
+              'tag': release['tagName'],
+              'name': release['name'],
+              'draft': release['isDraft'],
+              'prerelease': release['isPrerelease'],
+              'publishedAt': release['publishedAt'],
+              'url': release['url'],
+              'releaseCommit': os.environ['EXPECTED_RELEASE_COMMIT'],
+              'tagCommitVerification': 'PASS',
+              'assets': assets,
+              'checksumEntryVerification': 'PASS',
+              'checksumVerification': 'PASS',
+              'wheelSmokeTest': 'PASS',
+          }
+          Path('validation/v0.3.1-release-verification.json').write_text(
+              json.dumps(result, indent=2, sort_keys=True) + '\n',
+              encoding='utf-8',
+              newline='\n',
+          )
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v0.3.1-release-verification-v2
+          path: validation/
+          if-no-files-found: error
