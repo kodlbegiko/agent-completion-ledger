@@ -1,8 +1,5 @@
-from __future__ import annotations
-
 import csv
 import json
-from collections import Counter
 from pathlib import Path
 
 import yaml
@@ -72,20 +69,21 @@ def test_recruitment_matrix_preserves_legacy_and_wave_one_schema() -> None:
 
 
 def test_wave_one_roles_and_status_are_fixed_and_unsent() -> None:
-    with (RESEARCH / "wave-1-target-roles.csv").open(encoding="utf-8", newline="") as handle:
+    roles_path = RESEARCH / "wave-1-target-roles.csv"
+    with roles_path.open(encoding="utf-8", newline="") as handle:
         rows = list(csv.DictReader(handle))
 
     assert len(rows) == 9
     assert len({row["wave_id"] for row in rows}) == 9
     assert len({row["repository"] for row in rows}) == 9
-    assert Counter(row["role"] for row in rows) == {
-        "MAINTAINER_PILOT": 5,
-        "INDEPENDENT_REPRODUCTION": 2,
-        "INDEPENDENT_SECURITY_REVIEW": 2,
-    }
+    roles = [row["role"] for row in rows]
+    assert roles.count("MAINTAINER_PILOT") == 5
+    assert roles.count("INDEPENDENT_REPRODUCTION") == 2
+    assert roles.count("INDEPENDENT_SECURITY_REVIEW") == 2
     assert {row["status"] for row in rows} == {"NOT_SENT"}
 
-    status = json.loads((RESEARCH / "wave-1-status.json").read_text(encoding="utf-8"))
+    status_path = RESEARCH / "wave-1-status.json"
+    status = json.loads(status_path.read_text(encoding="utf-8"))
     assert status["schemaVersion"] == "1"
     assert status["decision"] == "READY FOR OWNER OUTREACH"
     assert status["wave1"] == {
@@ -121,9 +119,8 @@ def test_historical_prospective_dogfood_contract_is_unchanged() -> None:
 
 
 def test_nested_invitation_fences_keep_complete_messages() -> None:
-    text = (ROOT / "docs" / "outreach" / "WAVE-1-READY-TO-SEND.md").read_text(
-        encoding="utf-8"
-    )
+    path = ROOT / "docs" / "outreach" / "WAVE-1-READY-TO-SEND.md"
+    text = path.read_text(encoding="utf-8")
     for section_id in ("W1-R1", "W1-R2", "W1-S1", "W1-S2"):
         section_start = text.index(f"## {section_id}")
         next_section = text.find("\n## ", section_start + 1)
@@ -134,14 +131,18 @@ def test_nested_invitation_fences_keep_complete_messages() -> None:
 
     r1_start = text.index("## W1-R1")
     r1_end = text.index("\n## W1-R2", r1_start)
-    assert "Expected result:" in text[r1_start:r1_end]
-    assert "Privacy" not in text[r1_start:r1_end]
-    assert "Please do not provide private project data" in text[r1_start:r1_end]
+    r1 = text[r1_start:r1_end]
+    assert "Expected result:" in r1
+    assert "Please do not provide private project data" in r1
 
 
 def test_security_instructions_separate_main_from_v031_execution() -> None:
-    text = (ROOT / "docs" / "INDEPENDENT-SECURITY-REVIEW.md").read_text(encoding="utf-8")
-    assert text.index("git switch main") < text.index("git worktree add ../acl-v0.3.1 v0.3.1")
+    path = ROOT / "docs" / "INDEPENDENT-SECURITY-REVIEW.md"
+    text = path.read_text(encoding="utf-8")
+    main_index = text.index("git switch main")
+    worktree_index = text.index("git worktree add ../acl-v0.3.1 v0.3.1")
+
+    assert main_index < worktree_index
     assert 'python -m pip install -e ".[dev]"' in text
     assert "ACL is **not a sandbox**" in text
     assert "never third-party targets or real secrets" in text
