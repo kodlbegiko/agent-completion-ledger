@@ -1,0 +1,101 @@
+name: verify-v0.3.1-release
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch and validate release metadata
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p validation release-assets
+          gh release view v0.3.1 \
+            --repo "$GITHUB_REPOSITORY" \
+            --json tagName,name,isDraft,isPrerelease,publishedAt,targetCommitish,url,assets \
+            > validation/release.json
+          jq -e '.tagName == "v0.3.1"' validation/release.json
+          jq -e '.name == "v0.3.1 — Security and Packaging Patch"' validation/release.json
+          jq -e '.isDraft == false and .isPrerelease == false' validation/release.json
+          jq -e '[.assets[].name] | index("agent_completion_ledger-0.3.1-py3-none-any.whl") != null' validation/release.json
+          jq -e '[.assets[].name] | index("agent_completion_ledger-0.3.1.tar.gz") != null' validation/release.json
+          jq -e '[.assets[].name] | index("SHA256SUMS") != null' validation/release.json
+
+      - name: Download and verify release artifacts
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release download v0.3.1 \
+            --repo "$GITHUB_REPOSITORY" \
+            --dir release-assets \
+            --pattern 'agent_completion_ledger-0.3.1-py3-none-any.whl' \
+            --pattern 'agent_completion_ledger-0.3.1.tar.gz' \
+            --pattern 'SHA256SUMS'
+          cd release-assets
+          sha256sum --check SHA256SUMS
+          test "$(wc -l < SHA256SUMS)" -eq 2
+
+      - name: Smoke-test released wheel
+        run: >-
+          python scripts/wheel_smoke.py
+          release-assets/agent_completion_ledger-0.3.1-py3-none-any.whl
+
+      - name: Record verification result
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib
+          import json
+          from pathlib import Path
+
+          release = json.loads(Path('validation/release.json').read_text(encoding='utf-8'))
+          assets = {}
+          for path in sorted(Path('release-assets').iterdir()):
+              assets[path.name] = {
+                  'bytes': path.stat().st_size,
+                  'sha256': hashlib.sha256(path.read_bytes()).hexdigest(),
+              }
+          result = {
+              'status': 'VERIFIED',
+              'tag': release['tagName'],
+              'name': release['name'],
+              'draft': release['isDraft'],
+              'prerelease': release['isPrerelease'],
+              'publishedAt': release['publishedAt'],
+              'targetCommitish': release['targetCommitish'],
+              'url': release['url'],
+              'assets': assets,
+              'wheelSmokeTest': 'PASS',
+              'checksumVerification': 'PASS',
+          }
+          Path('validation/v0.3.1-release-verification.json').write_text(
+              json.dumps(result, indent=2, sort_keys=True) + '\n',
+              encoding='utf-8',
+              newline='\n',
+          )
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v0.3.1-release-verification
+          path: validation/
+          if-no-files-found: error
