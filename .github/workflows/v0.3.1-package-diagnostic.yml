@@ -1,8 +1,8 @@
 name: v0.3.1-package-diagnostic
 
 on:
-  push:
-    branches: [release/v0.3.1]
+  pull_request:
+    branches: [main]
 
 permissions:
   contents: read
