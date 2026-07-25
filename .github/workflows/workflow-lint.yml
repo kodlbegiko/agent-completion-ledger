@@ -18,9 +18,26 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: "1.24"
-      - name: Run actionlint
+      - name: Run actionlint and preserve output
         shell: bash
         run: |
           set -euo pipefail
           go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.7
-          "$(go env GOPATH)/bin/actionlint" -color=false .github/workflows/*.yml
+          set +e
+          "$(go env GOPATH)/bin/actionlint" -color=false .github/workflows/*.yml \
+            > actionlint-output.txt 2>&1
+          status=$?
+          set -e
+          cat actionlint-output.txt
+          echo "$status" > actionlint-exit-code.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: workflow-lint-diagnostics
+          path: |
+            actionlint-output.txt
+            actionlint-exit-code.txt
+          if-no-files-found: error
+      - name: Enforce actionlint success
+        shell: bash
+        run: test "$(cat actionlint-exit-code.txt)" -eq 0
