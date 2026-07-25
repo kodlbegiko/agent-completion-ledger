@@ -64,12 +64,20 @@ def test_release_artifact_workflow_is_manual_and_environment_protected() -> None
     assert "SHA256SUMS" in text
 
 
-def test_outreach_log_starts_empty() -> None:
+def test_outreach_log_records_first_owner_send() -> None:
     path = REPOSITORY_ROOT / "research/external-validation/outreach-log.csv"
     with path.open(newline="", encoding="utf-8") as handle:
-        rows = list(csv.reader(handle))
+        rows = list(csv.DictReader(handle))
     assert len(rows) == 1
-    assert rows[0][0] == "attempt_number"
+    record = rows[0]
+    assert record["attempt_number"] == "1"
+    assert record["wave_id"] == "W1-M1"
+    assert record["target_repository"] == "tmux-python/tmuxp"
+    assert record["owner_approved"] == "yes"
+    assert record["response_state"] == "SENT — AWAITING RESPONSE"
+    assert record["responder_class"] == "UNKNOWN"
+    assert record["participant_id"] == ""
+    assert record["public_link"] == "https://github.com/tmux-python/tmuxp/discussions/1078"
 
 
 def test_recruitment_matrix_has_exactly_thirty_unique_targets() -> None:
