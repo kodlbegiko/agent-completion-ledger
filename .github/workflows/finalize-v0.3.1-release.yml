@@ -37,6 +37,14 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
+          RELEASE=false
+          TAG_EXISTS=false
+          RELEASE_EXISTS=false
+          write_outputs() {
+            printf 'release=%s\ntag_exists=%s\nrelease_exists=%s\n' \
+              "$RELEASE" "$TAG_EXISTS" "$RELEASE_EXISTS" >> "$GITHUB_OUTPUT"
+          }
+
           git fetch --force --tags origin
           test "$(git rev-parse HEAD)" = "${{ github.event.workflow_run.head_sha }}"
           test "$(git rev-parse origin/main)" = "${{ github.event.workflow_run.head_sha }}"
@@ -47,15 +55,11 @@ jobs:
           PY
           )"
           if test "$VERSION" != "0.3.1"; then
-            echo "release=false" >> "$GITHUB_OUTPUT"
-            echo "tag_exists=false" >> "$GITHUB_OUTPUT"
-            echo "release_exists=false" >> "$GITHUB_OUTPUT"
+            write_outputs
             echo "main package version is $VERSION; v0.3.1 release skipped"
             exit 0
           fi
 
-          TAG_EXISTS=false
-          RELEASE_EXISTS=false
           if git show-ref --verify --quiet refs/tags/v0.3.1; then
             TAG_EXISTS=true
             test "$(git rev-list -n 1 v0.3.1)" = "$(git rev-parse HEAD)"
@@ -64,21 +68,19 @@ jobs:
             RELEASE_EXISTS=true
           fi
 
-          echo "tag_exists=$TAG_EXISTS" >> "$GITHUB_OUTPUT"
-          echo "release_exists=$RELEASE_EXISTS" >> "$GITHUB_OUTPUT"
-
           if test "$RELEASE_EXISTS" = true; then
             ASSETS="$(gh release view v0.3.1 --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name')"
             if grep -Fxq "agent_completion_ledger-0.3.1-py3-none-any.whl" <<<"$ASSETS" \
               && grep -Fxq "agent_completion_ledger-0.3.1.tar.gz" <<<"$ASSETS" \
               && grep -Fxq "SHA256SUMS" <<<"$ASSETS"; then
-              echo "release=false" >> "$GITHUB_OUTPUT"
+              write_outputs
               echo "v0.3.1 release and required assets already exist"
               exit 0
             fi
           fi
 
-          echo "release=true" >> "$GITHUB_OUTPUT"
+          RELEASE=true
+          write_outputs
 
       - name: Build, validate, and smoke-test distributions
         if: steps.gate.outputs.release == 'true'
