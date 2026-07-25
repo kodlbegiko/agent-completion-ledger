@@ -50,7 +50,7 @@ The repository disappeared, became private/archived, lost required test/build ev
 
 The representative use creates third-party network/legal/security risk, or the project is a large enterprise target excluded from the first wave.
 
-## Launch re-audit result
+## Launch re-audit result — 30 public candidates
 
 All original 30 repositories still existed, were public, were not archived, and had a resolvable current head during the audit. That technical status does not authorize contact.
 
