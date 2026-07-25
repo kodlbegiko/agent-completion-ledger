@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1",
   "statusDate": "2026-07-25",
-  "decision": "READY FOR OWNER OUTREACH",
+  "decision": "EXTERNAL VALIDATION IN PROGRESS",
   "featureFreeze": true,
   "release": {
     "tag": "v0.3.1",
@@ -14,14 +14,14 @@
     "realExternalTasks": 0,
     "independentReproductions": 0,
     "independentSecurityReviewers": 0,
-    "targetedOutreachSent": 0,
+    "targetedOutreachSent": 1,
     "responses": 0
   },
   "wave1": {
     "maintainerPilotTargets": 5,
     "reproductionTargets": 2,
     "securityReviewTargets": 2,
-    "messagesSent": 0,
+    "messagesSent": 1,
     "ownerReviewRequired": true
   },
   "humanEffectAnalysisRun": false,
