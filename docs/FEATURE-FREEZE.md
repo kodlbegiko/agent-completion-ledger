@@ -8,7 +8,7 @@ Status:
 FEATURE FREEZE
 ```
 
-Agent Completion Ledger v0.3.0 is engineering-complete within its documented scope. Until external value is supported, work must prioritize distribution, reproduction, independent security review, recruitment, real measurements, and maintenance.
+Agent Completion Ledger v0.3.x is engineering-complete within its documented scope. The current verified security and packaging patch is v0.3.1. Until external value is supported, work must prioritize distribution, reproduction, independent security review, recruitment, real measurements, and maintenance.
 
 ## Core verifier changes allowed only for
 
@@ -21,7 +21,9 @@ Agent Completion Ledger v0.3.0 is engineering-complete within its documented sco
 
 Every exception must link the triggering evidence, identify affected versions, include a regression test when applicable, and state whether the external protocol or participant materials are affected.
 
-## v0.3.1 permitted scope
+## v0.3.x patch scope
+
+Permitted patch work is limited to:
 
 - packaging metadata;
 - PyPI Trusted Publishing preparation or publication;
@@ -30,6 +32,8 @@ Every exception must link the triggering evidence, identify affected versions, i
 - reproduction fixes;
 - external-pilot blocking usability fixes;
 - documentation and metadata corrections.
+
+v0.3.1 used this exception only for the mixed-case remote-URL validation correction and packaging/distribution work. Its release does not authorize unrelated feature expansion.
 
 ## Prohibited before external value is supported
 
