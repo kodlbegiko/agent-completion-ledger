@@ -67,6 +67,8 @@ def test_recruitment_matrix_preserves_legacy_and_wave_one_schema() -> None:
     assert all(row[field].strip() for row in rows for field in mandatory)
 
 
+# Operational state is intentionally kept as one auditable block.
+# fmt: off
 def test_wave_one_tracks_first_outreach_without_human_evidence() -> None:
     roles_path = RESEARCH / "wave-1-target-roles.csv"
     with roles_path.open(encoding="utf-8", newline="") as handle:
@@ -115,6 +117,7 @@ def test_wave_one_tracks_first_outreach_without_human_evidence() -> None:
         log_rows[0]["public_link"]
         == "https://github.com/tmux-python/tmuxp/discussions/1078"
     )
+# fmt: on
 
 
 def test_historical_prospective_dogfood_contract_is_unchanged() -> None:
