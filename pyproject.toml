@@ -4,20 +4,43 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agent-completion-ledger"
-version = "0.3.0"
+version = "0.3.1"
 description = "Repository-level acceptance evidence contracts for coding-agent tasks."
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
 license-files = ["LICENSE"]
 authors = [{name = "Frontier Public-Interest Research Mission"}]
+keywords = [
+  "coding agents",
+  "acceptance evidence",
+  "continuous integration",
+  "software verification",
+  "reproducibility",
+]
 dependencies = [
   "jsonschema==4.26.0",
   "PyYAML==6.0.3",
 ]
 classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Software Development :: Quality Assurance",
+  "Topic :: Software Development :: Testing",
 ]
+
+[project.urls]
+Homepage = "https://github.com/kodlbegiko/agent-completion-ledger"
+Documentation = "https://github.com/kodlbegiko/agent-completion-ledger#readme"
+Changelog = "https://github.com/kodlbegiko/agent-completion-ledger/blob/main/CHANGELOG.md"
+Issues = "https://github.com/kodlbegiko/agent-completion-ledger/issues"
+Source = "https://github.com/kodlbegiko/agent-completion-ledger"
 
 [project.optional-dependencies]
 dev = [

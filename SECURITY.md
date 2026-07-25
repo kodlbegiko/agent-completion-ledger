@@ -2,6 +2,16 @@
 
 Report vulnerabilities privately through GitHub's security reporting mechanism rather than a public issue. Do not publish proof-of-concept secrets, private repository contents, or exploit payloads in a public issue.
 
+## Supported versions
+
+| Version | Security status |
+|---|---|
+| `0.3.1` | Current security and packaging patch. |
+| `0.3.0` | Affected by case-sensitive remote-URL argument rejection; use `--no-exec` for untrusted external repositories and upgrade to `0.3.1`. |
+| `<0.3.0` | Not supported for the current trusted-contract security boundary. |
+
+The v0.3.1 correction rejects `http://` and `https://` command arguments case-insensitively before an allow-listed executable receives them. This is input validation, not execution isolation. ACL remains **not a sandbox**.
+
 ## Trust model
 
 Completion contracts are reviewed repository policy, not safe untrusted input. The verifier performs local filesystem checks and may execute explicitly allow-listed commands with the current process permissions.
@@ -12,7 +22,7 @@ The implementation:
 - rejects absolute, Windows-drive, traversal, and symlink evidence paths;
 - confines working directories to the selected repository root;
 - requires an executable allowlist;
-- rejects remote URL command arguments;
+- rejects remote URL command arguments case-insensitively;
 - enforces timeouts;
 - does not automatically fetch contracts, dependencies, or remote scripts;
 - does not transmit telemetry or repository contents;

@@ -1,0 +1,159 @@
+name: finalize-v0.3.1-release
+
+on:
+  workflow_run:
+    workflows: [ci]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main'
+    runs-on: ubuntu-latest
+    environment: release-artifacts
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Determine whether v0.3.1 should be released
+        id: gate
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          RELEASE=false
+          TAG_EXISTS=false
+          RELEASE_EXISTS=false
+          write_outputs() {
+            printf 'release=%s\ntag_exists=%s\nrelease_exists=%s\n' \
+              "$RELEASE" "$TAG_EXISTS" "$RELEASE_EXISTS" >> "$GITHUB_OUTPUT"
+          }
+
+          git fetch --force --tags origin
+          test "$(git rev-parse HEAD)" = "${{ github.event.workflow_run.head_sha }}"
+          test "$(git rev-parse origin/main)" = "${{ github.event.workflow_run.head_sha }}"
+          VERSION="$(python - <<'PY'
+          import tomllib
+          from pathlib import Path
+          print(tomllib.loads(Path('pyproject.toml').read_text(encoding='utf-8'))['project']['version'])
+          PY
+          )"
+          if test "$VERSION" != "0.3.1"; then
+            write_outputs
+            echo "main package version is $VERSION; v0.3.1 release skipped"
+            exit 0
+          fi
+
+          if git show-ref --verify --quiet refs/tags/v0.3.1; then
+            TAG_EXISTS=true
+            test "$(git rev-list -n 1 v0.3.1)" = "$(git rev-parse HEAD)"
+          fi
+          if gh release view v0.3.1 --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            RELEASE_EXISTS=true
+          fi
+
+          if test "$RELEASE_EXISTS" = true; then
+            ASSETS="$(gh release view v0.3.1 --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name')"
+            if grep -Fxq "agent_completion_ledger-0.3.1-py3-none-any.whl" <<<"$ASSETS" \
+              && grep -Fxq "agent_completion_ledger-0.3.1.tar.gz" <<<"$ASSETS" \
+              && grep -Fxq "SHA256SUMS" <<<"$ASSETS"; then
+              write_outputs
+              echo "v0.3.1 release and required assets already exist"
+              exit 0
+            fi
+          fi
+
+          RELEASE=true
+          write_outputs
+
+      - name: Build, validate, and smoke-test distributions
+        if: steps.gate.outputs.release == 'true'
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install build==1.2.2.post1 twine==6.1.0
+          python -m build
+          python -m twine check dist/*
+          python scripts/wheel_smoke.py "$(python -c 'import glob; print(glob.glob("dist/*.whl")[0])')"
+
+      - name: Generate SHA-256 checksums
+        if: steps.gate.outputs.release == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib
+          from pathlib import Path
+
+          lines = []
+          for path in sorted(Path('dist').iterdir()):
+              if path.is_file():
+                  lines.append(f"{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.name}")
+          Path('dist/SHA256SUMS').write_text(
+              '\n'.join(lines) + '\n',
+              encoding='utf-8',
+              newline='\n',
+          )
+          PY
+          cat dist/SHA256SUMS
+
+      - name: Create or complete immutable tag and GitHub Release
+        if: steps.gate.outputs.release == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_EXISTS: ${{ steps.gate.outputs.tag_exists }}
+          RELEASE_EXISTS: ${{ steps.gate.outputs.release_exists }}
+        run: |
+          set -euo pipefail
+          if test "$TAG_EXISTS" != true; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git tag -a v0.3.1 -m "Agent Completion Ledger v0.3.1"
+            git push origin v0.3.1
+          fi
+
+          if test "$RELEASE_EXISTS" = true; then
+            gh release edit v0.3.1 \
+              --repo "$GITHUB_REPOSITORY" \
+              --title "v0.3.1 — Security and Packaging Patch" \
+              --notes-file docs/release-notes-v0.3.1.md
+            gh release upload v0.3.1 \
+              dist/*.whl \
+              dist/*.tar.gz \
+              dist/SHA256SUMS \
+              --repo "$GITHUB_REPOSITORY" \
+              --clobber
+          else
+            gh release create v0.3.1 \
+              dist/*.whl \
+              dist/*.tar.gz \
+              dist/SHA256SUMS \
+              --repo "$GITHUB_REPOSITORY" \
+              --title "v0.3.1 — Security and Packaging Patch" \
+              --notes-file docs/release-notes-v0.3.1.md \
+              --verify-tag
+          fi
+
+      - uses: actions/upload-artifact@v4
+        if: steps.gate.outputs.release == 'true'
+        with:
+          name: v0.3.1-release-artifacts
+          path: dist/
+          if-no-files-found: error

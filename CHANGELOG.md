@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.3.1 — 2026-07-25
+
+- Fixed remote URL argument rejection so mixed-case `HTTP://` and `HTTPS://` schemes are rejected before an allow-listed executable receives them.
+- Added parameterized lower- and uppercase regression tests plus an end-to-end benign reproduction case for the affected trust boundary.
+- Preserved the v0.3.0 tag as immutable and documented that v0.3.0 remains affected; external executable-mode integration should use v0.3.1 or later and still treat ACL as not being a sandbox.
+- Added owner-dispatched, immutable-tag PyPI Trusted Publishing preparation using OIDC, protected environments, TestPyPI-first approval, and no long-lived registry token.
+- Added reproducible wheel and sdist build validation, `twine check`, clean wheel installation smoke testing, SHA-256 checksums, and GitHub Release artifact upload preparation.
+- Expanded package metadata with project URLs, keywords, supported Python classifiers, audience, license, operating-system, and quality-assurance classifiers.
+- Added external-validation recruitment, distribution, independent-security-review, and prospective-dogfood operations without changing the preregistered research question or claiming external value.
+- Kept the project under `FEATURE FREEZE`; no new assertion type, framework adapter, dashboard, SaaS feature, or v0.4.0 work was added.
+
 ## 0.3.0 — 2026-07-24
 
 - Narrowed the product position to repository-level acceptance evidence contracts for coding-agent tasks.
