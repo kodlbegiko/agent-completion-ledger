@@ -67,7 +67,7 @@ def test_recruitment_matrix_preserves_legacy_and_wave_one_schema() -> None:
     assert all(row[field].strip() for row in rows for field in mandatory)
 
 
-def test_wave_one_roles_and_status_track_first_outreach_without_human_evidence() -> None:
+def test_wave_one_tracks_first_outreach_without_human_evidence() -> None:
     roles_path = RESEARCH / "wave-1-target-roles.csv"
     with roles_path.open(encoding="utf-8", newline="") as handle:
         rows = list(csv.DictReader(handle))
@@ -163,6 +163,7 @@ def test_security_instructions_separate_main_from_v031_execution() -> None:
     worktree_index = text.index("git worktree add ../acl-v0.3.1 v0.3.1")
 
     assert main_index < worktree_index
+    assert 'python -m pip install -e "..[dev]"' not in text
     assert 'python -m pip install -e ".[dev]"' in text
     assert "ACL is **not a sandbox**" in text
     assert "never third-party targets or real secrets" in text
