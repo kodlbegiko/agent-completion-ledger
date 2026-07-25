@@ -8,9 +8,9 @@ jobs:
   diagnose:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - run: python -m pip install -q -e ".[dev]"
-      - run: pytest -q -x
+      - name: Clone branch and capture first failing test
+        run: |
+          git clone --depth 1 --branch research/wave-1-first-outreach https://github.com/kodlbegiko/agent-completion-ledger.git repo
+          cd repo
+          python3 -m pip install -q -e ".[dev]"
+          pytest -q -x
