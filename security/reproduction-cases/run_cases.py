@@ -6,6 +6,7 @@ import json
 import os
 import subprocess
 import time
+from contextlib import suppress
 from pathlib import Path
 from typing import Any
 
@@ -131,8 +132,8 @@ def run_cases(output_dir: Path) -> dict[str, Any]:
             "remote-url",
             "remote-url.yml",
             output_dir,
-            expected_exit=2,
-            expected_status="UNVERIFIABLE",
+            expected_exit=1,
+            expected_status="FAILED",
         ),
         _run_case(
             "timeout",
@@ -182,10 +183,8 @@ def run_cases(output_dir: Path) -> dict[str, Any]:
             "diagnostic": f"symlink case unavailable: {exc}",
         }
     finally:
-        try:
+        with suppress(OSError):
             link.unlink()
-        except OSError:
-            pass
     cases.append(symlink_case)
 
     intoto_report = output_dir / "static-safe.intoto.json"
