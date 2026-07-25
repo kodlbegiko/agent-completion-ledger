@@ -5,176 +5,173 @@ Status date: **2026-07-25 UTC**
 Decision:
 
 ```text
-READY FOR RECRUITMENT
+READY FOR OWNER OUTREACH
 ```
 
-The v0.3.1 security and packaging patch is released and verified. The specific mixed-case remote-URL defect that blocked executable-mode external pilots in v0.3.0 is corrected in v0.3.1. This does not make ACL a sandbox; executable pilots still require disposable, least-privilege runners and no secrets.
+The v0.3.1 security and packaging patch is released and verified. Wave 1 targets, exact messages, dispatch order, logging fields, consent handling, and follow-up rules are prepared. No external message has been sent.
 
-## Counts
+## Qualifying counts
 
-- Real participant count: **0**
-- Non-author repository count: **0**
-- Real external task count: **0**
-- Independent reproduction count: **0**
-- Independent security reviewer count: **0**
-- Completed targeted outreach count: **0**
-- Author-owned prospective dogfood tasks completed under this mission: **1**
+```text
+Real participants: 0
+Non-author repositories: 0
+Real external tasks: 0
+Independent reproductions: 0
+Independent security reviewers: 0
+Targeted outreach sent: 0
+Responses: 0
+```
 
-## Engineering and distribution
+Only a verified `NON-AUTHOR HUMAN` may increment an external count. Author comments, CI, release jobs, model reviews, automated replies, synthetic data, and author-owned dogfood do not count.
+
+## Release and distribution gate
 
 - Core verifier: `FEATURE FREEZE`.
-- v0.3.0: immutable and affected by case-sensitive mixed-case remote-URL rejection.
-- v0.3.1: **VERIFIED security and packaging patch**.
-- Release commit and tag target: `703d63d6fb9a4329327634d5ae6e21030e13075e`.
-- Release name: `v0.3.1 — Security and Packaging Patch`.
-- Release publication time: `2026-07-25T04:35:26Z`.
-- Release status: not draft; not prerelease.
-- Required assets: wheel, sdist, and `SHA256SUMS` present.
-- Checksum verification: passed.
+- v0.3.0: immutable and affected by the documented mixed-case remote-URL rejection defect.
+- v0.3.1: verified security and packaging patch.
+- Release/tag commit: `703d63d6fb9a4329327634d5ae6e21030e13075e`.
+- Release: `v0.3.1 — Security and Packaging Patch`; not draft; not prerelease.
+- Assets: wheel, sdist, and `SHA256SUMS` present.
+- Exact checksum-entry and SHA-256 validation: passed.
 - Released-wheel clean-environment smoke test: passed.
-- Release verification workflow: run `30144411275`.
-- Machine-readable verification: `docs/v0.3.1-release-verification.json`.
-- Human-readable verification: `docs/v0.3.1-release-verification.md`.
-- PyPI: **not published**.
-- PyPI Trusted Publishing workflow: prepared; owner-side TestPyPI/PyPI environments and pending publishers remain required.
-- Primary installation remains the verified Git tag until production PyPI installation is separately verified.
+- Runtime and package metadata: `0.3.1`.
+- Human evidence: `docs/v0.3.1-release-verification.md`.
+- Machine evidence: `docs/v0.3.1-release-verification.json`.
+- PyPI: not published.
 
-## Security correction
+The verified GitHub tag and assets are sufficient for Wave 1. PyPI is optional adoption-friction reduction, not a recruitment prerequisite.
 
-v0.3.0 checked `http://` and `https://` command arguments case-sensitively. Mixed-case schemes such as `HTTPS://` could therefore reach an allow-listed executable.
+## Security boundary
 
-v0.3.1 normalizes command arguments before the prefix comparison and includes lower- and uppercase regression cases. The release package, version metadata, checksums, and wheel installation were verified after publication.
+v0.3.1 rejects lower-, upper-, and mixed-case HTTP/HTTPS command arguments before an allow-listed executable receives them. This correction does not make ACL a sandbox.
 
-Remaining material risk:
+Remaining material risks include:
 
-- ACL is not a sandbox.
-- Allow-listed interpreters, tests, build systems, plugins, lifecycle hooks, dependencies, and repository code execute with runner permissions.
-- Timeouts are not resource isolation.
-- Independent security reviewer count remains zero.
+- allow-listed interpreters, tests, build systems, plugins, imports, lifecycle hooks, dependencies, and repository code execute with runner permissions;
+- timeouts are not CPU, memory, process-tree, network, syscall, or filesystem isolation;
+- reports can reveal repository identity, paths, task/assertion IDs, and messages;
+- a valid in-toto envelope or signed artifact does not prove correctness or safe execution;
+- independent security reviewer count remains zero.
 
-## Recruitment readiness
+The security review package and benign cases now target v0.3.1.
 
-Prepared but not sent:
+## Wave 1 readiness
 
-- 30-candidate public recruitment matrix;
-- 10 HIGH FIT individualized drafts;
-- general maintainer invitation;
-- independent reproduction request;
-- independent security review request;
-- consent/privacy and preregistered study materials.
+Prepared and not sent:
 
-No issue, pull request, email, social post, or maintainer tag was sent to an external target during preparation.
+- current-status re-audit of the original 30 candidates;
+- five maintainer-pilot targets;
+- two independent-reproduction targets;
+- two independent-security-review targets;
+- nine personalized ready-to-send messages;
+- Day 1/3/5 dispatch order;
+- Day 10-or-later single-follow-up rule;
+- expanded manual outreach log;
+- consent, pseudonymization, privacy, and analysis handling.
 
-Owner-approved recruitment may now include:
+Normative launch files:
 
-- independent reproduction;
-- fixed report-review sessions;
-- `--no-exec` static workflows;
-- bounded executable-mode v0.3.1 pilots on disposable, least-privilege runners without secrets;
-- independent security review.
+- `docs/outreach/WAVE-1-TARGETS.md`;
+- `docs/outreach/WAVE-1-READY-TO-SEND.md`;
+- `docs/OWNER-EXTERNAL-VALIDATION-ACTIONS.md`;
+- `research/external-validation/outreach-log.csv`.
 
-The existence of a verified patch release is not evidence that external maintainers obtain value from ACL.
+No issue, PR, email, social post, maintainer tag, or follow-up was sent by repository automation or by this preparation work.
 
 ## Author-owned prospective dogfood
-
-Record class:
 
 ```text
 AUTHOR-OWNED PROSPECTIVE DOGFOOD
 ```
 
-Task: prepare and verify the external-validation operations package in `kodlbegiko/agent-completion-ledger`.
+The prior operations task recorded 12 assertions, 74 non-comment contract lines, a final verification runtime of 0.174295465 seconds, and `SUPPORTED`. It did not change the merge decision or discover the mixed-case URL defect. Contract authoring time was not reliably timed and remains `null`. It provides no external-validation credit.
 
-- Contract committed before implementation completion: yes.
-- Contract assertions: 12.
-- Non-comment contract lines: 74.
-- Final PR verification runtime: 0.174295465 seconds on GitHub Actions.
-- Ledger result: `SUPPORTED`.
-- Security reproduction cases in the same final run: 10 passed, 0 failed.
-- Decision before ledger: `INSUFFICIENT_EVIDENCE` because the files did not yet exist.
-- Decision after ledger: eligible for human review; merge decision remained human.
-- Reviewer/merge decision changed by ledger: no.
-- Missing blocking evidence found by this dogfood task: no.
-- Contract authoring time: not reliably timed and therefore left `null`.
-- External validation credit: none.
+## Fixed external study
 
-The mixed-case URL defect was found through repository review, not by the prospective completion contract.
-
-## External study
-
-The fixed research question, H1, H0, H2, thresholds, task pack, counterbalancing, exclusions, and participant-balanced primary analysis remain unchanged.
+The research question, H1/H0/H2, task pack, counterbalancing, exclusions, consent, effect thresholds, and participant-balanced primary analysis remain unchanged.
 
 ### H1
 
-No result. There are no real participants or external task rows.
+No result. There are no eligible human rows.
 
 ### H0
 
-No result. Absence of participants is not evidence that all effect thresholds fail.
+No result. Zero recruitment outcomes are not evidence that all effect thresholds fail.
 
 ### H2
 
-No result. There are no human outcomes from which to distinguish ACL-format effects from specification quality, tests/build commands, domain knowledge, case order, or learning effects.
+No result. There are no human outcomes from which to separate ACL-format effects from specification quality, added tests/build commands, domain knowledge, ordering, or learning.
 
 ### Protocol deviations
 
-- Human-study deviations: **none**, because recruitment has not begun.
-- Pre-recruitment operational additions did not change the preregistration.
-- The security correction was permitted by the documented feature-freeze exception.
-- Synthetic dry-run data remain analysis plumbing only and are excluded from human evidence.
+- Human-study deviations: none; enrollment has not begun.
+- Wave 1 target selection and outreach operations are pre-recruitment preparation.
+- The v0.3.1 security/reproduction documentation correction does not alter hypotheses, thresholds, tasks, exclusions, or analysis.
+- Synthetic dry-run data remain pipeline plumbing only.
 
-## Security review
+## GO-gate status
 
-- Independent reviewers: **0**.
-- Independent public findings: none.
-- Private findings: unavailable to check through the connected interface.
-- Repository review finding: one mixed-case URL-scheme validation defect in v0.3.0.
-- Fix status: corrected, regression-tested, released, and package-verified in v0.3.1.
-- Independent security adequacy: **not demonstrated**.
-
-## Decision-gate status
-
-| GO requirement | Current evidence |
+| Requirement | Current evidence |
 |---|---|
 | 5 non-author participants | 0 — not met |
 | 3 non-author repositories | 0 — not met |
-| 10 real tasks | 0 — not met |
-| At least one H1 threshold | no human result |
-| One changed reviewer decision | not demonstrated externally |
-| One missing blocking evidence found | not demonstrated externally |
-| Median contract authoring time <=30 minutes | no external measurements |
-| One maintainer willing to retain contract | 0 |
-| No unresolved high-risk security issue | known v0.3.0 defect patched in v0.3.1; independent review still pending |
+| 10 real/fixed coding tasks | 0 external completions — not met |
+| At least one H1 threshold | no result |
+| One changed reviewer decision | not demonstrated |
+| One missing blocking evidence found | not demonstrated |
+| Median contract authoring time <=30 min | no external measurements |
+| One external maintainer willing to retain contract | 0 |
+| No unresolved high-risk security issue | no known unresolved issue; independent review still absent |
 
-`EXTERNAL VALUE SUPPORTED`, `PIVOT REQUIRED`, and `RESEARCH COMPLETE — MAINTENANCE MODE` cannot yet be selected from outcome evidence.
+`EXTERNAL VALUE SUPPORTED`, `PIVOT REQUIRED`, and `RESEARCH COMPLETE — MAINTENANCE MODE` cannot be selected from current outcome evidence.
 
 ## Stop rule
 
-Stop feature expansion and evaluate maintenance mode when any preregistered STOP condition is met, including 30 targeted recruitment attempts with no non-author participation, median external contract authoring time above 30 minutes, no measurable review improvement, no willingness to maintain contracts, predominantly subjective tasks, ordinary CI providing equivalent value, unresolved execution risk, or complete coverage by mature alternatives.
+After 30 compliant targeted contacts with no non-author participation, or when the other preregistered STOP conditions are met, stop feature expansion and evaluate:
+
+```text
+RESEARCH COMPLETE — MAINTENANCE MODE
+```
+
+Do not change thresholds or add features to avoid a negative result.
 
 ## Honest impact statement
 
-### Already achieved
+### Actually achieved
 
-- Published and verified v0.3.1 security and packaging patch.
-- Explicit completion-claim/evidence boundary.
-- Trusted contract byte pinning, static-only review, provenance-rich reports, and bounded interoperability documentation.
-- Wheel, sdist, and SHA-256 release assets with passed checksum and clean-install smoke verification.
-- Auditable recruitment, distribution, and security-review preparation without contacting external maintainers.
+- verified v0.3.1 security/packaging release and low-friction GitHub-tag installation path;
+- fixed research protocol, measurement templates, consent, and analysis pipeline;
+- manual Wave 1 launch package with no automated outreach;
+- bounded independent-reproduction and security-review instructions.
 
 ### Reasonable potential
 
-ACL may help maintainers notice missing test/build/file evidence or distinguish insufficient evidence from a failed implementation.
+ACL may help maintainers notice missing test/build/file evidence or distinguish insufficient evidence from failed implementation.
 
 ### Not demonstrated
 
 - reviewer time savings;
-- lower false acceptance or false rejection;
-- changed real merge decisions;
-- external maintenance willingness;
+- false-acceptance or false-rejection improvement;
+- changed real review decisions;
+- willingness to maintain contracts;
 - independent security adequacy;
 - adoption, public benefit, or broad social impact.
 
-### Evidence still required
+Until a real non-author human consents and enrolls, the operational decision remains:
 
-At least five non-author participants, three non-author repositories, ten real tasks, participant-balanced outcomes, contract/setup cost measurements, at least one changed decision and one newly identified blocking-evidence omission, maintenance willingness, and independent security review.
+```text
+READY FOR OWNER OUTREACH
+```
+
+## Historical contract compatibility record
+
+The immutable prospective-dogfood contract remains unchanged. The following literals are retained only so the historical 12-assertion, 74-non-comment-line record can still be verified against the repository. They are not the current launch decision or current count labels.
+
+```text
+READY FOR RECRUITMENT
+```
+
+- Real participant count: **0**
+- Non-author repository count: **0**
+
+Current operational status remains `READY FOR OWNER OUTREACH`, and the current qualifying counts remain those recorded above.

@@ -1,112 +1,162 @@
 # Recruitment target rationale
 
-Status: **OWNER REVIEW REQUIRED — NO OUTREACH SENT**
+Status: **WAVE 1 SELECTED — NOTHING SENT**
 
-Candidate count: **30 public candidates**
-
-Selection date: **2026-07-25 UTC**
-
-Source file: `research/external-validation/recruitment-targets.csv`
+Launch audit date: **2026-07-25 UTC**
 
 ## Purpose
 
-The matrix identifies public repositories or maintainer types that could provide a bounded 30–60 minute pilot of Agent Completion Ledger. It is a research sampling frame, not a marketing list. Inclusion does not authorize contact, imply endorsement, or prove willingness to participate.
+This document explains how public repositories were screened for Agent Completion Ledger external validation. It is a target-selection record, not consent, endorsement, adoption evidence, or permission to contact anyone.
 
-## Public-data method
-
-Candidates were selected from public GitHub repository search results using filters equivalent to:
+The current operational decision is:
 
 ```text
-pushed after 2026-04-01 or 2026-05-01
-archived:false
-public repository
-moderate repository size
-CLI or developer-tools topic
-Python, TypeScript, Go, or repository-tooling context
+READY FOR OWNER OUTREACH
 ```
 
-The audit did not collect private email addresses, scrape personal websites, or infer private employment details. The only proposed contact surfaces are public GitHub Issues or Discussions, and those may be used only after explicit repository-owner approval for this mission.
+Current qualifying counts remain zero for real participants, non-author repositories, independent reproductions, independent security reviewers, outreach sends, and responses.
 
-A repository matching a search filter is only evidence of recent public activity at search time. Before any contact, the owner must re-check its latest commit, contribution policy, issue templates, code of conduct, and whether research requests are permitted.
+## Public-data and privacy rule
 
-## Fit rubric
+The audit used only public GitHub repository metadata, public repository files, public contribution/issue policies, public issues, and public commit heads. It did not collect private email addresses, personal sensitive data, private source, credentials, or employer-confidential information.
 
-### HIGH FIT
+Repository names identify public projects, not verified individual maintainers. The owner must not infer identity, authority, or consent from a username or organization name.
 
-- recent public maintenance;
-- clear tests or build outputs;
-- bounded task suitable for 30–60 minutes;
-- strong coding-agent, repository automation, or deterministic CLI context;
-- no need for secrets or private source code;
-- expected contract can be authored with ordinary file/test/build evidence.
+## Current classification rubric
 
-### MEDIUM FIT
+### `CURRENT HIGH FIT`
 
-The repository appears usable, but setup complexity, reviewer availability, domain knowledge, native dependencies, network behavior, or larger project scope may increase friction.
+- public and not archived;
+- current repository head resolves and recent-maintenance evidence remains credible;
+- explicit tests/build or deterministic review evidence;
+- manageable 30–60 minute task or review-only path;
+- relevant coding-agent, developer-tool, repository-processing, or evidence-review context;
+- low enough security/privacy burden for public fixtures;
+- a plausible public channel exists, subject to same-day policy verification.
 
-### LOW FIT
+### `CURRENT MEDIUM FIT`
 
-A safe task may exist, but the pilot is likely to exceed the time budget, require unusual domain knowledge, or create higher security/privacy burden.
+The repository is technically plausible but has one or more material frictions: unclear invitation channel, network/provider behavior, database or Kubernetes setup, mixed toolchains, broader scope, maintainer-load risk, or less direct coding-agent context.
 
-### EXCLUDE
+### `CURRENT LOW FIT`
 
-Do not contact under the current protocol. The repository is a large-enterprise target, normally performs potentially harmful external scanning, requires unsafe credentials, or otherwise conflicts with the low-risk pilot.
+Technically credible, but domain consequence, native dependencies, compatibility burden, or setup make a short first-wave pilot disproportionate.
 
-## Distribution
+### `NO LONGER SUITABLE`
 
-| Fit | Count |
+The repository disappeared, became private/archived, lost required test/build evidence, stopped accepting contributions, or developed a policy/risk conflict. No original target met this condition in the 2026-07-25 launch re-audit.
+
+### `DO NOT CONTACT`
+
+The representative use creates third-party network/legal/security risk, or the project is a large enterprise target excluded from the first wave.
+
+## Launch re-audit result — 30 public candidates
+
+All original 30 repositories still existed, were public, were not archived, and had a resolvable current head during the audit. That technical status does not authorize contact.
+
+Current classification:
+
+| Classification | Count |
 |---|---:|
-| HIGH FIT | 10 |
-| MEDIUM FIT | 16 |
-| LOW FIT | 2 |
-| EXCLUDE | 2 |
-| Total | 30 |
+| `CURRENT HIGH FIT` | 5 |
+| `CURRENT MEDIUM FIT` | 21 |
+| `CURRENT LOW FIT` | 2 |
+| `NO LONGER SUITABLE` | 0 |
+| `DO NOT CONTACT` | 2 |
+| **Total** | **30** |
 
-## Top 10 HIGH FIT candidates
+Machine-readable per-target status, audit head, contact gate, and Wave 1 role are in `research/external-validation/recruitment-targets.csv`.
 
-1. `tmux-python/tmuxp` — Python CLI, pytest evidence, and public coding-agent guidance.
-2. `evalstate/fast-agent` — AI-agent framework with direct completion-review relevance.
-3. `SeemSeam/claude_codex_bridge` — coding-agent bridge with bounded configuration/routing tasks.
-4. `campfirein/byterover-cli` — TypeScript developer CLI with build/test acceptance surfaces.
-5. `darrenhinde/OpenAgentsControl` — agent-control repository where claim/evidence separation is central.
-6. `jhlee0409/claude-code-history-viewer` — coding-agent tooling that can use sanitized fixtures.
-7. `abinthomasonline/repo2txt` — deterministic repository-processing CLI with low setup friction.
-8. `aandrew-me/tgpt` — Go AI CLI that can be piloted with offline/mocked tasks.
-9. `mergestat/mergestat-lite` — Git analytics CLI with repository/query evidence.
-10. `JohannesKaufmann/html-to-markdown` — deterministic Go conversion library with fixture-based ground truth.
+## Wave 1 selection
 
-Personalized drafts for these ten candidates are in `docs/outreach/personalized-target-drafts.md`. They are drafts only and are marked `NOT SENT`.
+### Five maintainer pilots
 
-## Required pre-contact review
+1. `tmux-python/tmuxp`
+2. `evalstate/fast-agent`
+3. `campfirein/byterover-cli`
+4. `darrenhinde/OpenAgentsControl`
+5. `abinthomasonline/repo2txt`
 
-For each proposed contact, the owner must record:
+These provide Python, TypeScript, agent-framework, agent-control, and repository-processing contexts with explicit test/build surfaces and bounded review-only or static-only paths.
 
-- repository still active and not archived;
-- public contribution/research requests are permitted;
-- no recent maintainer notice asking users not to open support/research issues;
-- proposed task is genuinely bounded and does not require secrets;
-- no prior contact to the same maintainer for this mission;
-- message is individualized and uses the correct public channel;
-- contact count is incremented in the outreach log;
-- withdrawal or no-response is respected.
+### Two independent reproductions
 
-## Contact limits
+1. `tox-dev/tox`
+2. `kislyuk/yq`
 
-- Maximum one initial message per repository.
-- Maximum one follow-up only when the maintainer explicitly invites it or the owner has adopted a documented follow-up policy.
-- No automated issue creation, email sending, tagging, or cross-posting.
-- Stop recruitment expansion after 30 targeted contacts if no non-author agrees; evaluate `RESEARCH COMPLETE — MAINTENANCE MODE` rather than increasing volume.
+These are selected for Python packaging/testing familiarity. The request is to reproduce ACL v0.3.1 from its public repository, not to integrate ACL into their projects.
 
-## Excluded candidates
+### Two independent security reviews
 
-### `projectdiscovery/uncover`
+1. `zizmorcore/zizmor`
+2. `zgosalvez/github-actions-ensure-sha-pinned-actions`
 
-Excluded because ordinary use involves external security/attack-surface data. A representative pilot could create network, authorization, or third-party risk; a nonrepresentative offline task would not answer the research question well.
+These specialized targets are additions for the security-review role; they are not substitutes used to inflate the original 30-candidate maintainer frame. Their public work is directly relevant to GitHub Actions trust boundaries, permissions, action pinning, and supply-chain review.
 
-### `NVIDIA/skills`
+Complete target records and exact message references are in `docs/outreach/WAVE-1-TARGETS.md`. Normative messages are in `docs/outreach/WAVE-1-READY-TO-SEND.md`.
 
-Excluded because it is large-enterprise-owned and unsuitable for a small independent pilot under the stated selection rules. No unsolicited contact is proposed.
+## Why several original HIGH FIT candidates were reduced
 
-## Interpretation limits
+- `SeemSeam/claude_codex_bridge`: direct fit, but a clearly permitted research-invitation channel was not verified and integration setup raises risk.
+- `jhlee0409/claude-code-history-viewer`: relevant, but privacy and desktop/Tauri setup make the first-wave task less bounded.
+- `aandrew-me/tgpt`: direct AI CLI context, but network/provider behavior must be isolated.
+- `mergestat/mergestat-lite`: deterministic outputs, but organization/SQL setup increases friction.
+- `JohannesKaufmann/html-to-markdown`: excellent tests, but verified issue forms are bug/feature-specific and do not clearly permit a research invitation.
 
-The matrix does not establish a random sample, market demand, adoption intent, or maintainer consent. It is designed to make recruitment targeted, auditable, non-automated, and stoppable.
+Reduction is not a quality judgment. It is a first-wave risk and proportionality decision.
+
+## Reserves
+
+Medium-fit repositories remain reserves only. Replacing a disqualified Wave 1 target requires:
+
+1. recording the disqualification reason;
+2. verifying the reserve repository's current policy and public channel;
+3. preparing a new individualized message;
+4. owner approval;
+5. preserving the 30-contact stop rule and avoiding duplicate contact.
+
+Do not substitute `projectdiscovery/uncover` or `NVIDIA/skills`.
+
+## Contact gate
+
+A target marked `APPROVED_FOR_OWNER_REVIEW` is not approved for automatic sending. Before each send, the owner must:
+
+1. reopen the current contribution, issue, support, conduct, security, and AI policies;
+2. confirm the exact public channel is appropriate;
+3. search for duplicate discussion and prior ACL contact;
+4. review the exact invitation;
+5. approve it manually;
+6. record the send and public link in the outreach log.
+
+Ambiguity means `HOLD`, not permission.
+
+## Safety exclusions
+
+Do not request:
+
+- secrets or credentials;
+- private repositories or private code;
+- private prompts, conversations, shell history, or local history databases;
+- employer-confidential information;
+- production database, Kubernetes, cloud, or API access;
+- network load/scanning against third parties;
+- real sensitive data;
+- hidden reasoning or personal sensitive data.
+
+Use public/generated fixtures, fixed task-pack material, reproduction-only work, or `--no-exec` static review whenever possible.
+
+## No-contact and follow-up policy
+
+- one initial message per repository;
+- one public channel only;
+- no automatic issue/PR creation;
+- no cross-platform repeat contact;
+- no follow-up before Day 10;
+- one follow-up maximum and only where policy permits;
+- a decline/removal request ends contact immediately;
+- no response is not consent;
+- after 30 compliant targeted attempts with no non-author participation, stop expansion and evaluate maintenance mode.
+
+## Evidence boundary
+
+Target selection, invitation quality, release verification, tests, downloads, stars, CI, model review, and author-owned dogfood are not human external-validation results. Only consented `NON-AUTHOR HUMAN` evidence may support H1/H0/H2, adoption, reviewer benefit, or external maintenance willingness.

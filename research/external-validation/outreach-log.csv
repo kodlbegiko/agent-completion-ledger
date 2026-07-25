@@ -1,1 +1,1 @@
-attempt_number,target_repository,fit,channel,owner_approved,sent_at_utc,response_state,participant_id,follow_up_allowed,notes
+attempt_number,wave_id,target_repository,role,fit,channel,policy_checked_at_utc,owner_approved,sent_at_utc,public_link,response_state,responder_class,participant_id,follow_up_allowed,follow_up_sent_at_utc,withdrawn_at_utc,notes

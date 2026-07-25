@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "1",
+  "statusDate": "2026-07-25",
+  "decision": "READY FOR OWNER OUTREACH",
+  "featureFreeze": true,
+  "release": {
+    "tag": "v0.3.1",
+    "verificationDocument": "docs/v0.3.1-release-verification.json",
+    "pypiPublished": false
+  },
+  "externalEvidence": {
+    "realParticipants": 0,
+    "nonAuthorRepositories": 0,
+    "realExternalTasks": 0,
+    "independentReproductions": 0,
+    "independentSecurityReviewers": 0,
+    "targetedOutreachSent": 0,
+    "responses": 0
+  },
+  "wave1": {
+    "maintainerPilotTargets": 5,
+    "reproductionTargets": 2,
+    "securityReviewTargets": 2,
+    "messagesSent": 0,
+    "ownerReviewRequired": true
+  },
+  "humanEffectAnalysisRun": false,
+  "externalValueSupported": false,
+  "publicImpactDemonstrated": false
+}

@@ -1,0 +1,10 @@
+wave_id,repository,role,status,planned_day
+W1-M1,tmux-python/tmuxp,MAINTAINER_PILOT,NOT_SENT,DAY_1
+W1-M2,evalstate/fast-agent,MAINTAINER_PILOT,NOT_SENT,DAY_1
+W1-S1,zizmorcore/zizmor,INDEPENDENT_SECURITY_REVIEW,NOT_SENT,DAY_1
+W1-M3,campfirein/byterover-cli,MAINTAINER_PILOT,NOT_SENT,DAY_3
+W1-M4,darrenhinde/OpenAgentsControl,MAINTAINER_PILOT,NOT_SENT,DAY_3
+W1-R1,tox-dev/tox,INDEPENDENT_REPRODUCTION,NOT_SENT,DAY_3
+W1-M5,abinthomasonline/repo2txt,MAINTAINER_PILOT,NOT_SENT,DAY_5
+W1-R2,kislyuk/yq,INDEPENDENT_REPRODUCTION,NOT_SENT,DAY_5
+W1-S2,zgosalvez/github-actions-ensure-sha-pinned-actions,INDEPENDENT_SECURITY_REVIEW,NOT_SENT,DAY_5
