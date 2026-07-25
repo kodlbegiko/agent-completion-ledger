@@ -2,34 +2,38 @@
 
 Status: **BENIGN LOCAL CASES — NOT AN EXPLOIT KIT**
 
-These cases exercise documented boundaries using only files in this repository, a short local sleep, and a non-routable `.invalid` URL string. They must not be pointed at third-party systems or used with secrets.
+Target release: **v0.3.1**
+
+These cases exercise documented boundaries using only files in this repository, a short local sleep, and a reserved non-routable `.invalid` URL string. Do not point them at third-party systems or run them with secrets.
 
 ## Setup
 
 ```bash
-git clone https://github.com/kodlbegiko/agent-completion-ledger.git
+git clone --branch v0.3.1 --depth 1 \
+  https://github.com/kodlbegiko/agent-completion-ledger.git
 cd agent-completion-ledger
-git switch research/external-validation-operations
 python -m venv .venv
 . .venv/bin/activate
 python -m pip install -e ".[dev]"
 ```
 
-On Windows PowerShell, activate with:
+On Windows PowerShell:
 
 ```powershell
 .venv\Scripts\Activate.ps1
 ```
 
-All commands below write reports under a disposable temporary directory.
+Linux/macOS examples below write reports under a disposable directory:
 
 ```bash
 mkdir -p /tmp/acl-security-review
 ```
 
-## Case 1: trusted static success
+Record any platform adaptation rather than silently changing the expected property.
 
-Expected result: `SUPPORTED` with a matching contract digest and no command execution.
+## Case 1 — trusted static success
+
+Expected: `SUPPORTED`, matching contract digest, no command execution.
 
 ```bash
 CONTRACT=security/reproduction-cases/contracts/static-safe.yml
@@ -41,17 +45,12 @@ agent-completion-ledger verify \
   --no-exec \
   --format json \
   --output /tmp/acl-security-review/static-safe.json
-```
-
-Inspect:
-
-```bash
 python -m json.tool /tmp/acl-security-review/static-safe.json
 ```
 
-## Case 2: contract replacement / digest mismatch
+## Case 2 — contract replacement/digest mismatch
 
-Expected result: exit code `2`, integrity-only `UNVERIFIABLE`, and no parsing/execution of mismatched policy.
+Expected: exit code `2`, integrity-only `UNVERIFIABLE`, and no parsing or execution of mismatched policy.
 
 ```bash
 set +e
@@ -66,11 +65,11 @@ set -e
 test "$STATUS" -eq 2
 ```
 
-Reviewers should confirm that the report contains the actual and expected digest and does not claim trusted success.
+Confirm that the report contains actual/expected digests and does not claim trusted success.
 
-## Case 3: `--no-exec` does not upgrade command evidence
+## Case 3 — `--no-exec` cannot upgrade command evidence
 
-The fixture command would fail if executed. Expected result under `--no-exec`: blocking command evidence is `UNVERIFIABLE`, not `SUPPORTED`.
+The fixture command would fail if executed. Expected: blocking command evidence is `UNVERIFIABLE`, never `SUPPORTED`.
 
 ```bash
 CONTRACT=security/reproduction-cases/contracts/interpreter-disabled.yml
@@ -88,9 +87,9 @@ set -e
 test "$STATUS" -ne 0
 ```
 
-## Case 4: repository-root traversal rejection
+## Case 4 — repository-root traversal rejection
 
-Expected result: `UNVERIFIABLE`; ACL must not inspect `../outside.txt`.
+Expected: `UNVERIFIABLE`; ACL must not inspect `../outside.txt`.
 
 ```bash
 agent-completion-ledger verify \
@@ -101,9 +100,9 @@ agent-completion-ledger verify \
   --output /tmp/acl-security-review/path-traversal.json || true
 ```
 
-## Case 5: Windows absolute-path rejection
+## Case 5 — Windows absolute-path rejection
 
-Expected result on every operating system: `UNVERIFIABLE`; the Windows drive path must not be opened.
+Expected on every OS: `UNVERIFIABLE`; the Windows drive path must not be opened.
 
 ```bash
 agent-completion-ledger verify \
@@ -114,9 +113,9 @@ agent-completion-ledger verify \
   --output /tmp/acl-security-review/windows-absolute.json || true
 ```
 
-## Case 6: symlink rejection
+## Case 6 — symlink rejection
 
-Create a symlink inside the disposable fixture directory. Expected result: `UNVERIFIABLE`; ACL must not follow it.
+Expected: `UNVERIFIABLE`; ACL must not follow the evidence symlink.
 
 ```bash
 ln -s public.txt security/reproduction-cases/repository/link.txt
@@ -129,11 +128,11 @@ agent-completion-ledger verify \
 rm security/reproduction-cases/repository/link.txt
 ```
 
-On systems where ordinary users cannot create symlinks, record the case as unavailable rather than changing permissions.
+If ordinary users cannot create symlinks, record the case as unavailable; do not elevate permissions.
 
-## Case 7: mixed-case remote URL rejection
+## Case 7 — mixed-case remote URL rejection
 
-Expected result: `UNVERIFIABLE` with exit code `2` before Python receives the mixed-case `HTTPS://...` argument. The `.invalid` domain is reserved for examples and must not be contacted.
+Expected in v0.3.1: `UNVERIFIABLE` with exit code `2` before Python receives the mixed-case `HTTPS://...` argument. The `.invalid` value must not be contacted.
 
 ```bash
 set +e
@@ -147,9 +146,11 @@ set -e
 test "$STATUS" -eq 2
 ```
 
-## Case 8: subprocess timeout
+The immutable v0.3.0 release is expected to exhibit the documented affected behavior and must not be used as the patched comparison target.
 
-Expected result: timeout/`UNVERIFIABLE` in substantially less than the two-second sleep.
+## Case 8 — subprocess timeout
+
+Expected: timeout/`UNVERIFIABLE` in substantially less than the fixture's two-second sleep.
 
 ```bash
 python - <<'PY'
@@ -178,11 +179,11 @@ assert elapsed < 1.5
 PY
 ```
 
-Timing can vary on overloaded runners. A failure of the conservative 1.5-second bound should be reported with environment details, not silently discarded.
+Timing can vary on overloaded runners. Report the environment and measured time rather than discarding a failure.
 
-## Case 9: command output is not copied into reports
+## Case 9 — command output not copied into reports
 
-The command emits a benign marker. Expected result: verification may be `SUPPORTED`, but the marker must not appear in the JSON report.
+Expected: the benign marker must not appear in the JSON report.
 
 ```bash
 agent-completion-ledger verify \
@@ -194,9 +195,9 @@ agent-completion-ledger verify \
   /tmp/acl-security-review/report-nondisclosure.json
 ```
 
-This checks only stdout/stderr omission. Paths, task IDs, assertion IDs, repository identity, and messages can still reveal internal names.
+This tests stdout/stderr omission only. Paths, repository identity, task IDs, assertion IDs, and messages may still reveal internal names.
 
-## Case 10: in-toto statement interpretation
+## Case 10 — in-toto interpretation
 
 Generate an unsigned statement:
 
@@ -212,9 +213,9 @@ agent-completion-ledger verify \
   --output /tmp/acl-security-review/static-safe.intoto.json
 ```
 
-Expected interpretation: the file is structured evidence only. It does not establish signer identity, runner trust, software correctness, compliance, or absence of tampering after generation.
+Expected interpretation: structured evidence only. It does not establish signer identity, runner trust, software correctness, compliance, or absence of later tampering.
 
-## Reporting template
+## Report template
 
 ```markdown
 Reviewer pseudonymous ID:
@@ -223,11 +224,11 @@ Operating system and Python version:
 Case ID:
 Expected security property:
 Observed result:
-Reproduction command:
+Exact reproduction command:
 Affected file/line:
 Severity rationale:
 Suggested mitigation:
-Public or private report:
+Public evidence link or private report reference:
 ```
 
-High-risk findings must be submitted through GitHub private security reporting. Do not publish exploit details, credentials, private source code, or third-party targets.
+High-risk findings must use GitHub private security reporting for `kodlbegiko/agent-completion-ledger`. Do not publish exploit details, credentials, private source, or third-party targets.
