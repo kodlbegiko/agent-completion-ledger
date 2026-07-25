@@ -133,14 +133,18 @@ On systems where ordinary users cannot create symlinks, record the case as unava
 
 ## Case 7: mixed-case remote URL rejection
 
-Expected result: `UNVERIFIABLE` before Python receives the `HTTPS://...` argument. The `.invalid` domain is reserved for examples and must not be contacted.
+Expected result: the command is rejected before Python receives the `HTTPS://...` argument. Because this is an unsafe assertion that did not satisfy the configured evidence, the task is `FAILED` with exit code `1`. The `.invalid` domain is reserved for examples and must not be contacted.
 
 ```bash
+set +e
 agent-completion-ledger verify \
   --contract security/reproduction-cases/contracts/remote-url.yml \
   --repo-root security/reproduction-cases/repository \
   --format json \
-  --output /tmp/acl-security-review/remote-url.json || true
+  --output /tmp/acl-security-review/remote-url.json
+STATUS=$?
+set -e
+test "$STATUS" -eq 1
 ```
 
 ## Case 8: subprocess timeout
