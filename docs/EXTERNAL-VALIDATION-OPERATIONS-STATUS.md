@@ -24,9 +24,11 @@ Restriction: until a v0.3.1 patch containing the mixed-case remote-URL rejection
 
 - v0.3.0 release: verified.
 - Release-tag CI: 189 tests passed across Linux, Windows, and macOS.
-- Core verifier: `FEATURE FREEZE`; one security-exception fix is under review.
-- Security finding: v0.3.0 checks remote URL arguments case-sensitively, so mixed-case schemes such as `HTTPS://` can reach an allow-listed executable. PR #8 normalizes the check before execution and adds lower/uppercase regression cases.
-- Release status: source fix prepared; affected v0.3.0 tag remains immutable and requires a v0.3.1 patch release. This is not yet a verified public fix.
+- Core verifier: `FEATURE FREEZE`; one narrowly scoped security-exception fix is merged to `main`.
+- Security finding: v0.3.0 checks remote URL arguments case-sensitively, so mixed-case schemes such as `HTTPS://` can reach an allow-listed executable. PR #8 normalized the check before execution and added lower/uppercase regression cases.
+- Source-fix merge: `e529cbe3249bdee9a50b5791aeb86260dbcc56d3`.
+- Final PR validation: full CI, workflow-lint, and all external-validation/security operations passed at head `eb6feb8717ab31f5948f2381889c6625e604d68f`.
+- Release status: source remediation is merged; affected v0.3.0 tag remains immutable and requires a v0.3.1 patch release. This is not yet a verified public patch.
 - PyPI: not published.
 - PyPI Trusted Publishing workflow: prepared as an owner-dispatched immutable-tag workflow; owner-side environments and pending publishers are required.
 - GitHub Release wheel/sdist/checksum workflow: prepared, not yet run.
@@ -58,8 +60,9 @@ Task: prepare and verify this external-validation operations package in `kodlbeg
 - Contract committed before implementation completion: yes.
 - Contract assertions: 12.
 - Non-comment contract lines: 74.
-- Preliminary verification runtime: 0.178941665 seconds on GitHub Actions.
+- Final PR verification runtime: 0.174295465 seconds on GitHub Actions.
 - Ledger result: `SUPPORTED`.
+- Security reproduction cases in the same final run: 10 passed, 0 failed.
 - Decision before ledger: `INSUFFICIENT_EVIDENCE` because the files did not yet exist.
 - Decision after ledger: eligible for human review; merge decision remains human.
 - Reviewer/merge decision changed by ledger: no.
@@ -67,7 +70,7 @@ Task: prepare and verify this external-validation operations package in `kodlbeg
 - Contract authoring time: not reliably timed and therefore left `null` rather than estimated.
 - External validation credit: none.
 
-The same PR review did uncover a separate mixed-case URL security defect. That finding came from repository review, not from the prospective completion contract, and is reported separately.
+The same PR review uncovered a separate mixed-case URL security defect. That finding came from repository review, not from the prospective completion contract, and is reported separately.
 
 ## External study
 
@@ -98,7 +101,7 @@ No result. There are no human outcomes from which to distinguish ACL format effe
 - Independent public findings: none.
 - Private findings: unavailable to check through the connected interface.
 - Repository PR review finding: one high-priority trust-boundary defect involving case-sensitive URL-scheme rejection.
-- Fix status: source fix and parametrized regression test are present on PR #8; full CI and v0.3.1 release verification remain required.
+- Fix status: source fix and parametrized regression tests are merged to `main`; the final PR matrix and benign end-to-end cases passed. v0.3.1 release verification remains required.
 - Remaining material risk: allow-listed interpreters and project test/build tools can execute repository code with runner permissions; ACL is not a sandbox.
 
 ## Decision-gate status
@@ -113,7 +116,7 @@ No result. There are no human outcomes from which to distinguish ACL format effe
 | One missing blocking evidence found | not demonstrated externally |
 | Median contract authoring time <=30 minutes | no external measurements |
 | One maintainer willing to retain contract | 0 |
-| No unresolved high-risk security issue | public patch release pending |
+| No unresolved high-risk security issue | source fix merged; public patch release pending |
 
 `EXTERNAL VALUE SUPPORTED`, `PIVOT REQUIRED`, and `RESEARCH COMPLETE — MAINTENANCE MODE` cannot yet be selected from outcome evidence. Recruitment materials are ready, but executable-mode external integration remains gated on a verified patch release.
 
@@ -129,7 +132,7 @@ Stop feature expansion and evaluate maintenance mode when any preregistered STOP
 - Explicit completion-claim/evidence boundary.
 - Trusted contract byte pinning, static-only review, provenance-rich reports, and bounded interoperability documentation.
 - Auditable recruitment, distribution, and security-review preparation without contacting external maintainers.
-- A real security review defect was identified and a narrow source fix was prepared before external executable-mode recruitment.
+- A real repository security defect was identified and its narrow source correction was merged before external executable-mode recruitment.
 
 ### Reasonable potential
 
@@ -146,4 +149,4 @@ ACL may help maintainers notice missing test/build/file evidence or distinguish 
 
 ### Evidence still required
 
-At least five non-author participants, three non-author repositories, ten real tasks, participant-balanced outcomes, contract/setup cost measurements, at least one changed decision and one newly identified blocking-evidence omission, maintenance willingness, an independently reviewed patch release, and independent security review.
+At least five non-author participants, three non-author repositories, ten real tasks, participant-balanced outcomes, contract/setup cost measurements, at least one changed decision and one newly identified blocking-evidence omission, maintenance willingness, a verified v0.3.1 patch release, and independent security review.

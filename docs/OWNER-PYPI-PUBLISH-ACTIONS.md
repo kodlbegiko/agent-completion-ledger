@@ -12,7 +12,7 @@ Agent Completion Ledger is **not published** on PyPI at the time this document w
 - The v0.3.0 GitHub Release currently records GitHub-generated source archives only; no project-built wheel, sdist, or `SHA256SUMS` asset is recorded.
 - The exact package name did not appear in an unauthenticated public PyPI search during the audit. This is not an authoritative reservation check; the owner must create a pending publisher or project to confirm availability.
 - PyPI requires an owner-side Trusted Publisher configuration. Repository automation cannot complete that account action.
-- PR #8 identified a case-sensitive remote-URL validation bypass in v0.3.0. The source fix and regression tests are prepared under the feature-freeze security exception; the next public package must include that fix.
+- PR #8 identified a case-sensitive remote-URL validation bypass in v0.3.0. The source fix and regression tests are merged to `main` in `e529cbe3249bdee9a50b5791aeb86260dbcc56d3`; the next public package must include that fix.
 
 ## Required owner configuration
 
@@ -72,7 +72,7 @@ The first registry release should be `v0.3.1`, not a silent rebuild of an alread
 
 Before tagging:
 
-1. Merge the PR #8 security fix and confirm mixed-case `HTTP://` and `HTTPS://` arguments become `UNVERIFIABLE` before interpreter execution.
+1. Verify `main` contains commit `e529cbe3249bdee9a50b5791aeb86260dbcc56d3` or a descendant and that mixed-case `HTTP://` and `HTTPS://` arguments become `UNVERIFIABLE` before interpreter execution.
 2. Set `[project].version` in `pyproject.toml` to `0.3.1`.
 3. Add a dated `0.3.1` CHANGELOG entry describing the security fix and packaging/external-validation operations only.
 4. Update `CITATION.cff` to `0.3.1` and the actual release date.
