@@ -67,7 +67,7 @@ def test_recruitment_matrix_preserves_legacy_and_wave_one_schema() -> None:
     assert all(row[field].strip() for row in rows for field in mandatory)
 
 
-def test_wave_one_roles_and_status_are_fixed_and_unsent() -> None:
+def test_wave_one_roles_and_status_track_first_outreach_without_human_evidence() -> None:
     roles_path = RESEARCH / "wave-1-target-roles.csv"
     with roles_path.open(encoding="utf-8", newline="") as handle:
         rows = list(csv.DictReader(handle))
@@ -79,20 +79,41 @@ def test_wave_one_roles_and_status_are_fixed_and_unsent() -> None:
     assert roles.count("MAINTAINER_PILOT") == 5
     assert roles.count("INDEPENDENT_REPRODUCTION") == 2
     assert roles.count("INDEPENDENT_SECURITY_REVIEW") == 2
-    assert {row["status"] for row in rows} == {"NOT_SENT"}
+    assert [row["wave_id"] for row in rows if row["status"] == "SENT"] == ["W1-M1"]
+    assert sum(row["status"] == "NOT_SENT" for row in rows) == 8
 
     status_path = RESEARCH / "wave-1-status.json"
     status = json.loads(status_path.read_text(encoding="utf-8"))
     assert status["schemaVersion"] == "1"
-    assert status["decision"] == "READY FOR OWNER OUTREACH"
+    assert status["decision"] == "EXTERNAL VALIDATION IN PROGRESS"
     assert status["wave1"] == {
         "maintainerPilotTargets": 5,
         "reproductionTargets": 2,
         "securityReviewTargets": 2,
-        "messagesSent": 0,
+        "messagesSent": 1,
         "ownerReviewRequired": True,
     }
-    assert all(value == 0 for value in status["externalEvidence"].values())
+    assert status["externalEvidence"] == {
+        "realParticipants": 0,
+        "nonAuthorRepositories": 0,
+        "realExternalTasks": 0,
+        "independentReproductions": 0,
+        "independentSecurityReviewers": 0,
+        "targetedOutreachSent": 1,
+        "responses": 0,
+    }
+
+    log_path = RESEARCH / "outreach-log.csv"
+    with log_path.open(encoding="utf-8", newline="") as handle:
+        log_rows = list(csv.DictReader(handle))
+    assert len(log_rows) == 1
+    assert log_rows[0]["wave_id"] == "W1-M1"
+    assert log_rows[0]["owner_approved"] == "yes"
+    assert log_rows[0]["response_state"] == "SENT — AWAITING RESPONSE"
+    assert log_rows[0]["responder_class"] == "UNKNOWN"
+    assert log_rows[0]["public_link"] == (
+        "https://github.com/tmux-python/tmuxp/discussions/1078"
+    )
 
 
 def test_historical_prospective_dogfood_contract_is_unchanged() -> None:
