@@ -39,8 +39,9 @@ def test_prospective_dogfood_template_has_aligned_columns() -> None:
     assert len(template) == len(header)
     record = dict(zip(header, template, strict=True))
     assert record["author_assistance_count"] == "0"
-    assert record["subjective_conditions_not_automated"] == (
-        "Conditions requiring human judgment"
+    assert (
+        record["subjective_conditions_not_automated"]
+        == "Conditions requiring human judgment"
     )
     assert record["security_or_privacy_concerns"] == "No secrets/private code"
     assert record["notes"]
