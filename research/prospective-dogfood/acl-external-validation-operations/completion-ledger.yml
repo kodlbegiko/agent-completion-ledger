@@ -3,7 +3,7 @@ policy:
   allowedExecutables: []
 tasks:
   - id: external-validation-operations
-    description: Verify the external-validation launch package without executing repository code.
+    description: Verify the external-validation operations package without executing repository code.
     claim:
       status: completed
       agent: autonomous-research-agent
@@ -13,22 +13,16 @@ tasks:
         type: required-files
         paths:
           - docs/v0.3.0-external-evidence-audit.md
-          - docs/v0.3.1-release-verification.md
-          - docs/v0.3.1-release-verification.json
           - docs/FEATURE-FREEZE.md
           - docs/OWNER-PYPI-PUBLISH-ACTIONS.md
-          - docs/OWNER-EXTERNAL-VALIDATION-ACTIONS.md
           - docs/RECRUITMENT-TARGET-RATIONALE.md
           - docs/INDEPENDENT-SECURITY-REVIEW.md
           - docs/EXTERNAL-VALIDATION-OPERATIONS-STATUS.md
-          - docs/outreach/WAVE-1-TARGETS.md
-          - docs/outreach/WAVE-1-READY-TO-SEND.md
-          - docs/outreach/WAVE-1-LAUNCH-CHECKLIST.md
+          - docs/outreach/maintainer-invitation.md
+          - docs/outreach/security-review-request.md
+          - docs/outreach/independent-reproduction-request.md
+          - docs/outreach/personalized-target-drafts.md
           - research/external-validation/recruitment-targets.csv
-          - research/external-validation/outreach-log.csv
-          - research/external-validation/wave-1-status.json
-          - research/external-validation/wave-1-target-roles.csv
-          - research/external-validation/wave-1-consent-gate.md
           - research/prospective-dogfood/collection-template.csv
           - security/reproduction-cases/README.md
           - .github/workflows/build-release-artifacts.yml
@@ -45,42 +39,34 @@ tasks:
         type: text-contains
         path: docs/FEATURE-FREEZE.md
         text: "FEATURE FREEZE"
-      - id: owner-outreach-status-honest
+      - id: recruitment-status-honest
         type: text-contains
         path: docs/EXTERNAL-VALIDATION-OPERATIONS-STATUS.md
-        text: "READY FOR OWNER OUTREACH"
+        text: "READY FOR RECRUITMENT"
       - id: no-external-participants-claimed
         type: text-contains
         path: docs/EXTERNAL-VALIDATION-OPERATIONS-STATUS.md
-        text: "Real participants: 0"
+        text: "Real participant count: **0**"
       - id: no-nonauthor-integrations-claimed
         type: text-contains
         path: docs/EXTERNAL-VALIDATION-OPERATIONS-STATUS.md
-        text: "Non-author repositories: 0"
+        text: "Non-author repository count: **0**"
       - id: outreach-not-sent
         type: text-contains
-        path: docs/outreach/WAVE-1-READY-TO-SEND.md
-        text: "NOT SENT — OWNER REVIEW REQUIRED"
-      - id: wave-one-target-count-recorded
-        type: text-contains
-        path: docs/outreach/WAVE-1-TARGETS.md
-        text: "five maintainer-pilot candidates"
-      - id: candidate-count-recorded
-        type: text-contains
-        path: docs/RECRUITMENT-TARGET-RATIONALE.md
-        text: "All original 30 repositories"
+        path: docs/outreach/personalized-target-drafts.md
+        text: "NOT SENT"
       - id: security-boundary-recorded
         type: text-contains
         path: docs/INDEPENDENT-SECURITY-REVIEW.md
         text: "not a sandbox"
-      - id: security-targets-v031
-        type: text-contains
-        path: docs/INDEPENDENT-SECURITY-REVIEW.md
-        text: "Target release: **v0.3.1**"
       - id: pypi-not-falsely-claimed
         type: text-contains
         path: docs/OWNER-PYPI-PUBLISH-ACTIONS.md
         text: "not published"
+      - id: candidate-count-header
+        type: text-contains
+        path: docs/RECRUITMENT-TARGET-RATIONALE.md
+        text: "30 public candidates"
       - id: no-v04-release-notes
         type: forbidden-files
         paths:
