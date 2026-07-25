@@ -1,12 +1,20 @@
-# Wave 1 ready-to-send invitations
+# Wave 1 invitation messages and live send state
 
 ```text
-STATUS: NOT SENT — OWNER REVIEW REQUIRED
+W1-M1: SENT — AWAITING RESPONSE
+REMAINING EIGHT: NOT SENT — OWNER REVIEW REQUIRED
 ```
 
-Audit date: **2026-07-25 UTC**
+Status date: **2026-07-25 UTC**
 
-These are the exact Wave 1 messages. Before sending any one of them, the owner must re-open the target's current contribution policy and issue templates, confirm the public channel is appropriate, search for prior contact or duplicate discussion, and log approval. Do not send through private email, multiple channels, automated tooling, or a generated external pull request.
+W1-M1 was manually posted by the owner after the required same-day policy, channel, and duplicate check:
+
+- Target: `tmux-python/tmuxp`
+- Channel: GitHub Discussions / General
+- Public record: `https://github.com/tmux-python/tmuxp/discussions/1078`
+- Evidence credit: none; a sent invitation is not consent or participation
+
+The sections below are the exact remaining Wave 1 messages. Before sending any one of them, the owner must re-open the target's current contribution policy and issue/discussion templates, confirm the public channel is appropriate, search for prior contact or duplicate discussion, and log approval. Do not send through private email, multiple channels, automated tooling, or a generated external pull request.
 
 Repository: `https://github.com/kodlbegiko/agent-completion-ledger`
 
@@ -15,33 +23,6 @@ Protocol: `https://github.com/kodlbegiko/agent-completion-ledger/blob/main/docs/
 Task pack: `https://github.com/kodlbegiko/agent-completion-ledger/tree/main/research/external-validation`
 
 Release: `https://github.com/kodlbegiko/agent-completion-ledger/releases/tag/v0.3.1`
-
-## W1-M1 — tmux-python/tmuxp
-
-**Suggested issue title**
-
-```text
-Optional 30–60 minute research pilot on coding-agent review evidence
-```
-
-**Exact message**
-
-```markdown
-Hello tmuxp maintainers,
-
-I maintain Agent Completion Ledger (ACL), a small open-source research tool that checks a coding-agent completion claim against repository evidence selected by a maintainer. I am testing an unproven research question: whether a structured ACL report improves a non-author maintainer's decision compared with the same agent summary alone.
-
-tmuxp appears suitable because its contributor workflow already makes the review evidence explicit through ruff, mypy, pytest, and repository agent guidance. A pilot could use one bounded parser or configuration-validation case with public fixtures, or you can review the fixed ten-task pack without installing anything.
-
-Expected time is 30–60 minutes. Static-only `--no-exec` review is available, and repository integration is optional. I will not request shell history, personal tmux configuration, private code, credentials, or secrets. I will not automatically create a PR in tmuxp.
-
-The result may support, narrow, or reject ACL's value claim; participation is not endorsement, and ACL is not an industry standard. You may decline or stop at any time, and a decline ends contact.
-
-Would you be willing to inspect the fixed materials before deciding?
-
-Repository: https://github.com/kodlbegiko/agent-completion-ledger
-Protocol: https://github.com/kodlbegiko/agent-completion-ledger/blob/main/docs/EXTERNAL-VALIDATION-PROTOCOL.md
-```
 
 ## W1-M2 — evalstate/fast-agent
 
@@ -342,7 +323,7 @@ Release: https://github.com/kodlbegiko/agent-completion-ledger/releases/tag/v0.3
 
 ## Manual send invariant
 
-Every section above remains `NOT SENT` until the owner records all of the following:
+Every remaining section above stays `NOT SENT` until the owner records all of the following:
 
 ```text
 policy_checked_at_utc:
@@ -356,4 +337,4 @@ public_link:
 follow_up_allowed: yes/no
 ```
 
-Do not pre-fill `sent_at_utc` or a public link. No automated dispatch is authorized.
+Do not pre-fill `sent_at_utc` or a public link. No automated dispatch is authorized. W1-M1 is excluded from this invariant because its manual send and public URL are already recorded in the outreach log.
