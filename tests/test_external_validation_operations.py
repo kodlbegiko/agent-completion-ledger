@@ -32,17 +32,12 @@ def test_external_integration_template_has_aligned_columns() -> None:
 
 
 def test_prospective_dogfood_template_has_aligned_columns() -> None:
-    header, template = _read_single_csv_row(
-        "research/prospective-dogfood/collection-template.csv"
-    )
+    header, template = _read_single_csv_row("research/prospective-dogfood/collection-template.csv")
     assert len(header) == 37
     assert len(template) == len(header)
     record = dict(zip(header, template, strict=True))
     assert record["author_assistance_count"] == "0"
-    assert (
-        record["subjective_conditions_not_automated"]
-        == "Conditions requiring human judgment"
-    )
+    assert record["subjective_conditions_not_automated"] == "Conditions requiring human judgment"
     assert record["security_or_privacy_concerns"] == "No secrets/private code"
     assert record["notes"]
 
