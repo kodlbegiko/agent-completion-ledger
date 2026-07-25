@@ -133,7 +133,7 @@ git worktree add ../acl-v0.3.1 v0.3.1
 cd ../acl-v0.3.1
 python -m venv .venv
 . .venv/bin/activate
-python -m pip install -e "[dev]"
+python -m pip install -e ".[dev]"
 agent-completion-ledger --help
 ```
 
