@@ -41,9 +41,10 @@ jobs:
               assert 'password:' not in text
 
           publish = publish_path.read_text(encoding='utf-8')
+          tag_expression = 'ref: ' + '$' + '{{ inputs.tag }}'
           assert 'workflow_dispatch:' in publish
           assert 'description: Existing immutable semver tag to publish' in publish
-          assert 'ref: ${{ inputs.tag }}' in publish
+          assert tag_expression in publish
           assert 'environment: testpypi' in publish
           assert 'environment: pypi' in publish
           assert publish.count('id-token: write') == 2
