@@ -32,6 +32,12 @@ Current external evidence:
 
 See `docs/EXTERNAL-VALIDATION-OPERATIONS-STATUS.md` and `docs/v0.3.0-external-evidence-audit.md`.
 
+### v0.3.0 security boundary notice
+
+PR #8 reproduced that v0.3.0's remote-URL argument check is case-sensitive: mixed-case schemes such as `HTTPS://` can reach an allow-listed executable instead of becoming `UNVERIFIABLE`. A narrow source fix and regression tests are prepared under the feature-freeze security exception; the immutable v0.3.0 release remains affected until a verified v0.3.1 patch is published.
+
+Until then, use v0.3.0 only for reproduction, report inspection, trusted local repositories, or `--no-exec` static verification. Do not rely on v0.3.0 executable mode as an isolation boundary for an untrusted external repository. ACL remains **not a sandbox** even after the patch.
+
 ## Installation status
 
 The current released source is `v0.3.0`. ACL is **not published on PyPI**. Install from the GitHub release tag or clone the repository:
