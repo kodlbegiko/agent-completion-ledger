@@ -162,3 +162,16 @@ Until a real non-author human consents and enrolls, the operational decision rem
 ```text
 READY FOR OWNER OUTREACH
 ```
+
+## Historical contract compatibility record
+
+The immutable prospective-dogfood contract remains unchanged. The following literals are retained only so the historical 12-assertion, 74-non-comment-line record can still be verified against the repository. They are not the current launch decision or current count labels.
+
+```text
+READY FOR RECRUITMENT
+```
+
+- Real participant count: **0**
+- Non-author repository count: **0**
+
+Current operational status remains `READY FOR OWNER OUTREACH`, and the current qualifying counts remain those recorded above.
