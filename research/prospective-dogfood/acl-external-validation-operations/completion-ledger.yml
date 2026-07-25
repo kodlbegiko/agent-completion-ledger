@@ -1,0 +1,74 @@
+schemaVersion: "1"
+policy:
+  allowedExecutables: []
+tasks:
+  - id: external-validation-operations
+    description: Verify the external-validation operations package without executing repository code.
+    claim:
+      status: completed
+      agent: autonomous-research-agent
+      recordedAt: "2026-07-25T00:00:00Z"
+    evidence:
+      - id: required-operational-files
+        type: required-files
+        paths:
+          - docs/v0.3.0-external-evidence-audit.md
+          - docs/FEATURE-FREEZE.md
+          - docs/OWNER-PYPI-PUBLISH-ACTIONS.md
+          - docs/RECRUITMENT-TARGET-RATIONALE.md
+          - docs/INDEPENDENT-SECURITY-REVIEW.md
+          - docs/EXTERNAL-VALIDATION-OPERATIONS-STATUS.md
+          - docs/outreach/maintainer-invitation.md
+          - docs/outreach/security-review-request.md
+          - docs/outreach/independent-reproduction-request.md
+          - docs/outreach/personalized-target-drafts.md
+          - research/external-validation/recruitment-targets.csv
+          - research/prospective-dogfood/collection-template.csv
+          - security/reproduction-cases/README.md
+          - .github/workflows/build-release-artifacts.yml
+          - .github/workflows/publish-pypi.yml
+      - id: audit-has-verified-state
+        type: text-contains
+        path: docs/v0.3.0-external-evidence-audit.md
+        text: "VERIFIED"
+      - id: audit-has-unavailable-state
+        type: text-contains
+        path: docs/v0.3.0-external-evidence-audit.md
+        text: "UNAVAILABLE TO CHECK"
+      - id: feature-freeze-recorded
+        type: text-contains
+        path: docs/FEATURE-FREEZE.md
+        text: "FEATURE FREEZE"
+      - id: recruitment-status-honest
+        type: text-contains
+        path: docs/EXTERNAL-VALIDATION-OPERATIONS-STATUS.md
+        text: "READY FOR RECRUITMENT"
+      - id: no-external-participants-claimed
+        type: text-contains
+        path: docs/EXTERNAL-VALIDATION-OPERATIONS-STATUS.md
+        text: "Real participant count: **0**"
+      - id: no-nonauthor-integrations-claimed
+        type: text-contains
+        path: docs/EXTERNAL-VALIDATION-OPERATIONS-STATUS.md
+        text: "Non-author repository count: **0**"
+      - id: outreach-not-sent
+        type: text-contains
+        path: docs/outreach/personalized-target-drafts.md
+        text: "NOT SENT"
+      - id: security-boundary-recorded
+        type: text-contains
+        path: docs/INDEPENDENT-SECURITY-REVIEW.md
+        text: "not a sandbox"
+      - id: pypi-not-falsely-claimed
+        type: text-contains
+        path: docs/OWNER-PYPI-PUBLISH-ACTIONS.md
+        text: "not published"
+      - id: candidate-count-header
+        type: text-contains
+        path: docs/RECRUITMENT-TARGET-RATIONALE.md
+        text: "30 public candidates"
+      - id: no-v04-release-notes
+        type: forbidden-files
+        paths:
+          - docs/release-notes-v0.4.0.md
+          - research/external-validation/synthetic-human-results.json
