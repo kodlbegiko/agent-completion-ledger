@@ -1,5 +1,5 @@
 {
-  "artifactDigest": "sha256:dca9e9857ee47740a7c4105e2c787e5783ee54bdd7bd93e851fd4b6eb94f870d",
+  "artifactDigest": "sha256:75413dec99c96ab776eb095f17e3ee1db7ff4cbfb0283195668b7bb6c36786f8",
   "assets": {
     "SHA256SUMS": {
       "bytes": 216,
@@ -14,6 +14,7 @@
       "sha256": "f3beaa8b922ce216d01120c78033b21ff2f7b16c0c7ef535088a22a09b19383b"
     }
   },
+  "checksumEntryVerification": "PASS — one wheel entry and one sdist entry",
   "checksumVerification": "PASS",
   "draft": false,
   "name": "v0.3.1 — Security and Packaging Patch",
@@ -23,8 +24,8 @@
   "releaseUrl": "https://github.com/kodlbegiko/agent-completion-ledger/releases/tag/v0.3.1",
   "status": "VERIFIED",
   "tag": "v0.3.1",
-  "tagComparison": "identical-to-release-commit",
-  "verificationHead": "e5a64e2a2045a5f145bb85e4f3232e1c37d91f58",
-  "verificationRunId": 30144411275,
+  "tagCommitVerification": "PASS — resolved tag equals release commit",
+  "verificationHead": "9a6a31770964189aa1c1286f8c5d5eebad0d8d23",
+  "verificationRunId": 30144764452,
   "wheelSmokeTest": "PASS"
 }
