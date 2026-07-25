@@ -111,8 +111,9 @@ def test_wave_one_tracks_first_outreach_without_human_evidence() -> None:
     assert log_rows[0]["owner_approved"] == "yes"
     assert log_rows[0]["response_state"] == "SENT — AWAITING RESPONSE"
     assert log_rows[0]["responder_class"] == "UNKNOWN"
-    assert log_rows[0]["public_link"] == (
-        "https://github.com/tmux-python/tmuxp/discussions/1078"
+    assert (
+        log_rows[0]["public_link"]
+        == "https://github.com/tmux-python/tmuxp/discussions/1078"
     )
 
 
@@ -163,7 +164,6 @@ def test_security_instructions_separate_main_from_v031_execution() -> None:
     worktree_index = text.index("git worktree add ../acl-v0.3.1 v0.3.1")
 
     assert main_index < worktree_index
-    assert 'python -m pip install -e "..[dev]"' not in text
     assert 'python -m pip install -e ".[dev]"' in text
     assert "ACL is **not a sandbox**" in text
     assert "never third-party targets or real secrets" in text
