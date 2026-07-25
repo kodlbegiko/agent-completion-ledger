@@ -1,20 +1,32 @@
 name: publish-package
 
 on:
-  push:
-    tags:
-      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing immutable semver tag to publish
+        required: true
+        type: string
 
 permissions:
   contents: read
 
 jobs:
   build:
-    name: Build and validate distributions
+    name: Build and validate tagged distributions
     runs-on: ubuntu-latest
     steps:
+      - name: Validate requested tag syntax
+        shell: bash
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+
       - uses: actions/checkout@v4
         with:
+          ref: ${{ inputs.tag }}
           fetch-depth: 0
           persist-credentials: false
 
@@ -23,13 +35,14 @@ jobs:
           python-version: "3.12"
           cache: pip
 
-      - name: Verify tag matches package version
+      - name: Verify tag matches checked-out commit and package version
         shell: bash
         env:
-          TAG: ${{ github.ref_name }}
+          TAG: ${{ inputs.tag }}
         run: |
           set -euo pipefail
-          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          git fetch --force --tags origin
+          git show-ref --verify --quiet "refs/tags/$TAG"
           test "$(git rev-parse HEAD)" = "$(git rev-list -n 1 "$TAG")"
           PACKAGE_VERSION="$(python - <<'PY'
           import tomllib
@@ -80,7 +93,7 @@ jobs:
           if-no-files-found: error
 
   publish-testpypi:
-    name: Publish to TestPyPI
+    name: Publish tagged distributions to TestPyPI
     needs: build
     runs-on: ubuntu-latest
     environment: testpypi
@@ -99,7 +112,7 @@ jobs:
           attestations: true
 
   publish-pypi:
-    name: Publish to PyPI after TestPyPI
+    name: Publish identical tagged distributions to PyPI
     needs: publish-testpypi
     runs-on: ubuntu-latest
     environment: pypi
