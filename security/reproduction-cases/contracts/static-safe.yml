@@ -1,0 +1,16 @@
+schemaVersion: "1"
+policy:
+  allowedExecutables: []
+tasks:
+  - id: static-safe
+    claim:
+      status: completed
+      agent: independent-security-review-fixture
+    evidence:
+      - id: public-file
+        type: file-exists
+        path: public.txt
+      - id: public-text
+        type: text-contains
+        path: public.txt
+        text: "public fixture"
