@@ -1,5 +1,5 @@
 wave_id,repository,role,status,planned_day
-W1-M1,tmux-python/tmuxp,MAINTAINER_PILOT,NOT_SENT,DAY_1
+W1-M1,tmux-python/tmuxp,MAINTAINER_PILOT,SENT,DAY_1
 W1-M2,evalstate/fast-agent,MAINTAINER_PILOT,NOT_SENT,DAY_1
 W1-S1,zizmorcore/zizmor,INDEPENDENT_SECURITY_REVIEW,NOT_SENT,DAY_1
 W1-M3,campfirein/byterover-cli,MAINTAINER_PILOT,NOT_SENT,DAY_3

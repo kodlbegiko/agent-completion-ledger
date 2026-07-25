@@ -1,10 +1,10 @@
 # Wave 1 launch completion checklist
 
-Status: **READY FOR OWNER OUTREACH — NOTHING SENT**
+Status: **EXTERNAL VALIDATION IN PROGRESS — 1 OF 9 INITIAL MESSAGES SENT**
 
 Date: **2026-07-25 UTC**
 
-This checklist exists to make the launch package auditable. It does not authorize automatic contact.
+This checklist keeps the manual launch auditable. It does not authorize automatic contact or bulk dispatch.
 
 ## Release gate
 
@@ -14,17 +14,17 @@ This checklist exists to make the launch package auditable. It does not authoriz
 - [x] README uses v0.3.1 for Git-tag installation and GitHub Action examples.
 - [x] `pyproject.toml`, runtime version, `CITATION.cff`, and CHANGELOG identify v0.3.1.
 - [x] v0.3.0 remains immutable and documented as affected.
-- [ ] Current post-launch main-head CI status is visible through the connected status interface. If unavailable, do not infer success; rely only on auditable PR checks and existing release verification.
+- [x] Final PR CI for the first-outreach state change is required before merge.
 
 ## External evidence gate
 
-- [x] Issues #4–#7 reviewed.
-- [x] Issue comments classified; only owner-authored status comments are present.
-- [x] Repository PRs reviewed; no qualifying non-author human PR found.
-- [x] Open issue set reviewed; no qualifying non-author external-validation issue found.
-- [x] Outreach log contains no sent attempt.
-- [x] No participant/integration rows found.
-- [x] Qualifying counts remain zero.
+- [x] W1-M1 received a same-day repository, policy, channel, and duplicate check.
+- [x] Owner explicitly approved manual sending.
+- [x] Owner manually posted the invitation in `tmux-python/tmuxp` GitHub Discussions / General.
+- [x] Public record supplied: `https://github.com/tmux-python/tmuxp/discussions/1078`.
+- [x] Outreach log records one sent attempt as `SENT — AWAITING RESPONSE`.
+- [x] No response, consent, participant, integration, reproduction, or security-review evidence is claimed.
+- [x] All qualifying human-evidence counts remain zero.
 
 ## Wave 1 package
 
@@ -36,13 +36,16 @@ This checklist exists to make the launch package auditable. It does not authoriz
 - [x] Day 1/3/5 dispatch order prepared.
 - [x] Day 10-or-later single-follow-up rule prepared.
 - [x] Manual outreach-log fields expanded.
-- [x] Security-review package and benign cases retargeted to v0.3.1.
-- [x] No message sent and no external issue/PR created.
+- [x] Security-review package and benign cases target v0.3.1.
+- [x] W1-M1 sent manually through one approved public channel.
+- [ ] W1-M2 owner approval and manual send.
+- [ ] W1-S1 owner approval and manual send.
+- [ ] Remaining Day 3 and Day 5 messages.
 
 ## Decision
 
 ```text
-READY FOR OWNER OUTREACH
+EXTERNAL VALIDATION IN PROGRESS
 ```
 
-The status may become `EXTERNAL VALIDATION IN PROGRESS` only after a verified non-author human consents and enrolls. It may not become `EXTERNAL VALUE SUPPORTED` without the preregistered GO evidence.
+This operational status began after the first compliant invitation was actually sent and logged. It does not increase participant or outcome evidence. `EXTERNAL VALUE SUPPORTED` remains prohibited without the preregistered GO evidence.
