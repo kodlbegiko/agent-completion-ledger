@@ -161,7 +161,7 @@ Request for a 15–30 minute independent reproduction of ACL v0.3.1
 
 **Exact message**
 
-```markdown
+````markdown
 Hello tox maintainers,
 
 I am looking for an independent, non-author reproduction of Agent Completion Ledger v0.3.1. This is reproduction only: no tox integration, endorsement, private repository, or product adoption is requested.
@@ -202,7 +202,7 @@ Would this one-time reproduction request be appropriate for this channel?
 
 Instructions: https://github.com/kodlbegiko/agent-completion-ledger/blob/main/docs/THIRD-PARTY-REPRODUCTION.md
 Release: https://github.com/kodlbegiko/agent-completion-ledger/releases/tag/v0.3.1
-```
+````
 
 ## W1-R2 — kislyuk/yq
 
@@ -214,7 +214,7 @@ Optional 15–30 minute Python package reproduction of ACL v0.3.1
 
 **Exact message**
 
-```markdown
+````markdown
 Hello yq maintainer,
 
 I am requesting a bounded independent reproduction of Agent Completion Ledger v0.3.1 from someone familiar with Python CLI packaging and tests. This does not ask yq to integrate ACL or provide any yq data.
@@ -251,7 +251,7 @@ No local YAML/XML/TOML files, credentials, private code, personal data, or sensi
 Would this request be suitable for the public issue tracker?
 
 Instructions: https://github.com/kodlbegiko/agent-completion-ledger/blob/main/docs/THIRD-PARTY-REPRODUCTION.md
-```
+````
 
 ## W1-S1 — zizmorcore/zizmor
 
@@ -263,25 +263,29 @@ Optional bounded review of ACL GitHub Actions and verifier trust boundaries
 
 **Exact message**
 
-```markdown
+````markdown
 Hello zizmor maintainers,
 
 I am seeking a bounded independent security review of Agent Completion Ledger (ACL) v0.3.1. ACL checks coding-agent completion claims against repository evidence, but it is explicitly not a sandbox and has no claim of independent security adequacy.
 
 The initial 30–60 minute scope is limited to reviewed contract/digest sources, GitHub Actions fork-PR permissions, executable allowlists, Python subprocess behavior, path/symlink confinement, report leakage, and the risk of interpreting an in-toto envelope or signed artifact as software correctness.
 
-A disposable setup is:
+Read the current reviewed instructions from `main`, then execute immutable v0.3.1 in a separate worktree:
 
 ```bash
-git clone --branch v0.3.1 --depth 1 https://github.com/kodlbegiko/agent-completion-ledger.git
+git clone https://github.com/kodlbegiko/agent-completion-ledger.git
 cd agent-completion-ledger
+git switch main
+cat docs/INDEPENDENT-SECURITY-REVIEW.md
+cat security/reproduction-cases/README.md
+git worktree add ../acl-v0.3.1 v0.3.1
+cd ../acl-v0.3.1
 python -m venv .venv
 . .venv/bin/activate
 python -m pip install -e ".[dev]"
-cat security/reproduction-cases/README.md
 ```
 
-The repository contains benign local cases for digest mismatch, `--no-exec`, traversal, Windows paths, symlinks, mixed-case URL rejection, timeouts, output nondisclosure, and in-toto interpretation. No test should target a third party, use real secrets, or publish a weaponized exploit.
+The instruction source is the latest reviewed `main`; the executable under test is immutable `v0.3.1`. The repository contains benign local cases for digest mismatch, `--no-exec`, traversal, Windows paths, symlinks, mixed-case URL rejection, timeouts, output nondisclosure, and in-toto interpretation. No test should target a third party, use real secrets, or publish a weaponized exploit.
 
 Known non-goals: ACL does not provide network, syscall, VM/container, privilege, malware, identity, or key-management isolation. A signed report proves an issuer/artifact relationship under the signing system; it does not prove software correctness, safe execution, complete requirements, or product value.
 
@@ -290,7 +294,7 @@ Public low-risk findings can use the supplied template. Suspected high-risk find
 This request is voluntary, does not imply endorsement, and can be stopped at any time. If the project's AI/contribution policy permits this request, would you consider an initial pass?
 
 Review package: https://github.com/kodlbegiko/agent-completion-ledger/blob/main/docs/INDEPENDENT-SECURITY-REVIEW.md
-```
+````
 
 ## W1-S2 — zgosalvez/github-actions-ensure-sha-pinned-actions
 
@@ -302,22 +306,26 @@ Optional review of ACL action pinning, release, and CI trust boundaries
 
 **Exact message**
 
-```markdown
+````markdown
 Hello maintainer,
 
 I am requesting a bounded independent security review of Agent Completion Ledger (ACL) v0.3.1, focused on GitHub Actions supply-chain and SHA/digest trust boundaries. ACL is a repository-evidence verifier for coding-agent completion claims; it is not a sandbox and has not been independently validated.
 
 The proposed 30–60 minute initial pass covers: whether expected contract digests originate from protected inputs, action/tag mutability, fork-PR permissions and secrets, checkout credentials, `id-token` exposure, exact release/tag binding, allow-listed subprocess limitations, and whether signed evidence could be mistaken for software correctness.
 
-Disposable setup:
+Read the current reviewed instructions from `main`, then execute immutable v0.3.1 in a separate worktree:
 
 ```bash
-git clone --branch v0.3.1 --depth 1 https://github.com/kodlbegiko/agent-completion-ledger.git
+git clone https://github.com/kodlbegiko/agent-completion-ledger.git
 cd agent-completion-ledger
+git switch main
+cat docs/INDEPENDENT-SECURITY-REVIEW.md
+cat security/reproduction-cases/README.md
+git worktree add ../acl-v0.3.1 v0.3.1
+cd ../acl-v0.3.1
 python -m venv .venv
 . .venv/bin/activate
 python -m pip install -e ".[dev]"
-cat security/reproduction-cases/README.md
 ```
 
 Only the included benign local cases are in scope. Please do not test third-party workflows, use credentials, attack external systems, or publish high-risk exploit details. High-risk results should use ACL's GitHub private security reporting route.
@@ -330,7 +338,7 @@ Would this one-time review be appropriate for the public issue channel?
 
 Review package: https://github.com/kodlbegiko/agent-completion-ledger/blob/main/docs/INDEPENDENT-SECURITY-REVIEW.md
 Release: https://github.com/kodlbegiko/agent-completion-ledger/releases/tag/v0.3.1
-```
+````
 
 ## Manual send invariant
 
