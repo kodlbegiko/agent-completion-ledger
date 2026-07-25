@@ -1,0 +1,18 @@
+schemaVersion: "1"
+policy:
+  allowedExecutables:
+    - python
+tasks:
+  - id: command-output-not-reported
+    claim:
+      status: completed
+      agent: independent-security-review-fixture
+    evidence:
+      - id: emit-benign-marker
+        type: command
+        command:
+          - python
+          - -c
+          - "print('ACL_BENIGN_OUTPUT_MARKER_DO_NOT_REPORT')"
+        expectedExitCode: 0
+        timeoutSeconds: 5

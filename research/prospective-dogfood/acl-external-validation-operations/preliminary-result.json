@@ -1,0 +1,22 @@
+{
+  "aclVersion": "0.3.0",
+  "assertionCount": 12,
+  "branch": "research/external-validation-operations",
+  "ciRunId": 30139255068,
+  "ciRunHeadSha": "7555340c98ab5f043a14549c64a6f057f5663d1d",
+  "contractAuthoringMeasurement": "PENDING MANUAL TIMER; not inferred or fabricated",
+  "contractAuthoringMinutes": null,
+  "contractCreatedBeforeImplementationCompletion": true,
+  "contractLineCount": 74,
+  "decisionAfterLedger": "ELIGIBLE_FOR_REVIEW; merge decision remains human",
+  "decisionBeforeLedger": "INSUFFICIENT_EVIDENCE",
+  "decisionChanged": false,
+  "externalValidationCredit": false,
+  "ledgerResult": "SUPPORTED",
+  "missingBlockingEvidenceFound": false,
+  "recordStatus": "AUTHOR-OWNED PROSPECTIVE DOGFOOD — PRELIMINARY PR EVIDENCE",
+  "repository": "kodlbegiko/agent-completion-ledger",
+  "resultDigest": "d082ee83ebb606d8688e2f75c77165129874d7cb9804bcffa27b46382a47c81e",
+  "securitySuiteInSameRun": "FAIL due to corrected test expectation; not a verifier bypass",
+  "verificationRuntimeSeconds": 0.178941665
+}

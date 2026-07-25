@@ -166,10 +166,17 @@ def test_command_not_allowlisted(repo: Path) -> None:
     assert evaluate_assertion(spec, repo, ()).outcome is AssertionOutcome.UNVERIFIABLE
 
 
-def test_remote_url_argument_rejected(repo: Path) -> None:
-    spec = AssertionSpec(
-        "command", "command", command=(sys.executable, "https://example.invalid/code.py")
-    )
+@pytest.mark.parametrize(
+    "url",
+    [
+        "http://example.invalid/code.py",
+        "https://example.invalid/code.py",
+        "HTTP://example.invalid/code.py",
+        "HTTPS://example.invalid/code.py",
+    ],
+)
+def test_remote_url_argument_rejected(repo: Path, url: str) -> None:
+    spec = AssertionSpec("command", "command", command=(sys.executable, url))
     result = evaluate_assertion(spec, repo, (sys.executable,))
     assert result.outcome is AssertionOutcome.UNVERIFIABLE
 

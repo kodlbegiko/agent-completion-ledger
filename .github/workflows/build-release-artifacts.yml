@@ -1,0 +1,96 @@
+name: build-release-artifacts
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing semver release tag to rebuild and attach
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-attach:
+    name: Build and attach wheel, sdist, and checksums
+    runs-on: ubuntu-latest
+    environment: release-artifacts
+    permissions:
+      contents: write
+    steps:
+      - name: Validate requested tag syntax
+        shell: bash
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Verify immutable tag and package version
+        shell: bash
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          git fetch --force --tags origin
+          git show-ref --verify --quiet "refs/tags/$TAG"
+          test "$(git rev-parse HEAD)" = "$(git rev-list -n 1 "$TAG")"
+          PACKAGE_VERSION="$(python - <<'PY'
+          import tomllib
+          from pathlib import Path
+          print(tomllib.loads(Path('pyproject.toml').read_text(encoding='utf-8'))['project']['version'])
+          PY
+          )"
+          test "$TAG" = "v$PACKAGE_VERSION"
+
+      - name: Build and validate distributions
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install build==1.2.2.post1 twine==6.1.0
+          python -m build
+          python -m twine check dist/*
+          python scripts/wheel_smoke.py "$(python -c 'import glob; print(glob.glob("dist/*.whl")[0])')"
+
+      - name: Generate SHA-256 checksums
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib
+          from pathlib import Path
+
+          lines = []
+          for path in sorted(Path('dist').iterdir()):
+              if path.is_file():
+                  digest = hashlib.sha256(path.read_bytes()).hexdigest()
+                  lines.append(f"{digest}  {path.name}")
+          Path('dist/SHA256SUMS').write_text('\n'.join(lines) + '\n', encoding='utf-8', newline='\n')
+          PY
+          cat dist/SHA256SUMS
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.tag }}-release-artifacts
+          path: dist/
+          if-no-files-found: error
+
+      - name: Attach artifacts to existing GitHub Release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null
+          gh release upload "$TAG" dist/* --repo "$GITHUB_REPOSITORY" --clobber

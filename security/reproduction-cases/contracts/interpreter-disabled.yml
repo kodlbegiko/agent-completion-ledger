@@ -1,0 +1,18 @@
+schemaVersion: "1"
+policy:
+  allowedExecutables:
+    - python
+tasks:
+  - id: interpreter-disabled
+    claim:
+      status: completed
+      agent: independent-security-review-fixture
+    evidence:
+      - id: command-must-not-run
+        type: test-command
+        command:
+          - python
+          - -c
+          - "raise SystemExit('this command must not execute in --no-exec mode')"
+        expectedExitCode: 0
+        timeoutSeconds: 5

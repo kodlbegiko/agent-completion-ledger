@@ -1,0 +1,18 @@
+schemaVersion: "1"
+policy:
+  allowedExecutables:
+    - python
+tasks:
+  - id: timeout-enforced
+    claim:
+      status: completed
+      agent: independent-security-review-fixture
+    evidence:
+      - id: bounded-sleep
+        type: command
+        command:
+          - python
+          - -c
+          - "import time; time.sleep(2)"
+        expectedExitCode: 0
+        timeoutSeconds: 0.1

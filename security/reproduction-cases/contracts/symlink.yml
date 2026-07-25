@@ -1,0 +1,12 @@
+schemaVersion: "1"
+policy:
+  allowedExecutables: []
+tasks:
+  - id: symlink-rejected
+    claim:
+      status: completed
+      agent: independent-security-review-fixture
+    evidence:
+      - id: generated-symlink
+        type: file-exists
+        path: link.txt

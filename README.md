@@ -12,6 +12,32 @@ ACL is responsible for task completion claims, repository/CI evidence, determini
 
 ACL is **not** complete agent tracing, chain-of-thought storage, general operation audit, agent identity, regulatory certification, artifact build provenance, a complete sandbox, a product-value test, or proof of semantic correctness. See `docs/ecosystem-positioning.md`.
 
+## Project state
+
+```text
+ENGINEERING COMPLETE
+FEATURE FREEZE
+READY FOR RECRUITMENT
+```
+
+The v0.3.0 engineering scope is frozen. Core verifier changes require a security, reproduction, packaging, cross-platform, or externally observed blocking-usability reason. v0.4.0 is prohibited until the preregistered external-value gate is met. See `docs/FEATURE-FREEZE.md`.
+
+Current external evidence:
+
+- real participants: **0**;
+- non-author repository integrations: **0**;
+- independent reproductions: **0**;
+- independent security reviewers: **0**;
+- realized reviewer-time savings, decision improvement, adoption, and public impact: **not demonstrated**.
+
+See `docs/EXTERNAL-VALIDATION-OPERATIONS-STATUS.md` and `docs/v0.3.0-external-evidence-audit.md`.
+
+### v0.3.0 security boundary notice
+
+PR #8 reproduced that v0.3.0's remote-URL argument check is case-sensitive: mixed-case schemes such as `HTTPS://` can reach an allow-listed executable instead of becoming `UNVERIFIABLE`. A narrow source fix and regression tests are prepared under the feature-freeze security exception; the immutable v0.3.0 release remains affected until a verified v0.3.1 patch is published.
+
+Until then, use v0.3.0 only for reproduction, report inspection, trusted local repositories, or `--no-exec` static verification. Do not rely on v0.3.0 executable mode as an isolation boundary for an untrusted external repository. ACL remains **not a sandbox** even after the patch.
+
 ## Installation status
 
 The current released source is `v0.3.0`. ACL is **not published on PyPI**. Install from the GitHub release tag or clone the repository:
@@ -31,7 +57,9 @@ cd agent-completion-ledger
 python -m pip install -e ".[dev]"
 ```
 
-GitHub Releases provide source archives. Wheel and sdist builds are validated in CI, but no PyPI publication is claimed.
+GitHub Releases currently provide generated source archives. Wheel and sdist builds are validated in CI, but the v0.3.0 Release does not yet record project-built wheel, sdist, and checksum assets. PyPI Trusted Publishing and release-asset workflows are prepared; owner setup and verification remain required. See `docs/OWNER-PYPI-PUBLISH-ACTIONS.md`.
+
+Do not use `pip install agent-completion-ledger` in user instructions until the production PyPI project and a clean-environment installation have been verified.
 
 ## Quick verification
 
@@ -172,7 +200,7 @@ pytest --cov=agent_completion_ledger --cov-branch
 python -m build
 ```
 
-CI covers Python 3.11/3.12/3.13 on Ubuntu and Python 3.12 on Windows/macOS, branch coverage, wheel installation, deterministic report output, predicate schema validation, safe workflow fixtures, composite-action integration, full reproduction, and dogfood against Shipcheck and CSV Snapshot.
+CI covers Python 3.11/3.12/3.13 on Ubuntu and Python 3.12 on Windows/macOS, branch coverage, wheel installation, deterministic report output, predicate schema validation, safe workflow fixtures, composite-action integration, full reproduction, author-owned dogfood against Shipcheck and CSV Snapshot, and the external-validation operations package.
 
 ## Research evidence
 
@@ -180,12 +208,20 @@ CI covers Python 3.11/3.12/3.13 on Ubuntu and Python 3.12 on Windows/macOS, bran
 - v0.2.0 preregistered Multi-SWE-bench Go/MagentLess source: `SUPPORTED` within its documented scope.
 - These studies do not estimate real-world prevalence or prove semantic correctness.
 
-## External validation and impact
+## External validation operations
 
-- Engineering hardening: implemented and under release CI.
-- External study materials: `READY FOR EXTERNAL VALIDATION`.
-- Real external participants: **0**.
-- Non-author repository integrations: **0**.
-- Independent adoption, reviewer-time savings, changed real decisions, product-quality improvement, and realized public impact: **EXTERNAL VALIDATION PENDING / UNKNOWN**.
+The fixed research question asks whether Summary + Ledger improves non-author maintainer review compared with Summary-only. The preregistered thresholds, ten-task pack, participant-balanced primary analysis, integration data template, 30-candidate recruitment matrix, non-sent outreach drafts, and independent security-review package are available under:
 
-See `docs/ADOPTION-QUICKSTART.md`, `docs/EXTERNAL-VALIDATION-PROTOCOL.md`, `research/external-validation/preregistration.md`, `SECURITY.md`, and `docs/v0.3.0-red-team.md`.
+- `docs/EXTERNAL-VALIDATION-PROTOCOL.md`;
+- `research/external-validation/`;
+- `docs/outreach/`;
+- `docs/INDEPENDENT-SECURITY-REVIEW.md`;
+- `security/reproduction-cases/`.
+
+No external contact is automated. Owner approval is required before any message. Synthetic data, model reviews, author-owned dogfood, CI, downloads, stars, or release quality cannot be counted as human external validation.
+
+Current decision:
+
+```text
+READY FOR RECRUITMENT
+```

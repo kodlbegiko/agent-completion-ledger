@@ -1,0 +1,12 @@
+schemaVersion: "1"
+policy:
+  allowedExecutables: []
+tasks:
+  - id: windows-absolute-rejected
+    claim:
+      status: completed
+      agent: independent-security-review-fixture
+    evidence:
+      - id: windows-drive-path
+        type: file-exists
+        path: C:\\Windows\\System32\\drivers\\etc\\hosts

@@ -194,7 +194,7 @@ def _command_assertion(
             AssertionOutcome.UNVERIFIABLE,
             f"executable is not allow-listed: {executable}",
         )
-    if any(argument.startswith(("http://", "https://")) for argument in spec.command):
+    if any(argument.lower().startswith(("http://", "https://")) for argument in spec.command):
         return _result(
             spec,
             AssertionOutcome.UNVERIFIABLE,

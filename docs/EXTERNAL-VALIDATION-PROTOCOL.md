@@ -1,19 +1,28 @@
 # External validation protocol
 
-Status: **READY FOR EXTERNAL VALIDATION**
+Status: **READY FOR RECRUITMENT**
 
 Real participant count: **0**
 
+Non-author repository count: **0**
+
 The preregistered hypotheses, thresholds, task pack, consent notice, collection template, and analysis script are under `research/external-validation/`.
+
+## Fixed research question
+
+> For non-author repository maintainers, does adding an Agent Completion Ledger report to coding-agent completion review improve decision quality, missing-evidence detection, or review efficiency compared with reading the agent summary alone?
+
+The research question, H1/H0/H2, material thresholds, exclusions, and participant-balanced primary analysis cannot be changed after human outcome data are inspected.
 
 ## Materials freeze
 
 Before the first participant:
 
 1. record the commit SHA containing the protocol and task pack;
-2. export SHA-256 digests for `preregistration.md`, `task-pack.json`, `data-template.csv`, and `analyze.py`;
+2. export SHA-256 digests for `preregistration.md`, `task-pack.json`, `data-template.csv`, `adoption-integration-template.csv`, and `analyze.py`;
 3. do not change primary metrics, exclusions, or thresholds after outcome data are inspected;
-4. log any operational correction with date, reason, affected participants, and whether re-consent is required.
+4. log any operational correction with date, reason, affected participants, and whether re-consent is required;
+5. exclude all `SYNTH-`, template, author-owned, and model-only records from human analysis.
 
 ## Counterbalancing schedule
 
@@ -46,16 +55,44 @@ Randomize order within each condition block using a recorded random seed. A part
 - Correct insufficient-evidence decision: reviewer chooses `INSUFFICIENT_EVIDENCE` for that ground-truth class.
 - First-blocker time is measured only when a blocking issue is identified; absence remains missing, not zero.
 
+## Non-author repository integration track
+
+A participant may also apply ACL to a real public task in a repository they maintain. This track measures adoption friction and real decision effects; it does not replace the fixed counterbalanced ten-task experiment.
+
+For every integration, use `research/external-validation/adoption-integration-template.csv` and record:
+
+- participant pseudonymous ID and consent state;
+- repository type and public identifier, or `not disclosed` when approved by the protocol;
+- programming language and task family;
+- ACL version and public task/commit/PR reference;
+- whether the contract existed before the review decision;
+- contract authoring time, non-comment line count, and assertion count;
+- installation time;
+- CI runtime before ACL, with ACL, and calculated overhead;
+- decision before and after the ledger and whether it changed;
+- false acceptance and false rejection against fixed ground truth;
+- ambiguity before and after;
+- time to the first blocking evidence;
+- willingness to keep the contract;
+- number of times author assistance was required;
+- subjective conditions not automatically verified;
+- security/privacy concerns and protocol deviations.
+
+Do not collect secrets, private code, employer-confidential information, hidden reasoning, sensitive personal data, or identity information beyond consented contact records stored separately. The template has explicit negative-control fields for prohibited data; any `true` value requires immediate review and exclusion from publication.
+
 ## Data quality checks
 
-- exactly ten completed task rows per included participant;
+- exactly ten completed task rows per included fixed-study participant;
 - five rows in each condition;
 - no duplicate participant/task pair;
 - decision and ground truth use allowed values;
 - review time is positive;
 - confidence and ambiguity are integers 1–5;
 - exclusions contain a written reason;
-- synthetic IDs beginning `SYNTH-` are never merged with real participant results.
+- synthetic IDs beginning `SYNTH-` are never merged with real participant results;
+- repeated judgments from one participant remain clustered under that participant and are not treated as independent participants;
+- participant-balanced summaries are primary; pooled rows are sensitivity analysis only;
+- author-owned prospective dogfood and non-author integration records remain separately labeled.
 
 ## Analysis
 
@@ -65,12 +102,23 @@ python research/external-validation/analyze.py \
   --output research/external-validation/analysis-result.json
 ```
 
-The script reports both conditions and every preregistered threshold. It does not claim causal attribution beyond the prepared comparison, and it cannot resolve H2 without additional specification-only controls.
+The script reports participant-level, participant-balanced, and pooled sensitivity results and every preregistered threshold. It does not claim causal attribution beyond the prepared comparison, and it cannot resolve H2 without additional specification-only controls and qualitative evidence.
+
+Real integration outcomes are summarized separately before any exploratory cross-task analysis. They may establish real decision changes or adoption friction but cannot be substituted for missing fixed-study participants.
+
+## Recruitment operations
+
+- Candidate matrix: `research/external-validation/recruitment-targets.csv`.
+- Outreach log: `research/external-validation/outreach-log.csv`.
+- Drafts: `docs/outreach/`.
+- No message may be sent without owner approval and a fresh repository/contact-policy check.
+- One initial public message maximum per target; no automated issue, PR, email, tagging, or social posting.
+- Stop and evaluate maintenance mode after 30 targeted attempts with no non-author participant.
 
 ## Recruitment state
 
-No participant has been recruited or completed the protocol. The repository issues track recruitment, reproduction, interoperability feedback, and security review. Until real evidence meets the stated thresholds, the project status remains:
+No participant has been recruited or completed the protocol. Issues #4–#7 track reproduction, recruitment, interoperability feedback, and security review. Until real evidence meets the stated thresholds, the project status remains:
 
 ```text
-EXTERNAL VALIDATION PENDING
+READY FOR RECRUITMENT
 ```
