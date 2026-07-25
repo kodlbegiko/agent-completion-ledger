@@ -5,12 +5,12 @@ Status date: **2026-07-25 UTC**
 Decision:
 
 ```text
-READY FOR OWNER OUTREACH
+EXTERNAL VALIDATION IN PROGRESS
 ```
 
-The v0.3.1 security and packaging patch is released and verified. Wave 1 targets, exact messages, dispatch order, logging fields, consent handling, and follow-up rules are prepared. No external message has been sent.
+The v0.3.1 security and packaging patch remains released and verified. The owner manually sent the first compliant Wave 1 invitation through the approved public channel. No response, consent, enrollment, completed task, reproduction, or security review is claimed from that send.
 
-## Qualifying counts
+## Current qualifying counts
 
 ```text
 Real participants: 0
@@ -18,28 +18,38 @@ Non-author repositories: 0
 Real external tasks: 0
 Independent reproductions: 0
 Independent security reviewers: 0
-Targeted outreach sent: 0
+Targeted outreach sent: 1
 Responses: 0
 ```
 
-Only a verified `NON-AUTHOR HUMAN` may increment an external count. Author comments, CI, release jobs, model reviews, automated replies, synthetic data, and author-owned dogfood do not count.
+Only a verified `NON-AUTHOR HUMAN` may increment a participant or external-evidence count. An invitation, owner comment, CI result, model review, bot response, synthetic row, or author-owned dogfood task does not count.
 
-## Release and distribution gate
+## First public outreach record
+
+```text
+Wave ID: W1-M1
+Target: tmux-python/tmuxp
+Role: MAINTAINER_PILOT
+Channel: GitHub Discussions / General
+State: SENT — AWAITING RESPONSE
+Public URL: https://github.com/tmux-python/tmuxp/discussions/1078
+```
+
+The owner manually posted the approved invitation and supplied the public URL. The connected GitHub actions do not expose Discussion creation metadata, so the outreach log records the owner-confirmation time and states that limitation explicitly.
+
+The remaining eight Wave 1 messages are still `NOT_SENT` and each requires its own same-day policy check and owner approval. No cross-channel duplicate contact or follow-up has been sent.
+
+## Release and feature-freeze gate
 
 - Core verifier: `FEATURE FREEZE`.
-- v0.3.0: immutable and affected by the documented mixed-case remote-URL rejection defect.
-- v0.3.1: verified security and packaging patch.
+- v0.3.0 remains immutable and documented as affected by the mixed-case remote-URL rejection defect.
+- v0.3.1 is the verified security and packaging patch.
 - Release/tag commit: `703d63d6fb9a4329327634d5ae6e21030e13075e`.
-- Release: `v0.3.1 — Security and Packaging Patch`; not draft; not prerelease.
-- Assets: wheel, sdist, and `SHA256SUMS` present.
-- Exact checksum-entry and SHA-256 validation: passed.
-- Released-wheel clean-environment smoke test: passed.
-- Runtime and package metadata: `0.3.1`.
-- Human evidence: `docs/v0.3.1-release-verification.md`.
-- Machine evidence: `docs/v0.3.1-release-verification.json`.
-- PyPI: not published.
-
-The verified GitHub tag and assets are sufficient for Wave 1. PyPI is optional adoption-friction reduction, not a recruitment prerequisite.
+- Release assets include wheel, sdist, and `SHA256SUMS`.
+- Exact checksum validation and released-wheel smoke verification passed.
+- Runtime and package metadata remain `0.3.1`.
+- PyPI remains unpublished and is not a Wave 1 prerequisite.
+- No v0.4.0 development is authorized before the external-value gate is met.
 
 ## Security boundary
 
@@ -53,50 +63,17 @@ Remaining material risks include:
 - a valid in-toto envelope or signed artifact does not prove correctness or safe execution;
 - independent security reviewer count remains zero.
 
-The security review package and benign cases now target v0.3.1.
-
-## Wave 1 readiness
-
-Prepared and not sent:
-
-- current-status re-audit of the original 30 candidates;
-- five maintainer-pilot targets;
-- two independent-reproduction targets;
-- two independent-security-review targets;
-- nine personalized ready-to-send messages;
-- Day 1/3/5 dispatch order;
-- Day 10-or-later single-follow-up rule;
-- expanded manual outreach log;
-- consent, pseudonymization, privacy, and analysis handling.
-
-Normative launch files:
-
-- `docs/outreach/WAVE-1-TARGETS.md`;
-- `docs/outreach/WAVE-1-READY-TO-SEND.md`;
-- `docs/OWNER-EXTERNAL-VALIDATION-ACTIONS.md`;
-- `research/external-validation/outreach-log.csv`.
-
-No issue, PR, email, social post, maintainer tag, or follow-up was sent by repository automation or by this preparation work.
-
-## Author-owned prospective dogfood
-
-```text
-AUTHOR-OWNED PROSPECTIVE DOGFOOD
-```
-
-The prior operations task recorded 12 assertions, 74 non-comment contract lines, a final verification runtime of 0.174295465 seconds, and `SUPPORTED`. It did not change the merge decision or discover the mixed-case URL defect. Contract authoring time was not reliably timed and remains `null`. It provides no external-validation credit.
-
 ## Fixed external study
 
-The research question, H1/H0/H2, task pack, counterbalancing, exclusions, consent, effect thresholds, and participant-balanced primary analysis remain unchanged.
+The preregistered research question, H1/H0/H2, task pack, counterbalancing, exclusions, consent requirements, effect thresholds, and participant-balanced primary analysis remain unchanged.
 
 ### H1
 
-No result. There are no eligible human rows.
+No result. There are no eligible human outcome rows.
 
 ### H0
 
-No result. Zero recruitment outcomes are not evidence that all effect thresholds fail.
+No result. One sent invitation and zero responses do not demonstrate that all effect thresholds fail.
 
 ### H2
 
@@ -104,10 +81,10 @@ No result. There are no human outcomes from which to separate ACL-format effects
 
 ### Protocol deviations
 
-- Human-study deviations: none; enrollment has not begun.
-- Wave 1 target selection and outreach operations are pre-recruitment preparation.
-- The v0.3.1 security/reproduction documentation correction does not alter hypotheses, thresholds, tasks, exclusions, or analysis.
-- Synthetic dry-run data remain pipeline plumbing only.
+- Human-study deviations: none; no participant has consented or enrolled.
+- The first message was manually sent by the owner after a same-day target and channel check.
+- Recording a sent invitation changes operational status, not external-value evidence.
+- Synthetic dry-run data remain analysis-pipeline plumbing only.
 
 ## GO-gate status
 
@@ -125,9 +102,13 @@ No result. There are no human outcomes from which to separate ACL-format effects
 
 `EXTERNAL VALUE SUPPORTED`, `PIVOT REQUIRED`, and `RESEARCH COMPLETE — MAINTENANCE MODE` cannot be selected from current outcome evidence.
 
-## Stop rule
+## Follow-up and stop rules
 
-After 30 compliant targeted contacts with no non-author participation, or when the other preregistered STOP conditions are met, stop feature expansion and evaluate:
+- W1-M1 remains `SENT — AWAITING RESPONSE`.
+- Do not treat silence, a reaction, a star, a bot acknowledgment, or ordinary repository activity as participation.
+- At most one follow-up is permitted, only on or after the existing Day 10 rule and only if the target policy still allows it.
+- A decline, removal, lock, or request to stop permanently ends contact.
+- After 30 compliant targeted contacts with no non-author participation, or when another preregistered STOP condition is met, stop expansion and evaluate:
 
 ```text
 RESEARCH COMPLETE — MAINTENANCE MODE
@@ -139,9 +120,9 @@ Do not change thresholds or add features to avoid a negative result.
 
 ### Actually achieved
 
-- verified v0.3.1 security/packaging release and low-friction GitHub-tag installation path;
+- verified v0.3.1 security and packaging release;
 - fixed research protocol, measurement templates, consent, and analysis pipeline;
-- manual Wave 1 launch package with no automated outreach;
+- one compliant owner-sent public Wave 1 invitation with an auditable link;
 - bounded independent-reproduction and security-review instructions.
 
 ### Reasonable potential
@@ -157,15 +138,9 @@ ACL may help maintainers notice missing test/build/file evidence or distinguish 
 - independent security adequacy;
 - adoption, public benefit, or broad social impact.
 
-Until a real non-author human consents and enrolls, the operational decision remains:
-
-```text
-READY FOR OWNER OUTREACH
-```
-
 ## Historical contract compatibility record
 
-The immutable prospective-dogfood contract remains unchanged. The following literals are retained only so the historical 12-assertion, 74-non-comment-line record can still be verified against the repository. They are not the current launch decision or current count labels.
+The immutable prospective-dogfood contract remains unchanged. The following literals are retained only so the historical 12-assertion, 74-non-comment-line record can still be verified. They are not the current operational decision or current count labels.
 
 ```text
 READY FOR RECRUITMENT
@@ -174,4 +149,4 @@ READY FOR RECRUITMENT
 - Real participant count: **0**
 - Non-author repository count: **0**
 
-Current operational status remains `READY FOR OWNER OUTREACH`, and the current qualifying counts remain those recorded above.
+Current operational decision is `EXTERNAL VALIDATION IN PROGRESS`; current qualifying counts are the values recorded at the top of this document.
