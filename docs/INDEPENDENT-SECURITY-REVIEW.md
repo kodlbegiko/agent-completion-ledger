@@ -120,29 +120,37 @@ Review tag mutability, release/tag binding, third-party action references, depen
 
 ## Reproduction setup
 
-Use the immutable v0.3.1 tag in a disposable environment:
+Read the latest reviewed instructions from `main`, then execute the immutable `v0.3.1` code from a separate worktree:
 
 ```bash
-git clone --branch v0.3.1 --depth 1 \
-  https://github.com/kodlbegiko/agent-completion-ledger.git
+git clone https://github.com/kodlbegiko/agent-completion-ledger.git
 cd agent-completion-ledger
+git switch main
+cat docs/INDEPENDENT-SECURITY-REVIEW.md
+cat security/reproduction-cases/README.md
+
+git worktree add ../acl-v0.3.1 v0.3.1
+cd ../acl-v0.3.1
 python -m venv .venv
 . .venv/bin/activate
-python -m pip install -e ".[dev]"
+python -m pip install -e "[dev]"
 agent-completion-ledger --help
 ```
 
-Run the fixed package reproduction:
+The separation is intentional:
+
+- review instructions come from the latest reviewed `main` checkout;
+- the executable under test is pinned to immutable `v0.3.1`;
+- ACL is not a sandbox, including when an executable is allow-listed;
+- use only the supplied benign local fixtures, never third-party targets or real secrets.
+
+Run the fixed package reproduction from the `acl-v0.3.1` worktree:
 
 ```bash
 agent-completion-ledger reproduce --output-dir reproduced-results
 ```
 
-Read and execute only the benign local security cases:
-
-```bash
-cat security/reproduction-cases/README.md
-```
+Return to the `main` checkout when consulting or copying the current security-case instructions. Execute corresponding cases only against the pinned `v0.3.1` worktree.
 
 The cases use repository fixtures, a short local sleep, and a reserved `.invalid` URL string. They must not be redirected to third-party systems or run with secrets.
 
