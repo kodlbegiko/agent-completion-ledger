@@ -33,6 +33,8 @@ jobs:
       - name: Determine whether v0.3.1 should be released
         id: gate
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           git fetch --force --tags origin
@@ -46,14 +48,36 @@ jobs:
           )"
           if test "$VERSION" != "0.3.1"; then
             echo "release=false" >> "$GITHUB_OUTPUT"
+            echo "tag_exists=false" >> "$GITHUB_OUTPUT"
+            echo "release_exists=false" >> "$GITHUB_OUTPUT"
             echo "main package version is $VERSION; v0.3.1 release skipped"
             exit 0
           fi
+
+          TAG_EXISTS=false
+          RELEASE_EXISTS=false
           if git show-ref --verify --quiet refs/tags/v0.3.1; then
-            echo "release=false" >> "$GITHUB_OUTPUT"
-            echo "v0.3.1 already exists; duplicate release skipped"
-            exit 0
+            TAG_EXISTS=true
+            test "$(git rev-list -n 1 v0.3.1)" = "$(git rev-parse HEAD)"
           fi
+          if gh release view v0.3.1 --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            RELEASE_EXISTS=true
+          fi
+
+          echo "tag_exists=$TAG_EXISTS" >> "$GITHUB_OUTPUT"
+          echo "release_exists=$RELEASE_EXISTS" >> "$GITHUB_OUTPUT"
+
+          if test "$RELEASE_EXISTS" = true; then
+            ASSETS="$(gh release view v0.3.1 --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name')"
+            if grep -Fxq "agent_completion_ledger-0.3.1-py3-none-any.whl" <<<"$ASSETS" \
+              && grep -Fxq "agent_completion_ledger-0.3.1.tar.gz" <<<"$ASSETS" \
+              && grep -Fxq "SHA256SUMS" <<<"$ASSETS"; then
+              echo "release=false" >> "$GITHUB_OUTPUT"
+              echo "v0.3.1 release and required assets already exist"
+              exit 0
+            fi
+          fi
+
           echo "release=true" >> "$GITHUB_OUTPUT"
 
       - name: Build, validate, and smoke-test distributions
@@ -87,24 +111,43 @@ jobs:
           PY
           cat dist/SHA256SUMS
 
-      - name: Create immutable tag and GitHub Release
+      - name: Create or complete immutable tag and GitHub Release
         if: steps.gate.outputs.release == 'true'
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
+          TAG_EXISTS: ${{ steps.gate.outputs.tag_exists }}
+          RELEASE_EXISTS: ${{ steps.gate.outputs.release_exists }}
         run: |
           set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git tag -a v0.3.1 -m "Agent Completion Ledger v0.3.1"
-          git push origin v0.3.1
-          gh release create v0.3.1 \
-            dist/*.whl \
-            dist/*.tar.gz \
-            dist/SHA256SUMS \
-            --title "v0.3.1 — Security and Packaging Patch" \
-            --notes-file docs/release-notes-v0.3.1.md \
-            --verify-tag
+          if test "$TAG_EXISTS" != true; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git tag -a v0.3.1 -m "Agent Completion Ledger v0.3.1"
+            git push origin v0.3.1
+          fi
+
+          if test "$RELEASE_EXISTS" = true; then
+            gh release edit v0.3.1 \
+              --repo "$GITHUB_REPOSITORY" \
+              --title "v0.3.1 — Security and Packaging Patch" \
+              --notes-file docs/release-notes-v0.3.1.md
+            gh release upload v0.3.1 \
+              dist/*.whl \
+              dist/*.tar.gz \
+              dist/SHA256SUMS \
+              --repo "$GITHUB_REPOSITORY" \
+              --clobber
+          else
+            gh release create v0.3.1 \
+              dist/*.whl \
+              dist/*.tar.gz \
+              dist/SHA256SUMS \
+              --repo "$GITHUB_REPOSITORY" \
+              --title "v0.3.1 — Security and Packaging Patch" \
+              --notes-file docs/release-notes-v0.3.1.md \
+              --verify-tag
+          fi
 
       - uses: actions/upload-artifact@v4
         if: steps.gate.outputs.release == 'true'
