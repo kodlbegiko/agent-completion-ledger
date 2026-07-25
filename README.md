@@ -20,7 +20,7 @@ FEATURE FREEZE
 READY FOR RECRUITMENT
 ```
 
-The v0.3.0 engineering scope is frozen. Core verifier changes require a security, reproduction, packaging, cross-platform, or externally observed blocking-usability reason. v0.4.0 is prohibited until the preregistered external-value gate is met. See `docs/FEATURE-FREEZE.md`.
+The v0.3.x engineering scope is frozen. The current security and packaging patch is v0.3.1. Core verifier changes require a security, reproduction, packaging, cross-platform, or externally observed blocking-usability reason. v0.4.0 is prohibited until the preregistered external-value gate is met. See `docs/FEATURE-FREEZE.md`.
 
 Current external evidence:
 
@@ -32,21 +32,21 @@ Current external evidence:
 
 See `docs/EXTERNAL-VALIDATION-OPERATIONS-STATUS.md` and `docs/v0.3.0-external-evidence-audit.md`.
 
-### v0.3.0 security boundary notice
+### v0.3.1 security patch
 
-PR #8 reproduced that v0.3.0's remote-URL argument check is case-sensitive: mixed-case schemes such as `HTTPS://` can reach an allow-listed executable instead of becoming `UNVERIFIABLE`. The narrow source fix and regression tests are merged to `main` in `e529cbe3249bdee9a50b5791aeb86260dbcc56d3` under the feature-freeze security exception; the immutable v0.3.0 release remains affected until a verified v0.3.1 patch is published.
+v0.3.0's remote-URL argument check was case-sensitive, so mixed-case schemes such as `HTTPS://` could reach an allow-listed executable instead of becoming `UNVERIFIABLE`. v0.3.1 rejects HTTP and HTTPS command arguments case-insensitively before execution and includes lower/uppercase regression coverage.
 
-Until then, use v0.3.0 only for reproduction, report inspection, trusted local repositories, or `--no-exec` static verification. Do not rely on v0.3.0 executable mode as an isolation boundary for an untrusted external repository. ACL remains **not a sandbox** even after the patch.
+The immutable v0.3.0 release remains affected. Use v0.3.1 or later for executable-mode verification. ACL remains **not a sandbox**: allow-listed interpreters, tests, build tools, plugins, lifecycle hooks, dependencies, and repository code still execute with the verifier process's permissions.
 
 ## Installation status
 
-The current released source is `v0.3.0`. ACL is **not published on PyPI**. Install from the GitHub release tag or clone the repository:
+The current GitHub release is `v0.3.1`. ACL is **not published on PyPI**. Install the verified GitHub tag or clone the repository:
 
 ```bash
 python -m venv .venv
 . .venv/bin/activate
 python -m pip install \
-  "agent-completion-ledger @ git+https://github.com/kodlbegiko/agent-completion-ledger.git@v0.3.0"
+  "agent-completion-ledger @ git+https://github.com/kodlbegiko/agent-completion-ledger.git@v0.3.1"
 ```
 
 For development:
@@ -57,9 +57,9 @@ cd agent-completion-ledger
 python -m pip install -e ".[dev]"
 ```
 
-GitHub Releases currently provide generated source archives. Wheel and sdist builds are validated in CI, but the v0.3.0 Release does not yet record project-built wheel, sdist, and checksum assets. PyPI Trusted Publishing and release-asset workflows are prepared; owner setup and verification remain required. See `docs/OWNER-PYPI-PUBLISH-ACTIONS.md`.
+The v0.3.1 GitHub Release includes a project-built wheel, sdist, and `SHA256SUMS`. The published assets passed checksum validation and a clean-environment wheel smoke test. See `docs/v0.3.1-release-verification.md`.
 
-Do not use `pip install agent-completion-ledger` in user instructions until the production PyPI project and a clean-environment installation have been verified.
+PyPI Trusted Publishing is prepared but still requires owner-side TestPyPI/PyPI configuration and verification. Do not use `pip install agent-completion-ledger` in user instructions until the production PyPI project and a clean-environment installation have been verified. See `docs/OWNER-PYPI-PUBLISH-ACTIONS.md`.
 
 ## Quick verification
 
@@ -164,7 +164,7 @@ steps:
   - id: contract
     shell: bash
     run: echo "sha256=$(sha256sum completion-ledger.yml | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
-  - uses: kodlbegiko/agent-completion-ledger@v0.3.0
+  - uses: kodlbegiko/agent-completion-ledger@v0.3.1
     with:
       contract: completion-ledger.yml
       expected-contract-sha256: ${{ steps.contract.outputs.sha256 }}
