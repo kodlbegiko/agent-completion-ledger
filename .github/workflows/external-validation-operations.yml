@@ -65,109 +65,11 @@ jobs:
             research/prospective-dogfood/acl-external-validation-operations/completion-ledger.yml
 
       - name: Execute benign security review cases
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p validation-artifacts/security
-
-          STATIC=security/reproduction-cases/contracts/static-safe.yml
-          STATIC_SHA="$(python -c 'import hashlib,sys; print(hashlib.sha256(open(sys.argv[1],"rb").read()).hexdigest())' "$STATIC")"
-          agent-completion-ledger verify \
-            --contract "$STATIC" \
-            --repo-root security/reproduction-cases/repository \
-            --expected-contract-sha256 "$STATIC_SHA" \
-            --no-exec \
-            --format json \
-            --output validation-artifacts/security/static-safe.json
-
-          set +e
-          agent-completion-ledger verify \
-            --contract "$STATIC" \
-            --repo-root security/reproduction-cases/repository \
-            --expected-contract-sha256 0000000000000000000000000000000000000000000000000000000000000000 \
-            --format json \
-            --output validation-artifacts/security/digest-mismatch.json
-          test "$?" -eq 2
-
-          agent-completion-ledger verify \
-            --contract security/reproduction-cases/contracts/interpreter-disabled.yml \
-            --repo-root security/reproduction-cases/repository \
-            --no-exec \
-            --format json \
-            --output validation-artifacts/security/interpreter-disabled.json
-          test "$?" -eq 2
-
-          agent-completion-ledger verify \
-            --contract security/reproduction-cases/contracts/path-traversal.yml \
-            --repo-root security/reproduction-cases/repository \
-            --no-exec \
-            --format json \
-            --output validation-artifacts/security/path-traversal.json
-          test "$?" -eq 2
-
-          agent-completion-ledger verify \
-            --contract security/reproduction-cases/contracts/windows-absolute.yml \
-            --repo-root security/reproduction-cases/repository \
-            --no-exec \
-            --format json \
-            --output validation-artifacts/security/windows-absolute.json
-          test "$?" -eq 2
-
-          agent-completion-ledger verify \
-            --contract security/reproduction-cases/contracts/remote-url.yml \
-            --repo-root security/reproduction-cases/repository \
-            --format json \
-            --output validation-artifacts/security/remote-url.json
-          test "$?" -eq 2
-
-          agent-completion-ledger verify \
-            --contract security/reproduction-cases/contracts/timeout.yml \
-            --repo-root security/reproduction-cases/repository \
-            --format json \
-            --output validation-artifacts/security/timeout.json
-          test "$?" -eq 2
-          set -e
-
-          agent-completion-ledger verify \
-            --contract security/reproduction-cases/contracts/report-nondisclosure.yml \
-            --repo-root security/reproduction-cases/repository \
-            --format json \
-            --output validation-artifacts/security/report-nondisclosure.json
-          ! grep -q ACL_BENIGN_OUTPUT_MARKER_DO_NOT_REPORT \
-            validation-artifacts/security/report-nondisclosure.json
-
-          ln -s public.txt security/reproduction-cases/repository/link.txt
-          set +e
-          agent-completion-ledger verify \
-            --contract security/reproduction-cases/contracts/symlink.yml \
-            --repo-root security/reproduction-cases/repository \
-            --no-exec \
-            --format json \
-            --output validation-artifacts/security/symlink.json
-          test "$?" -eq 2
-          set -e
-          rm security/reproduction-cases/repository/link.txt
-
-          python - <<'PY'
-          import json
-          from pathlib import Path
-
-          expected = {
-              'static-safe.json': 'SUPPORTED',
-              'digest-mismatch.json': 'UNVERIFIABLE',
-              'interpreter-disabled.json': 'UNVERIFIABLE',
-              'path-traversal.json': 'UNVERIFIABLE',
-              'windows-absolute.json': 'UNVERIFIABLE',
-              'remote-url.json': 'UNVERIFIABLE',
-              'timeout.json': 'UNVERIFIABLE',
-              'report-nondisclosure.json': 'SUPPORTED',
-              'symlink.json': 'UNVERIFIABLE',
-          }
-          root = Path('validation-artifacts/security')
-          for name, status in expected.items():
-              payload = json.loads((root / name).read_text(encoding='utf-8'))
-              assert payload['overallStatus'] == status, (name, payload['overallStatus'])
-          PY
+        id: security-cases
+        continue-on-error: true
+        run: >-
+          python security/reproduction-cases/run_cases.py
+          --output-dir validation-artifacts/security
 
       - name: Run author-owned prospective dogfood
         shell: bash
@@ -227,7 +129,8 @@ jobs:
               ) / 1_000_000_000,
               'decisionBeforeLedger': 'INSUFFICIENT_EVIDENCE',
               'ledgerResult': report['overallStatus'],
-              'decisionAfterLedger': 'ELIGIBLE_FOR_REVIEW; merge decision remains human',
+              'decisionAfterLedger': 'ELIGIBLE_FOR REVIEW; merge decision remains human',
+              'decisionChanged': False,
               'missingBlockingEvidenceFound': False,
               'externalValidationCredit': False,
               'resultDigest': report['resultDigest'],
@@ -240,7 +143,15 @@ jobs:
           PY
 
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: external-validation-operations-evidence
           path: validation-artifacts/
           if-no-files-found: error
+
+      - name: Enforce benign security case success
+        if: always()
+        env:
+          SECURITY_CASES_OUTCOME: ${{ steps.security-cases.outcome }}
+        shell: bash
+        run: test "$SECURITY_CASES_OUTCOME" = "success"
