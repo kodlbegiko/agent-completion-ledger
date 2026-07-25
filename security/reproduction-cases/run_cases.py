@@ -132,8 +132,8 @@ def run_cases(output_dir: Path) -> dict[str, Any]:
             "remote-url",
             "remote-url.yml",
             output_dir,
-            expected_exit=1,
-            expected_status="FAILED",
+            expected_exit=2,
+            expected_status="UNVERIFIABLE",
         ),
         _run_case(
             "timeout",
