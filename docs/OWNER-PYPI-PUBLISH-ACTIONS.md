@@ -12,6 +12,7 @@ Agent Completion Ledger is **not published** on PyPI at the time this document w
 - The v0.3.0 GitHub Release currently records GitHub-generated source archives only; no project-built wheel, sdist, or `SHA256SUMS` asset is recorded.
 - The exact package name did not appear in an unauthenticated public PyPI search during the audit. This is not an authoritative reservation check; the owner must create a pending publisher or project to confirm availability.
 - PyPI requires an owner-side Trusted Publisher configuration. Repository automation cannot complete that account action.
+- PR #8 identified a case-sensitive remote-URL validation bypass in v0.3.0. The source fix and regression tests are prepared under the feature-freeze security exception; the next public package must include that fix.
 
 ## Required owner configuration
 
@@ -32,7 +33,7 @@ pypi
 release-artifacts
 ```
 
-For `pypi` and `release-artifacts`:
+For `testpypi`, `pypi`, and `release-artifacts`:
 
 - require an owner or trusted reviewer approval;
 - restrict deployment branches/tags to protected release tags where the GitHub plan supports it;
@@ -65,22 +66,23 @@ Environment: pypi
 
 If PyPI reports that the name is unavailable, stop. Do not publish under a confusingly similar name without a separate naming review and documentation update.
 
-## Prepare packaging-only v0.3.1
+## Prepare security/packaging patch v0.3.1
 
-The first registry release should be `v0.3.1`, not a silent rebuild of an already published Git tag. v0.3.1 is restricted to packaging, distribution, release assets, security/reproduction fixes, and documentation/metadata corrections.
+The first registry release should be `v0.3.1`, not a silent rebuild of an already published Git tag. v0.3.1 is restricted to the reviewed case-insensitive URL rejection fix, packaging/distribution, release assets, reproduction fixes, and documentation/metadata corrections.
 
 Before tagging:
 
-1. Set `[project].version` in `pyproject.toml` to `0.3.1`.
-2. Add a dated `0.3.1` CHANGELOG entry describing only packaging/distribution and external-validation operations.
-3. Update `CITATION.cff` to `0.3.1` and the actual release date.
-4. Add package metadata if approved: project URLs, keywords, intended audience, supported Python classifiers, and operating-system classifier.
-5. Keep README installation text on the Git-tag command until PyPI verification is complete.
-6. Run the full CI matrix and confirm no core verifier feature change is included.
+1. Merge the PR #8 security fix and confirm mixed-case `HTTP://` and `HTTPS://` arguments become `UNVERIFIABLE` before interpreter execution.
+2. Set `[project].version` in `pyproject.toml` to `0.3.1`.
+3. Add a dated `0.3.1` CHANGELOG entry describing the security fix and packaging/external-validation operations only.
+4. Update `CITATION.cff` to `0.3.1` and the actual release date.
+5. Add package metadata if approved: project URLs, keywords, intended audience, supported Python classifiers, and operating-system classifier.
+6. Keep README installation text on the Git-tag command until PyPI verification is complete.
+7. Run the full CI matrix and confirm no unrelated verifier feature change is included.
 
-## Create and publish the tag
+## Create the immutable tag
 
-After the pending publishers and environments are configured:
+After the patch commit passes clean-main CI:
 
 ```bash
 git switch main
@@ -89,16 +91,28 @@ git tag -a v0.3.1 -m "Agent Completion Ledger v0.3.1"
 git push origin v0.3.1
 ```
 
-The `publish-package` workflow will:
+Pushing the tag does **not** automatically publish to PyPI. This prevents an unconfigured or unapproved registry deployment.
 
-1. verify the tag matches `pyproject.toml`;
-2. build wheel and sdist from the tagged commit;
-3. run `twine check` to validate README/package rendering metadata;
-4. install and smoke-test the built wheel;
-5. generate `SHA256SUMS`;
-6. publish to TestPyPI using OIDC;
-7. wait for the protected `pypi` environment;
-8. publish the identical artifacts to PyPI using OIDC.
+## Publish the exact tag manually
+
+In GitHub Actions, open `publish-package`, choose **Run workflow**, and enter:
+
+```text
+tag = v0.3.1
+```
+
+The workflow will:
+
+1. validate semver syntax;
+2. check out the exact tag;
+3. verify the tag resolves to the checked-out commit and matches `pyproject.toml`;
+4. build wheel and sdist from that tag;
+5. run `twine check` to validate README/package rendering metadata;
+6. install and smoke-test the wheel;
+7. generate a separate `SHA256SUMS` artifact that is not uploaded as a PyPI distribution;
+8. publish wheel and sdist to TestPyPI using OIDC;
+9. wait for the protected `pypi` environment;
+10. publish the identical wheel and sdist to PyPI using OIDC.
 
 No long-lived PyPI token is stored.
 
@@ -156,7 +170,7 @@ tag = v0.3.1
 
 Approve the `release-artifacts` environment. The workflow checks out the exact tag, confirms version/tag equality, builds and smoke-tests wheel/sdist, generates `SHA256SUMS`, and uploads all three asset types to the existing GitHub Release.
 
-For historical v0.3.0 backfill, the same workflow may be run with `v0.3.0` after owner review. This rebuild is reproducible from the immutable tag, but it occurs after the original release date and must be described as a backfilled artifact set.
+For historical v0.3.0 backfill, the same workflow may be run with `v0.3.0` after owner review. This rebuild is reproducible from the immutable tag, but it occurs after the original release date and must be described as a backfilled artifact set. It does not fix the mixed-case URL issue in v0.3.0.
 
 ## README switch gate
 
